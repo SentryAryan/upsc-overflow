@@ -1,0 +1,75 @@
+"use client";
+
+import HomePagination from "@/components/Filters/HomePagination";
+import { LoaderDemo } from "@/components/Loaders/LoaderDemo";
+import { setQuestions } from "@/lib/redux/slices/questions.slice";
+import { RootState } from "@/lib/redux/store";
+import axios from "axios";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "sonner";
+import QuestionCard from "../../components/Questions/QuestionCard";
+
+export default function TagPage() {
+  const searchParams = useSearchParams();
+  const dispatch = useDispatch();
+  const questions = useSelector(
+    (state: RootState) => state.questions.questions
+  );
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const currentPage = Number(searchParams.get("page")) || 1;
+  const receivedTag = searchParams.get("tag") || "";
+  const decodedTag = decodeURIComponent(receivedTag); // Decode URL-encoded spaces (%20)
+  console.log("tag received =", receivedTag);
+  console.log("tag by decodedURIComponent =", decodedTag);
+  console.log("tag by encodeURIComponent =", encodeURIComponent(decodedTag));
+  console.log("tag by encodeURI =", encodeURI(decodedTag));
+
+  const [totalPages, setTotalPages] = useState<number>(0);
+
+  const fetchQuestions = async () => {
+    try {
+      setIsLoading(true);
+      const response = await axios.get(
+        `/api/questions/get-all?page=${currentPage}&limit=10&tag=${encodeURIComponent(decodedTag)}`
+      );
+      dispatch(setQuestions(response.data.data));
+      setTotalPages(response.data.data[0]?.totalPages || 0);
+    } catch (error: any) {
+      console.log(error.response?.data?.message);
+      toast.error(`Questions not found, visit previous pages`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchQuestions();
+  }, [currentPage]);
+
+  return (
+    <div className="flex flex-col items-center w-full p-10 min-h-screen gap-4">
+      <h1 className="text-2xl font-bold mb-4">Questions tagged with "#{(decodedTag)}"</h1>
+      <HomePagination tag={encodeURIComponent(decodedTag)} totalPages={totalPages} />
+
+      {isLoading ? (
+        <div className="flex items-center justify-center h-[70vh]">
+          <LoaderDemo />
+        </div>
+      ) : questions.length === 0 ? (
+        <p className="text-center mt-4 text-muted-foreground">
+          No questions found with this tag.
+        </p>
+      ) : currentPage > totalPages ? (
+        <p className="text-center mt-4 text-muted-foreground">No more pages</p>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
+          {questions.map((question: any) => (
+            <QuestionCard key={question._id} question={question} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
