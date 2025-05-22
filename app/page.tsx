@@ -16,6 +16,8 @@ import {
   setAvailableSubjects,
   setSelectedSubject,
 } from "../lib/redux/slices/filterSubjects.slice";
+import SearchBar from "@/components/Forms/SearchBar";
+import SortFilter from "@/components/Filters/SortFilter";
 
 export interface QuestionCardProps extends QuestionType {
   likesAnswersComments: {
@@ -87,6 +89,7 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col items-center w-full p-10 min-h-screen gap-4">
+      <SearchBar />
       <HomePagination totalPages={totalPages} />
 
       <SubjectFilter
@@ -94,6 +97,8 @@ export default function HomePage() {
         selectedSubject={selectedSubject}
         onSelectSubject={handleSelectSubject}
       />
+
+      <SortFilter />
 
       {isLoading ? (
         <div className="flex items-center justify-center h-[70vh]">

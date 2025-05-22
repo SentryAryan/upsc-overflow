@@ -13,10 +13,12 @@ const HomePagination = ({
   totalPages,
   subject,
   tag,
+  question,
 }: {
   totalPages: number;
   subject?: string;
   tag?: string;
+  question?: string;
 }) => {
   console.log("HomePagination.jsx");
   const pathname = usePathname();
@@ -34,7 +36,7 @@ const HomePagination = ({
               currentPage === 1 ? totalPages : currentPage - 1
             }${subject ? `&subject=${subject}` : ""}${
               tag ? `&tag=${tag}` : ""
-            }`}
+            }${question ? `&question=${question}` : ""}`}
           />
         </PaginationItem>
 
@@ -46,7 +48,9 @@ const HomePagination = ({
                 <PaginationLink
                   href={`${pathname}?page=${i + 1}${
                     subject ? `&subject=${subject}` : ""
-                  }${tag ? `&tag=${tag}` : ""}`}
+                  }${tag ? `&tag=${tag}` : ""}${
+                    question ? `&question=${question}` : ""
+                  }`}
                   isActive={currentPage === i + 1}
                 >
                   {i + 1}
@@ -61,7 +65,9 @@ const HomePagination = ({
                 <PaginationLink
                   href={`${pathname}?page=${i + 1}${
                     subject ? `&subject=${subject}` : ""
-                  }${tag ? `&tag=${tag}` : ""}`}
+                  }${tag ? `&tag=${tag}` : ""}${
+                    question ? `&question=${question}` : ""
+                  }`}
                   isActive={currentPage === i + 1}
                 >
                   {i + 1}
@@ -81,7 +87,7 @@ const HomePagination = ({
               currentPage === totalPages ? 1 : currentPage + 1
             }${subject ? `&subject=${subject}` : ""}${
               tag ? `&tag=${tag}` : ""
-            }`}
+            }${question ? `&question=${question}` : ""}`}
           />
         </PaginationItem>
       </PaginationContent>

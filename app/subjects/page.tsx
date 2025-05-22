@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import QuestionCard from "../../components/Questions/QuestionCard";
+import SearchBar from "../../components/Forms/SearchBar";
 
 export default function SubjectPage() {
   const searchParams = useSearchParams();
@@ -32,6 +33,8 @@ export default function SubjectPage() {
       dispatch(setQuestions(response.data.data));
       setTotalPages(response.data.data[0]?.totalPages || 0);
     } catch (error: any) {
+      dispatch(setQuestions([]));
+      setTotalPages(0);
       console.log(error.response?.data?.message);
       toast.error(`Questions not found, visit previous pages`);
     } finally {
@@ -41,11 +44,12 @@ export default function SubjectPage() {
 
   useEffect(() => {
     fetchQuestions();
-  }, [currentPage]);
+  }, [currentPage, subject]);
 
   return (
     <div className="flex flex-col items-center w-full p-10 min-h-screen gap-4">
       <h1 className="text-2xl font-bold mb-4">Questions in {subject}</h1>
+      <SearchBar />
       <HomePagination subject={subject} totalPages={totalPages} />
 
       {isLoading ? (

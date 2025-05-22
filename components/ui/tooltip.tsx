@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import * as TooltipPrimitive from "@radix-ui/react-tooltip"
+import * as React from "react";
+import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 function TooltipProvider({
   delayDuration = 0,
@@ -15,7 +15,7 @@ function TooltipProvider({
       delayDuration={delayDuration}
       {...props}
     />
-  )
+  );
 }
 
 function Tooltip({
@@ -25,13 +25,13 @@ function Tooltip({
     <TooltipProvider>
       <TooltipPrimitive.Root data-slot="tooltip" {...props} />
     </TooltipProvider>
-  )
+  );
 }
 
 function TooltipTrigger({
   ...props
 }: React.ComponentProps<typeof TooltipPrimitive.Trigger>) {
-  return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />
+  return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />;
 }
 
 function TooltipContent({
@@ -41,7 +41,7 @@ function TooltipContent({
   children,
   ...props
 }: React.ComponentProps<typeof TooltipPrimitive.Content> & {
-  type?: "tag" | "subject"
+  type?: "tag" | "subject";
 }) {
   return (
     <TooltipPrimitive.Portal>
@@ -55,10 +55,16 @@ function TooltipContent({
         {...props}
       >
         {children}
-        <TooltipPrimitive.Arrow className="dark:bg-blue-700 group-hover:dark:bg-blue-900 fill-blue-700 group-hover:fill-blue-900 z-50! size-2.5! translate-y-[calc(-50%_-_2px)]! rotate-45! rounded-[2px]!" />
+        <TooltipPrimitive.Arrow
+          className={`${
+            type === "subject"
+              ? "dark:bg-blue-700 group-hover:dark:bg-blue-900 fill-blue-700 group-hover:fill-blue-900"
+              : "dark:bg-gray-700 group-hover:dark:bg-gray-900 fill-gray-700 group-hover:fill-gray-900"
+          } z-50! size-2.5! translate-y-[calc(-50%_-_2px)]! rotate-45! rounded-[2px]!`}
+        />
       </TooltipPrimitive.Content>
     </TooltipPrimitive.Portal>
-  )
+  );
 }
 
-export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider }
+export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider };

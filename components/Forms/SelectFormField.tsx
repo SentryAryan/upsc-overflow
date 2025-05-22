@@ -9,12 +9,12 @@ import {
 } from "../ui/form";
 import Link from "next/link";
 import {
- Select,
- SelectContent,
- SelectItem,
- SelectTrigger,
- SelectValue,
-} from "@/components/ui/select"
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { FieldValues, Control, Path } from "react-hook-form";
 
 interface FormFieldProps<T extends FieldValues> {

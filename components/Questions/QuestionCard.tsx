@@ -139,7 +139,7 @@ const QuestionCard = ({ question }: { question: QuestionCardProps }) => {
               <TooltipProvider key={index}>
                 <Tooltip>
                   <TooltipTrigger
-                    className="text-xs font-medium bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 px-3 py-1.5 rounded-full cursor-pointer"
+                    className="text-xs font-medium bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300 px-3 py-1.5 rounded-full cursor-pointer hover:bg-gray-200 hover:dark:bg-gray-700 transition-all duration-200"
                     onClick={(e) => {
                       e.stopPropagation();
                       router.push(`/tags?tag=${encodeURIComponent(tag)}`);
@@ -149,13 +149,13 @@ const QuestionCard = ({ question }: { question: QuestionCardProps }) => {
                   </TooltipTrigger>
                   <TooltipContent
                     type="tag"
-                    className="dark:bg-blue-700 dark:hover:bg-blue-900 text-blue-200 cursor-pointer font-bold"
+                    className="dark:bg-gray-700 dark:hover:dark:bg-gray-900 text-blue-200 cursor-pointer font-bold"
                     onClick={(e) => {
                       e.stopPropagation();
                       router.push(`/tags?tag=${encodeURIComponent(tag)}`);
                     }}
                   >
-                    View all questions in {tag}
+                    View all questions in #{tag}
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>

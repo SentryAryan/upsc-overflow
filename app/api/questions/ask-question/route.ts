@@ -21,7 +21,11 @@ const questionSchema = z.object({
 
 export const POST = errorHandler(async (req: NextRequest) => {
   const validatedData = questionSchema.parse(await req.json());
-  const { title, description, subject, tags, asker } = validatedData;
+  let { title, description, subject, tags, asker } = validatedData;
+
+  if (!title.endsWith("?")) {
+    title = title + "?";
+  }
 
   await dbConnect();
 

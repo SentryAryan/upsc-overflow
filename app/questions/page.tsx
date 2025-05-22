@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import QuestionCard from "../../components/Questions/QuestionCard";
 import SearchBar from "../../components/Forms/SearchBar";
 
-export default function TagPage() {
+export default function QuestionsPage() {
   const searchParams = useSearchParams();
   const dispatch = useDispatch();
   const questions = useSelector(
@@ -20,20 +20,16 @@ export default function TagPage() {
   );
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const currentPage = Number(searchParams.get("page")) || 1;
-  const receivedTag = searchParams.get("tag") || "";
-  const decodedTag = decodeURIComponent(receivedTag); // Decode URL-encoded spaces (%20)
-  console.log("tag received =", receivedTag);
-  console.log("tag by decodedURIComponent =", decodedTag);
-  console.log("tag by encodeURIComponent =", encodeURIComponent(decodedTag));
-  console.log("tag by encodeURI =", encodeURI(decodedTag));
-
+  const questionQuery = searchParams.get("question") || "";
   const [totalPages, setTotalPages] = useState<number>(0);
 
   const fetchQuestions = async () => {
     try {
       setIsLoading(true);
       const response = await axios.get(
-        `/api/questions/get-all?page=${currentPage}&limit=10&tag=${encodeURIComponent(decodedTag)}`
+        `/api/questions/get-all?page=${currentPage}&limit=10&question=${encodeURIComponent(
+          questionQuery
+        )}`
       );
       dispatch(setQuestions(response.data.data));
       setTotalPages(response.data.data[0]?.totalPages || 0);
@@ -49,14 +45,19 @@ export default function TagPage() {
 
   useEffect(() => {
     fetchQuestions();
-  }, [currentPage, decodedTag]);
+  }, [currentPage, questionQuery]);
 
   return (
     <div className="flex flex-col items-center w-full p-10 min-h-screen gap-4">
-      <h1 className="text-2xl font-bold mb-4">Questions tagged with "#{(decodedTag)}"</h1>
+      <h1 className="text-2xl font-bold mb-4">
+        Search results for "{questionQuery}"
+      </h1>
       <SearchBar />
-      
-      <HomePagination tag={encodeURIComponent(decodedTag)} totalPages={totalPages} />
+
+      <HomePagination
+        question={encodeURIComponent(questionQuery)}
+        totalPages={totalPages}
+      />
 
       {isLoading ? (
         <div className="flex items-center justify-center h-[70vh]">
@@ -64,7 +65,7 @@ export default function TagPage() {
         </div>
       ) : questions.length === 0 ? (
         <p className="text-center mt-4 text-muted-foreground">
-          No questions found with this tag.
+          No questions found for this query.
         </p>
       ) : currentPage > totalPages ? (
         <p className="text-center mt-4 text-muted-foreground">No more pages</p>
