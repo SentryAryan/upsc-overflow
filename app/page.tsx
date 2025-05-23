@@ -43,13 +43,16 @@ export default function HomePage() {
   );
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const currentPage = Number(searchParams.get("page")) || 1;
+  const sortBy = searchParams.get("sortBy");
   const [totalPages, setTotalPages] = useState<number>(0);
 
   const fetchQuestions = async () => {
     try {
       setIsLoading(true);
       const response = await axios.get(
-        `/api/questions/get-all?page=${currentPage}&limit=10`
+        `/api/questions/get-all?page=${currentPage}&limit=10${
+          sortBy ? `&sortBy=${encodeURIComponent(sortBy)}` : ""
+        }`
       );
       const fetchedQuestions = response.data.data;
       console.log(response.data.data);
@@ -81,7 +84,7 @@ export default function HomePage() {
     //   fetchQuestions();
     // }
     fetchQuestions();
-  }, [currentPage]);
+  }, [currentPage, sortBy]);
 
   const filteredQuestions = selectedSubject
     ? questions.filter((q: QuestionType) => q.subject === selectedSubject)

@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import QuestionCard from "../../components/Questions/QuestionCard";
 import SearchBar from "../../components/Forms/SearchBar";
+import SortFilter from "@/components/Filters/SortFilter";
 
 export default function SubjectPage() {
   const searchParams = useSearchParams();
@@ -23,12 +24,13 @@ export default function SubjectPage() {
   const currentPage = Number(searchParams.get("page")) || 1;
   const subject = searchParams.get("subject") || "";
   const [totalPages, setTotalPages] = useState<number>(0);
+  const sortBy = searchParams.get("sortBy");
 
   const fetchQuestions = async () => {
     try {
       setIsLoading(true);
       const response = await axios.get(
-        `/api/questions/get-all?page=${currentPage}&limit=10&subject=${subject}`
+        `/api/questions/get-all?page=${currentPage}&limit=10&subject=${subject}${sortBy ? `&sortBy=${sortBy}` : ""}`
       );
       dispatch(setQuestions(response.data.data));
       setTotalPages(response.data.data[0]?.totalPages || 0);
@@ -44,13 +46,15 @@ export default function SubjectPage() {
 
   useEffect(() => {
     fetchQuestions();
-  }, [currentPage, subject]);
+  }, [currentPage, subject, sortBy]);
 
   return (
     <div className="flex flex-col items-center w-full p-10 min-h-screen gap-4">
       <h1 className="text-2xl font-bold mb-4">Questions in {subject}</h1>
       <SearchBar />
       <HomePagination subject={subject} totalPages={totalPages} />
+
+      <SortFilter />
 
       {isLoading ? (
         <div className="flex items-center justify-center h-[70vh]">

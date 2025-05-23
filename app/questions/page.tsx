@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import QuestionCard from "../../components/Questions/QuestionCard";
 import SearchBar from "../../components/Forms/SearchBar";
+import SortFilter from "@/components/Filters/SortFilter";
 
 export default function QuestionsPage() {
   const searchParams = useSearchParams();
@@ -22,6 +23,7 @@ export default function QuestionsPage() {
   const currentPage = Number(searchParams.get("page")) || 1;
   const questionQuery = searchParams.get("question") || "";
   const [totalPages, setTotalPages] = useState<number>(0);
+  const sortBy = searchParams.get("sortBy");
 
   const fetchQuestions = async () => {
     try {
@@ -29,7 +31,7 @@ export default function QuestionsPage() {
       const response = await axios.get(
         `/api/questions/get-all?page=${currentPage}&limit=10&question=${encodeURIComponent(
           questionQuery
-        )}`
+        )}${sortBy ? `&sortBy=${sortBy}` : ""}`
       );
       dispatch(setQuestions(response.data.data));
       setTotalPages(response.data.data[0]?.totalPages || 0);
@@ -45,7 +47,7 @@ export default function QuestionsPage() {
 
   useEffect(() => {
     fetchQuestions();
-  }, [currentPage, questionQuery]);
+  }, [currentPage, questionQuery, sortBy]);
 
   return (
     <div className="flex flex-col items-center w-full p-10 min-h-screen gap-4">
@@ -58,6 +60,8 @@ export default function QuestionsPage() {
         question={encodeURIComponent(questionQuery)}
         totalPages={totalPages}
       />
+
+      <SortFilter />
 
       {isLoading ? (
         <div className="flex items-center justify-center h-[70vh]">

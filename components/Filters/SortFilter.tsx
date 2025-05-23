@@ -21,13 +21,15 @@ const SortFilter: React.FC<SortFilterProps> = () => {
   const currentSortBy = (searchParams.get("sortBy") as SortByType) || "date-asc"; // Default to earliest
 
   const handleSelectSort = (sortByValue: SortByType) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("sortBy", sortByValue);
-    // Reset page to 1 when sort order changes
-    if (params.has("page")) {
-      params.set("page", "1");
-    }
-    router.push(`?${params.toString()}`);
+    const page = searchParams.get("page");
+    const question = searchParams.get("question");
+    const subject = searchParams.get("subject");
+    const tag = searchParams.get("tag");
+    router.push(
+      `?${page ? `page=1` : ""}&sortBy=${sortByValue}${
+        question ? `&question=${question}` : ""
+      }${subject ? `&subject=${subject}` : ""}${tag ? `&tag=${tag}` : ""}`
+    );
   };
 
   return (

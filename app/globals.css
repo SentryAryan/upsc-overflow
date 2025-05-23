@@ -126,7 +126,7 @@
 
   pre[class*="language-"],
   code[class*="language-"] {
-    @apply bg-gray-100 dark:bg-gray-400 p-4 rounded-md font-mono text-sm dark:text-gray-900;
+    @apply bg-gray-100 dark:bg-gray-400 p-4 rounded-md font-mono text-sm dark:text-gray-900 overflow-x-auto;
   }
 
   pre[class*="language-"] {

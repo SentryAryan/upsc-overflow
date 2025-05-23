@@ -481,7 +481,7 @@ const QuestionPage = () => {
           </div>
 
           {/* Question content */}
-          <div className="prose prose-lg dark:prose-invert max-w-none flex-1 text-gray-700 dark:text-gray-300">
+          <div className="prose prose-lg dark:prose-invert max-w-[1030px] flex-1 text-gray-700 dark:text-gray-300">
             <div>{parse(question.description)}</div>
           </div>
         </div>

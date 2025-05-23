@@ -24,6 +24,7 @@ const HomePagination = ({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentPage = Number(searchParams.get("page")) || 1;
+  const sortBy = searchParams.get("sortBy");
   console.log(searchParams.get("page"));
 
   return (
@@ -36,7 +37,9 @@ const HomePagination = ({
               currentPage === 1 ? totalPages : currentPage - 1
             }${subject ? `&subject=${subject}` : ""}${
               tag ? `&tag=${tag}` : ""
-            }${question ? `&question=${question}` : ""}`}
+            }${question ? `&question=${question}` : ""}${
+              sortBy ? `&sortBy=${sortBy}` : ""
+            }`}
           />
         </PaginationItem>
 
@@ -50,7 +53,7 @@ const HomePagination = ({
                     subject ? `&subject=${subject}` : ""
                   }${tag ? `&tag=${tag}` : ""}${
                     question ? `&question=${question}` : ""
-                  }`}
+                  }${sortBy ? `&sortBy=${sortBy}` : ""}`}
                   isActive={currentPage === i + 1}
                 >
                   {i + 1}
@@ -67,7 +70,7 @@ const HomePagination = ({
                     subject ? `&subject=${subject}` : ""
                   }${tag ? `&tag=${tag}` : ""}${
                     question ? `&question=${question}` : ""
-                  }`}
+                  }${sortBy ? `&sortBy=${sortBy}` : ""}`}
                   isActive={currentPage === i + 1}
                 >
                   {i + 1}
@@ -87,7 +90,9 @@ const HomePagination = ({
               currentPage === totalPages ? 1 : currentPage + 1
             }${subject ? `&subject=${subject}` : ""}${
               tag ? `&tag=${tag}` : ""
-            }${question ? `&question=${question}` : ""}`}
+            }${question ? `&question=${question}` : ""}${
+              sortBy ? `&sortBy=${sortBy}` : ""
+            }`}
           />
         </PaginationItem>
       </PaginationContent>

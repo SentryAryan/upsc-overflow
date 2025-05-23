@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import QuestionCard from "../../components/Questions/QuestionCard";
 import SearchBar from "../../components/Forms/SearchBar";
+import SortFilter from "@/components/Filters/SortFilter";
 
 export default function TagPage() {
   const searchParams = useSearchParams();
@@ -22,6 +23,8 @@ export default function TagPage() {
   const currentPage = Number(searchParams.get("page")) || 1;
   const receivedTag = searchParams.get("tag") || "";
   const decodedTag = decodeURIComponent(receivedTag); // Decode URL-encoded spaces (%20)
+  const sortBy = searchParams.get("sortBy");
+
   console.log("tag received =", receivedTag);
   console.log("tag by decodedURIComponent =", decodedTag);
   console.log("tag by encodeURIComponent =", encodeURIComponent(decodedTag));
@@ -33,7 +36,7 @@ export default function TagPage() {
     try {
       setIsLoading(true);
       const response = await axios.get(
-        `/api/questions/get-all?page=${currentPage}&limit=10&tag=${encodeURIComponent(decodedTag)}`
+        `/api/questions/get-all?page=${currentPage}&limit=10&tag=${encodeURIComponent(decodedTag)}${sortBy ? `&sortBy=${sortBy}` : ""}`
       );
       dispatch(setQuestions(response.data.data));
       setTotalPages(response.data.data[0]?.totalPages || 0);
@@ -49,7 +52,7 @@ export default function TagPage() {
 
   useEffect(() => {
     fetchQuestions();
-  }, [currentPage, decodedTag]);
+  }, [currentPage, decodedTag, sortBy]);
 
   return (
     <div className="flex flex-col items-center w-full p-10 min-h-screen gap-4">
@@ -57,6 +60,8 @@ export default function TagPage() {
       <SearchBar />
       
       <HomePagination tag={encodeURIComponent(decodedTag)} totalPages={totalPages} />
+
+      <SortFilter />
 
       {isLoading ? (
         <div className="flex items-center justify-center h-[70vh]">
