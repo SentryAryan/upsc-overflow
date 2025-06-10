@@ -172,6 +172,10 @@ export const GET = errorHandler(async (req: NextRequest) => {
     // Step 2: Calculate sorting metrics for each question
     const questionsWithMetrics = await Promise.all(
       baseQuestions.map(async (q) => {
+        console.log("q =", q);
+        console.log("q._doc =", { ...q._doc });
+        console.log("q.toObject() =", { ...q.toObject() });
+        console.log("q.toJSON() =", { ...q.toJSON() });
         let votes = 0;
         let answerCount = 0;
         let commentCount = 0;
@@ -205,7 +209,9 @@ export const GET = errorHandler(async (req: NextRequest) => {
               return answerComments;
             })
           );
-          commentCount = directComments + answerComments.reduce((acc, curr) => acc + curr, 0);
+          commentCount =
+            directComments +
+            answerComments.reduce((acc, curr) => acc + curr, 0);
         }
 
         return {
@@ -218,19 +224,26 @@ export const GET = errorHandler(async (req: NextRequest) => {
     );
     console.log("Single question", questionsWithMetrics[0]);
     console.log("Date field =", questionsWithMetrics[0].createdAt);
-    console.log("Type of Date field =", typeof questionsWithMetrics[0].createdAt);
+    console.log(
+      "Type of Date field =",
+      typeof questionsWithMetrics[0].createdAt
+    );
 
     // Step 3: Sort based on criteria
     questionsWithMetrics.sort((a, b) => {
       switch (sortBy) {
         case "date-desc":
-          console.log("Difference of Dates in date-desc =", b.createdAt - a.createdAt);
-          return (
+          console.log(
+            "Difference of Dates in date-desc =",
             b.createdAt - a.createdAt
           );
+          return b.createdAt - a.createdAt;
         case "date-asc":
           return (
-            console.log("Difference of Dates in date-asc =", a.createdAt - b.createdAt),
+            console.log(
+              "Difference of Dates in date-asc =",
+              a.createdAt - b.createdAt
+            ),
             a.createdAt - b.createdAt
           );
         case "votes-desc":

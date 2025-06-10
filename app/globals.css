@@ -126,10 +126,198 @@
 
   pre[class*="language-"],
   code[class*="language-"] {
-    @apply bg-gray-100 dark:bg-gray-400 p-4 rounded-md font-mono text-sm dark:text-gray-900 overflow-x-auto;
+    @apply bg-gray-100 dark:bg-gray-400 p-4 rounded-md font-mono text-sm dark:text-gray-900 w-max;
   }
 
-  pre[class*="language-"] {
-    @apply overflow-x-auto;
+  /* pre[class*="language-"] {
+    width: max-content;
+    min-width: 100%;
+  } */
+}
+
+/* Tiptap Editor Styling */
+.ProseMirror {
+  outline: none;
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  color: #adb5bd;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.ProseMirror .has-focus {
+  border-radius: 3px;
+  box-shadow: 0 0 0 3px #68cef8;
+}
+
+/* Table styling */
+.ProseMirror table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+.ProseMirror table td,
+.ProseMirror table th {
+  min-width: 1em;
+  border: 2px solid #ced4da;
+  padding: 3px 5px;
+  vertical-align: top;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.ProseMirror table th {
+  font-weight: bold;
+  text-align: left;
+  background-color: #f1f3f4;
+}
+
+.ProseMirror .selectedCell:after {
+  z-index: 2;
+  position: absolute;
+  content: "";
+  left: 0; right: 0; top: 0; bottom: 0;
+  background: rgba(200, 200, 255, 0.4);
+  pointer-events: none;
+}
+
+/* Task list styling */
+.ProseMirror ul[data-type="taskList"] {
+  list-style: none;
+  padding: 0;
+}
+
+.ProseMirror ul[data-type="taskList"] p {
+  margin: 0;
+}
+
+.ProseMirror ul[data-type="taskList"] li {
+  display: flex;
+}
+
+.ProseMirror ul[data-type="taskList"] li > label {
+  flex: 0 0 auto;
+  margin-right: 0.5rem;
+  user-select: none;
+}
+
+.ProseMirror ul[data-type="taskList"] li > div {
+  flex: 1 1 auto;
+}
+
+/* Code block styling */
+.ProseMirror pre {
+  background: #0d1117;
+  color: #c9d1d9;
+  font-family: 'JetBrainsMono', 'SFMono-Regular', 'SF Mono', 'Consolas', 'Liberation Mono', 'Menlo', monospace;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  width: max-content;
+  min-width: 100%;
+  overflow-x: auto;
+}
+
+.ProseMirror code {
+  background-color: rgba(97, 97, 97, 0.1);
+  border-radius: 0.25rem;
+  box-decoration-break: clone;
+  color: inherit;
+  font-size: 0.875rem;
+  padding: 0.25rem;
+  white-space: pre;
+}
+
+/* Dark mode adjustments */
+.dark .ProseMirror table th {
+  background-color: #374151;
+}
+
+.dark .ProseMirror table td,
+.dark .ProseMirror table th {
+  border-color: #4b5563;
+}
+
+/* Global table styling for rendered content (outside editor) */
+.prose table,
+table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+  margin: 1rem 0;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+}
+
+.prose table td,
+.prose table th,
+table td,
+table th {
+  min-width: 1em;
+  border: 1px solid var(--border);
+  padding: 0.5rem 0.75rem;
+  vertical-align: top;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.prose table th,
+table th {
+  font-weight: 600;
+  text-align: left;
+  background-color: var(--muted);
+  color: var(--foreground);
+}
+
+.prose table td,
+table td {
+  background-color: var(--background);
+}
+
+/* Dark mode table styling */
+.dark .prose table th,
+.dark table th {
+  background-color: var(--muted);
+  border-color: var(--border);
+}
+
+.dark .prose table td,
+.dark .prose table th,
+.dark table td,
+.dark table th {
+  border-color: var(--border);
+}
+
+/* Table responsive styling */
+@media (max-width: 768px) {
+  .prose table,
+  table {
+    font-size: 0.875rem;
   }
+  
+  .prose table td,
+  .prose table th,
+  table td,
+  table th {
+    padding: 0.375rem 0.5rem;
+  }
+}
+
+/* Colgroup styling for better column control */
+.prose colgroup col,
+colgroup col {
+  min-width: 100px;
+}
+
+/* Table content styling */
+.prose table p,
+table p {
+  margin: 0;
+  padding: 0;
 }

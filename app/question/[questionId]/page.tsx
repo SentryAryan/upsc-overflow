@@ -15,11 +15,12 @@ import {
   ChevronDown,
   ChevronUp,
   MessageCircle,
+  Trash2,
 } from "lucide-react";
 import Image from "next/image";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { CommentForm } from "../../../components/Forms/CommentForm";
+import { toast } from "sonner";
 
 export interface AnswerWithUser extends AnswerTypeSchema {
   user: User;
@@ -48,6 +49,7 @@ export interface CommentWithUser {
 
 const QuestionPage = () => {
   const { questionId } = useParams();
+  const router = useRouter();
   console.log("This is the questionId", questionId);
   const [question, setQuestion] = useState<QuestionType | null>(null);
   const [answers, setAnswers] = useState<AnswerWithUser[]>([]);
@@ -322,6 +324,20 @@ const QuestionPage = () => {
     }
   };
 
+  const handleQuestionDelete = async () => {
+    try {
+      const response = await axios.delete(
+        `/api/questions/deleteById?questionId=${questionId}`
+      );
+      if (response.data.success) {
+        toast.success("Question deleted successfully");
+        router.push("/");
+      }
+    } catch (error: any) {
+      console.log(error.message);
+    }
+  };
+
   useEffect(() => {
     console.log("This is the questionId", questionId);
     if (questionId) {
@@ -368,9 +384,22 @@ const QuestionPage = () => {
     <div className="container mx-auto py-8 px-4 md:px-6 flex flex-col gap-6 max-w-[1200px] min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Question Section - Enhanced */}
       <div className="bg-white dark:bg-card rounded-xl shadow-lg p-6 md:p-8 border border-gray-100 dark:border-gray-700 transition-all hover:shadow-xl">
-        <h1 className="text-2xl md:text-3xl font-bold mb-4 text-gray-800 dark:text-gray-100">
-          {question.title}
-        </h1>
+        <div className="flex justify-between items-start mb-4">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100 flex-1">
+            {question.title}
+          </h1>
+
+          {/* Delete button - only visible to question author */}
+          {question.asker === userId && (
+            <button
+              onClick={handleQuestionDelete}
+              className="ml-4 p-2 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors group cursor-pointer"
+              title="Delete question"
+            >
+              <Trash2 className="h-5 w-5" />
+            </button>
+          )}
+        </div>
 
         {/* Author info with enhanced styling */}
         <div className="flex flex-wrap items-center mb-6 pb-4 border-b border-gray-100 dark:border-gray-700">
@@ -481,8 +510,8 @@ const QuestionPage = () => {
           </div>
 
           {/* Question content */}
-          <div className="prose prose-lg dark:prose-invert max-w-[1030px] flex-1 text-gray-700 dark:text-gray-300">
-            <div>{parse(question.description)}</div>
+          <div className="prose prose-lg dark:prose-invert max-w-[1030px] flex-1 text-gray-700 dark:text-gray-300 overflow-x-auto">
+            <div className="w-max">{parse(question.description)}</div>
           </div>
         </div>
 
@@ -527,29 +556,24 @@ const QuestionPage = () => {
             </div>
           </div>
 
-          {/* Question Comment Form */}
-          {isQuestionCommentFormExpanded && (
-            <div className="mt-3 mb-6 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg border border-gray-100 dark:border-gray-700 transition-all">
-              <CommentFormTA
-                questionId={questionId as string}
-                userId={userId || ""}
-                setIsCommentLoading={() => setIsQuestionCommentLoading(true)}
-                questionComments={questionComments}
-                setQuestionComments={setQuestionComments}
-                isQuestionCommentLoading={isQuestionCommentLoading}
-                setIsQuestionCommentLoading={setIsQuestionCommentLoading}
-              />
-              {/* <CommentForm
-                questionId={questionId as string}
-                userId={userId || ""}
-                setIsCommentLoading={() => setIsQuestionCommentLoading(true)}
-                questionComments={questionComments}
-                setQuestionComments={setQuestionComments}
-                isQuestionCommentLoading={isQuestionCommentLoading}
-                setIsQuestionCommentLoading={setIsQuestionCommentLoading}
-              /> */}
-            </div>
-          )}
+          {/* Question Comment Form - Always rendered with smooth transitions */}
+          <div
+            className={`mt-3 mb-6 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-100 dark:border-gray-700 transition-all duration-100 ease-in-out overflow-hidden ${
+              isQuestionCommentFormExpanded
+                ? "h-max opacity-100 p-4"
+                : "max-h-0 opacity-0 p-0 mb-0 mt-0"
+            }`}
+          >
+            <CommentFormTA
+              questionId={questionId as string}
+              userId={userId || ""}
+              setIsCommentLoading={() => setIsQuestionCommentLoading(true)}
+              questionComments={questionComments}
+              setQuestionComments={setQuestionComments}
+              isQuestionCommentLoading={isQuestionCommentLoading}
+              setIsQuestionCommentLoading={setIsQuestionCommentLoading}
+            />
+          </div>
 
           {/* Display Question Comments */}
           {isQuestionCommentLoading ? (
@@ -562,7 +586,7 @@ const QuestionPage = () => {
                 <div
                   className={`mt-4 pl-2 border-l-2 border-gray-200 dark:border-gray-700 space-y-4 overflow-hidden transition-all duration-300 ease-in-out ${
                     isQuestionCommentsVisible
-                      ? "max-h-[2000px] opacity-100"
+                      ? "h-max opacity-100"
                       : "max-h-0 opacity-0"
                   }`}
                 >
@@ -676,7 +700,7 @@ const QuestionPage = () => {
                                 )}
                               </span>
                             </div>
-                            <div className="text-gray-700 dark:text-gray-300 text-sm break-words whitespace-pre-wrap max-w-[125ch] overflow-hidden">
+                            <div className="text-gray-700 dark:text-gray-300 text-sm break-words whitespace-pre-wrap max-w-[125ch] overflow-auto w-max">
                               {parse(comment.content)}
                             </div>
                           </div>
@@ -712,25 +736,22 @@ const QuestionPage = () => {
               </button>
             </div>
 
-            {/* Answer form - conditionally rendered */}
-            {isAnswerFormExpanded && (
-              <div className="mt-6 transition-all">
-                {/* <AnswerForm
-                  questionId={questionId as string}
-                  userId={userId || ""}
-                  setIsLoadingAnswers={setIsLoadingAnswers}
-                  setAnswers={setAnswers}
-                  answers={answers}
-                /> */}
-                <AnswerFormTA
-                  questionId={questionId as string}
-                  userId={userId || ""}
-                  setIsLoadingAnswers={setIsLoadingAnswers}
-                  setAnswers={setAnswers}
-                  answers={answers}
-                />
-              </div>
-            )}
+            {/* Answer form - Always rendered with smooth transitions */}
+            <div
+              className={`mt-6 transition-all duration-100 ease-in-out overflow-hidden ${
+                isAnswerFormExpanded
+                  ? "max-h-[600px] opacity-100"
+                  : "max-h-0 opacity-0 mt-0"
+              }`}
+            >
+              <AnswerFormTA
+                questionId={questionId as string}
+                userId={userId || ""}
+                setIsLoadingAnswers={setIsLoadingAnswers}
+                setAnswers={setAnswers}
+                answers={answers}
+              />
+            </div>
           </div>
 
           {/* Answers Section - Enhanced */}
@@ -866,8 +887,8 @@ const QuestionPage = () => {
                       </div>
 
                       {/* Answer content */}
-                      <div className="prose prose-md dark:prose-invert max-w-none flex-1 text-gray-700 dark:text-gray-300">
-                        <div>{parse(answer.content)}</div>
+                      <div className="prose prose-md dark:prose-invert max-w-none flex-1 text-gray-700 dark:text-gray-300 overflow-x-auto">
+                        <div className="w-max">{parse(answer.content)}</div>
                       </div>
                     </div>
 
@@ -901,32 +922,27 @@ const QuestionPage = () => {
                         </div>
                       </div>
 
-                      {/* Comment form - Enhanced styling */}
-                      {answer._id && expandedCommentAnswer === answer._id && (
-                        <div className="mt-3 mb-6 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg border border-gray-100 dark:border-gray-700 transition-all">
-                          <CommentFormTA
-                            questionId={questionId as string}
-                            userId={userId || ""}
-                            setIsCommentLoading={setIsCommentLoading}
-                            setAnswers={setAnswers}
-                            answers={answers}
-                            answerId={answer._id}
-                            isQuestionCommentLoading={isQuestionCommentLoading}
-                            setIsQuestionCommentLoading={
-                              setIsQuestionCommentLoading
-                            }
-                          />
-                          {/* <CommentForm
-                questionId={questionId as string}
-                userId={userId || ""}
-                setIsCommentLoading={() => setIsQuestionCommentLoading(true)}
-                questionComments={questionComments}
-                setQuestionComments={setQuestionComments}
-                isQuestionCommentLoading={isQuestionCommentLoading}
-                setIsQuestionCommentLoading={setIsQuestionCommentLoading}
-              /> */}
-                        </div>
-                      )}
+                      {/* Comment form - Always rendered with smooth transitions */}
+                      <div
+                        className={`mt-3 mb-6 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-100 dark:border-gray-700 transition-all duration-100 ease-in-out overflow-hidden ${
+                          answer._id && expandedCommentAnswer === answer._id
+                            ? "h-max opacity-100 p-4"
+                            : "max-h-0 opacity-0 p-0 mb-0 mt-0"
+                        }`}
+                      >
+                        <CommentFormTA
+                          questionId={questionId as string}
+                          userId={userId || ""}
+                          setIsCommentLoading={setIsCommentLoading}
+                          setAnswers={setAnswers}
+                          answers={answers}
+                          answerId={answer._id}
+                          isQuestionCommentLoading={isQuestionCommentLoading}
+                          setIsQuestionCommentLoading={
+                            setIsQuestionCommentLoading
+                          }
+                        />
+                      </div>
 
                       {/* Display comments with enhanced styling */}
                       {isCommentLoading === answer._id ? (
@@ -1077,7 +1093,7 @@ const QuestionPage = () => {
                                             })}
                                           </span>
                                         </div>
-                                        <div className="text-gray-700 dark:text-gray-300 text-sm break-words whitespace-pre-wrap max-w-[125ch] overflow-hidden">
+                                        <div className="text-gray-700 dark:text-gray-300 text-sm break-words whitespace-pre-wrap max-w-[125ch] overflow-x-auto">
                                           {parse(comment.content)}
                                         </div>
                                       </div>

@@ -15,6 +15,9 @@ import InputFormField from "./InputFormField";
 import SelectFormField from "./SelectFormField";
 import TagsInput from "./TagsInput";
 import TextAreaFormField from "./TextAreaFormField";
+import TiptapFormField from "./TiptapFormField";
+import HugeRTEFormField from "./HugeRTEFormField2";
+import TinyMCEFormField from "./TinyMCEFormField";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -89,13 +92,31 @@ export function AskQuestionFormTA({
           label="Question"
           placeholder="Enter your question"
         />
-        <TextAreaFormField
+        {/* <TextAreaFormField
           control={form.control}
           name="description"
           label="Question Description"
           placeholder="Enter your question description"
           description="Enter your description"
+        /> */}
+        {/* <TiptapFormField
+          control={form.control}
+          name="description"
+          label="Description"
+          placeholder="Enter your content..."
+        /> */}
+        <HugeRTEFormField
+          control={form.control}
+          name="description"
+          label="Description"
+          placeholder="Enter your content..."
         />
+        {/* <TinyMCEFormField
+          control={form.control}
+          name="description"
+          label="Description"
+          placeholder="Enter your content..."
+        /> */}
         <SelectFormField
           control={form.control}
           name="subject"
@@ -120,4 +141,4 @@ export function AskQuestionFormTA({
       </form>
     </Form>
   );
-} 
+}

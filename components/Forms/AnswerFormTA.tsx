@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import TextAreaFormField from "./TextAreaFormField";
+import HugeRTEFormField from "./HugeRTEFormField2";
 
 const formSchema = z.object({
   content: z.string().min(2, {
@@ -71,9 +72,16 @@ export function AnswerFormTA({
         onSubmit={form.handleSubmit(onSubmit)}
         className="w-full p-6 border rounded-md space-y-6"
       >
-        <TextAreaFormField
+        {/* <TextAreaFormField
           control={form.control}
           description="Enter your answer"
+          name="content"
+          label="Answer"
+          placeholder="Enter your answer"
+        /> */}
+
+        <HugeRTEFormField
+          control={form.control}
           name="content"
           label="Answer"
           placeholder="Enter your answer"
