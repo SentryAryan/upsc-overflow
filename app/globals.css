@@ -155,7 +155,7 @@
 
 /* Table styling */
 .ProseMirror table {
-  border-collapse: collapse;
+  border-collapse: separate !important;
   table-layout: fixed;
   width: 100%;
   margin: 0;
@@ -246,13 +246,22 @@
 /* Global table styling for rendered content (outside editor) */
 .prose table,
 table {
-  border-collapse: collapse;
-  table-layout: fixed;
-  width: 100%;
+  border-collapse: separate !important;
+  table-layout: auto;
+  width: max-content;
+  min-width: 100%;
   margin: 1rem 0;
-  overflow: hidden;
-  border-radius: 0.5rem;
-  border: 1px solid var(--border);
+  overflow-x: auto;
+  border: 1px solid var(--border) !important;
+  @apply rounded-md!;
+}
+
+/* Specific handling for tables with many columns */
+table[style*="150"] {
+  table-layout: auto !important;
+  width: max-content !important;
+  min-width: 100%;
+  @apply rounded-md!;
 }
 
 .prose table td,
@@ -265,6 +274,8 @@ table th {
   vertical-align: top;
   box-sizing: border-box;
   position: relative;
+  white-space: nowrap;
+  @apply rounded-md!;
 }
 
 .prose table th,

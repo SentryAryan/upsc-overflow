@@ -29,8 +29,8 @@ import {
   Users,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import * as React from "react";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export interface SidebarItemType {
   name: string;
@@ -42,56 +42,75 @@ interface SimpleSidebarProps extends React.ComponentProps<typeof Sidebar> {
   items?: SidebarItemType[];
 }
 
-const loggedInSidebarItems: SidebarItemType[] = [
-  {
-    name: "Home",
-    path: "/",
-    icon: Home,
-  },
-  {
-    name: "Ask Question",
-    path: "/ask-question",
-    icon: FileQuestion,
-  },
-  {
-    name: "Discussions",
-    path: "/discussions",
-    icon: MessageSquare,
-  },
-  {
-    name: "Resources",
-    path: "/resources",
-    icon: Book,
-  },
-  {
-    name: "Achievements",
-    path: "/achievements",
-    icon: Award,
-  },
-  {
-    name: "Community",
-    path: "/community",
-    icon: Users,
-  },
-  {
-    name: "Settings",
-    path: "/settings",
-    icon: Settings,
-  },
-];
-
-const loggedOutSidebarItems: SidebarItemType[] = [
-  {
-    name: "Home",
-    path: "/",
-    icon: Home,
-  },
-];
-
 export function SimpleSidebar({ ...props }: SimpleSidebarProps) {
+  console.log("SimpleSidebar.tsx");
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  console.log("searchParams =", searchParams);
+  console.log("searchParams.toString() =", searchParams.toString());
+  console.log("pathname =", pathname);
+  console.log("typeof pathname =", typeof pathname);
+  const [homePath, setHomePath] = useState<string>("/");
+  
+  const loggedInSidebarItems: SidebarItemType[] = [
+    {
+      name: "Home",
+      path: homePath,
+      icon: Home,
+    },
+    {
+      name: "Ask Question",
+      path: "/ask-question",
+      icon: FileQuestion,
+    },
+    {
+      name: "Discussions",
+      path: "/discussions",
+      icon: MessageSquare,
+    },
+    {
+      name: "Resources",
+      path: "/resources",
+      icon: Book,
+    },
+    {
+      name: "Achievements",
+      path: "/achievements",
+      icon: Award,
+    },
+    {
+      name: "Community",
+      path: "/community",
+      icon: Users,
+    },
+    {
+      name: "Settings",
+      path: "/settings",
+      icon: Settings,
+    },
+  ];
+  
+  const loggedOutSidebarItems: SidebarItemType[] = [
+    {
+      name: "Home",
+      path: "/",
+      icon: Home,
+    },
+  ];
+  
   const { user, isSignedIn } = useUser();
-  const sidebarItems = isSignedIn ? loggedInSidebarItems : loggedOutSidebarItems;
+  const sidebarItems = isSignedIn
+    ? loggedInSidebarItems
+    : loggedOutSidebarItems;
+
+  useEffect(() => {
+    // Only capture and retain filters when user is specifically on the home page
+    if (pathname === "/") {
+      const searchString = searchParams.toString();
+      const fullPath = searchString ? `/?${searchString}` : "/";
+      setHomePath(fullPath);
+    }
+  }, [pathname, searchParams]);
 
   return (
     <Sidebar
@@ -105,9 +124,12 @@ export function SimpleSidebar({ ...props }: SimpleSidebarProps) {
       <SidebarContent className="flex-1 overflow-y-auto p-2">
         <SidebarMenu className="space-y-1">
           {sidebarItems.map((item) => {
+            // Extract just the pathname part for comparison (ignore search params for active state)
+            const itemPathname = item.path.split('?')[0];
+
             const isActive =
-              pathname === item.path ||
-              (item.path !== "/" && pathname.startsWith(item.path));
+              pathname === itemPathname ||
+              (itemPathname !== "/" && pathname.startsWith(itemPathname));
 
             return (
               <SidebarMenuItem key={item.name} className="rounded-md">
@@ -143,10 +165,16 @@ export function SimpleSidebar({ ...props }: SimpleSidebarProps) {
             </AccordionTrigger>
             <AccordionContent>
               <div className="text-xs space-y-2 mt-1">
-                <Link href="/faq/how-to-ask" className="block hover:text-primary">
+                <Link
+                  href="/faq/how-to-ask"
+                  className="block hover:text-primary"
+                >
                   How to ask questions?
                 </Link>
-                <Link href="/faq/guidelines" className="block hover:text-primary">
+                <Link
+                  href="/faq/guidelines"
+                  className="block hover:text-primary"
+                >
                   Community guidelines
                 </Link>
                 <Link href="/help" className="block hover:text-primary">

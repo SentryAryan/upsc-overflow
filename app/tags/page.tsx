@@ -36,7 +36,9 @@ export default function TagPage() {
     try {
       setIsLoading(true);
       const response = await axios.get(
-        `/api/questions/get-all?page=${currentPage}&limit=10&tag=${encodeURIComponent(decodedTag)}${sortBy ? `&sortBy=${sortBy}` : ""}`
+        `/api/questions/get-all?page=${currentPage}&limit=10&tag=${encodeURIComponent(
+          decodedTag
+        )}${sortBy ? `&sortBy=${sortBy}` : ""}`
       );
       dispatch(setQuestions(response.data.data));
       setTotalPages(response.data.data[0]?.totalPages || 0);
@@ -56,10 +58,15 @@ export default function TagPage() {
 
   return (
     <div className="flex flex-col items-center w-full p-10 min-h-screen gap-4">
-      <h1 className="text-2xl font-bold mb-4">Questions tagged with "#{(decodedTag)}"</h1>
+      <h1 className="text-2xl font-bold mb-4">
+        Questions tagged with "#{decodedTag}"
+      </h1>
       <SearchBar />
-      
-      <HomePagination tag={encodeURIComponent(decodedTag)} totalPages={totalPages} />
+
+      <HomePagination
+        tag={encodeURIComponent(decodedTag)}
+        totalPages={totalPages}
+      />
 
       <SortFilter />
 
