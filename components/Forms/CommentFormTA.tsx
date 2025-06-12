@@ -26,6 +26,7 @@ export function CommentFormTA({
   setAnswers,
   answers,
   answerId,
+  isCommentLoading,
   setIsCommentLoading,
   questionComments,
   setQuestionComments,
@@ -33,6 +34,7 @@ export function CommentFormTA({
   setIsQuestionCommentLoading,
 }: {
   userId: string;
+  isCommentLoading: string;
   setIsCommentLoading: (isLoading: string) => void;
   questionId: string;
   setAnswers?: (answers: AnswerWithUser[]) => void;
@@ -146,7 +148,11 @@ export function CommentFormTA({
           placeholder="Enter your comment"
         />
 
-        <Button type="submit" className="btn-auth">
+        <Button
+          type="submit"
+          className="btn-auth"
+          disabled={isQuestionCommentLoading || isCommentLoading === answerId}
+        >
           Submit
         </Button>
       </form>

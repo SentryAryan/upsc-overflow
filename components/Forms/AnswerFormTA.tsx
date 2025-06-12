@@ -20,12 +20,14 @@ const formSchema = z.object({
 export function AnswerFormTA({
   userId,
   setIsLoadingAnswers,
+  isLoadingAnswers,
   questionId,
   setAnswers,
   answers,
 }: {
   userId: string;
   setIsLoadingAnswers: (isLoading: boolean) => void;
+  isLoadingAnswers: boolean;
   questionId: string;
   setAnswers: (answers: AnswerWithUser[]) => void;
   answers: AnswerWithUser[];
@@ -87,7 +89,7 @@ export function AnswerFormTA({
           placeholder="Enter your answer"
         />
 
-        <Button type="submit" className="btn-auth">
+        <Button type="submit" className="btn-auth" disabled={isLoadingAnswers}>
           Submit
         </Button>
       </form>

@@ -11,7 +11,6 @@ import Like from "../../../../db/models/like.model";
 import Answer from "../../../../db/models/answer.model";
 
 export const DELETE = errorHandler(async (req: NextRequest) => {
-  await dbConnect();
   const { userId } = await auth();
   const questionId = req.nextUrl.searchParams.get("questionId");
 
@@ -29,6 +28,7 @@ export const DELETE = errorHandler(async (req: NextRequest) => {
     throw generateApiError(400, "Invalid question ID", ["Invalid question ID"]);
   }
 
+  await dbConnect();
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
@@ -68,6 +68,6 @@ export const DELETE = errorHandler(async (req: NextRequest) => {
     await session.abortTransaction();
     throw error;
   } finally {
-    session.endSession();
+    await session.endSession();
   }
 });

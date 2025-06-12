@@ -54,6 +54,8 @@ const QuestionPage = () => {
   const [question, setQuestion] = useState<QuestionType | null>(null);
   const [answers, setAnswers] = useState<AnswerWithUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAnswerDeleting, setIsAnswerDeleting] = useState("");
+  const [isCommentDeleting, setIsCommentDeleting] = useState("");
   const [isLoadingAnswers, setIsLoadingAnswers] = useState(false);
   const [expandedCommentAnswer, setExpandedCommentAnswer] = useState<
     string | null
@@ -326,6 +328,7 @@ const QuestionPage = () => {
 
   const handleQuestionDelete = async () => {
     try {
+      setIsLoading(true);
       const response = await axios.delete(
         `/api/questions/deleteById?questionId=${questionId}`
       );
@@ -335,6 +338,60 @@ const QuestionPage = () => {
       }
     } catch (error: any) {
       console.log(error.message);
+      toast.error("Failed to delete question");
+      setIsLoading(false);
+    }
+  };
+
+  const handleAnswerDelete = async (answerId: string) => {
+    try {
+      setIsAnswerDeleting(answerId);
+      const response = await axios.delete(
+        `/api/answers/deleteById?answerId=${answerId}`
+      );
+      if (response.data.success) {
+        toast.success("Answer deleted successfully");
+        setAnswers(answers.filter((answer) => answer._id !== answerId));
+      }
+    } catch (error: any) {
+      console.log(error.message);
+      toast.error("Failed to delete answer");
+    } finally {
+      setIsAnswerDeleting("");
+    }
+  };
+
+  const handleCommentDelete = async (commentId: string, isQuestionComment: boolean = false) => {
+    try {
+      setIsCommentDeleting(commentId);
+      const response = await axios.delete(
+        `/api/comments/deleteById?commentId=${commentId}`
+      );
+      if (response.data.success) {
+        toast.success("Comment deleted successfully");
+        
+        if (isQuestionComment) {
+          // Remove from question comments
+          setQuestionComments(questionComments.filter((comment) => comment._id !== commentId));
+        } else {
+          // Remove from answer comments
+          const updatedAnswers = answers.map((answer) => {
+            if (answer.comments && answer.comments.some((comment) => comment._id === commentId)) {
+              return {
+                ...answer,
+                comments: answer.comments.filter((comment) => comment._id !== commentId)
+              };
+            }
+            return answer;
+          });
+          setAnswers(updatedAnswers as AnswerWithUser[]);
+        }
+      }
+    } catch (error: any) {
+      console.log(error.message);
+      toast.error("Failed to delete comment");
+    } finally {
+      setIsCommentDeleting("");
     }
   };
 
@@ -567,7 +624,8 @@ const QuestionPage = () => {
             <CommentFormTA
               questionId={questionId as string}
               userId={userId || ""}
-              setIsCommentLoading={() => setIsQuestionCommentLoading(true)}
+              setIsCommentLoading={setIsCommentLoading}
+              isCommentLoading={isCommentLoading}
               questionComments={questionComments}
               setQuestionComments={setQuestionComments}
               isQuestionCommentLoading={isQuestionCommentLoading}
@@ -594,8 +652,20 @@ const QuestionPage = () => {
                     (comment: CommentWithUser, commentIndex: number) => (
                       <div
                         key={commentIndex}
-                        className="text-sm p-3 bg-gray-50 dark:bg-gray-800/40 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800/70 transition-colors"
+                        className="text-sm p-3 bg-gray-50 dark:bg-gray-800/40 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800/70 transition-colors relative"
                       >
+                        {/* Loader overlay for deleting comment */}
+                        {isCommentDeleting === comment._id && (
+                          <div className="absolute inset-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm flex items-center justify-center z-20 rounded-lg">
+                            <div className="flex flex-col items-center gap-3">
+                              <LoaderDemo />
+                              <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                                Deleting comment...
+                              </span>
+                            </div>
+                          </div>
+                        )}
+
                         <div className="flex items-start">
                           {/* Vote buttons for comment */}
                           <div className="flex flex-col items-center mr-3">
@@ -611,6 +681,7 @@ const QuestionPage = () => {
                                   ? "text-blue-500 dark:text-blue-400"
                                   : "text-gray-500 dark:text-gray-400"
                               }`}
+                              disabled={isCommentDeleting === comment._id}
                             >
                               <ArrowUp
                                 className={`w-4 h-4 ${
@@ -657,6 +728,7 @@ const QuestionPage = () => {
                                   ? "text-red-500 dark:text-red-400"
                                   : "text-gray-500 dark:text-gray-400"
                               }`}
+                              disabled={isCommentDeleting === comment._id}
                             >
                               <ArrowDown
                                 className={`w-4 h-4 ${
@@ -670,37 +742,54 @@ const QuestionPage = () => {
 
                           {/* Comment content */}
                           <div className="flex-1">
-                            <div className="flex items-center mb-2">
-                              {comment.user?.imageUrl ? (
-                                <Image
-                                  src={comment.user.imageUrl}
-                                  alt={comment.user.firstName || "User"}
-                                  width={24}
-                                  height={24}
-                                  className="rounded-full mr-2 border border-gray-200 dark:border-gray-700"
-                                />
-                              ) : (
-                                <div className="w-6 h-6 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mr-2">
-                                  <span className="text-gray-500 dark:text-gray-400 text-xs">
-                                    {comment.user?.firstName?.charAt(0) || "?"}
-                                  </span>
-                                </div>
-                              )}
-                              <span className="font-medium text-xs mr-2 text-gray-700 dark:text-gray-300">
-                                {comment.user?.firstName}{" "}
-                                {comment.user?.lastName}
-                              </span>
-                              <span className="text-xs text-gray-500 dark:text-gray-400">
-                                {new Date(comment.createdAt).toLocaleDateString(
-                                  "en-US",
-                                  {
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="flex items-center">
+                                {comment.user?.imageUrl ? (
+                                  <Image
+                                    src={comment.user.imageUrl}
+                                    alt={
+                                      comment.user.firstName || "User"
+                                    }
+                                    width={24}
+                                    height={24}
+                                    className="rounded-full mr-2 border border-gray-200 dark:border-gray-700"
+                                  />
+                                ) : (
+                                  <div className="w-6 h-6 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mr-2">
+                                    <span className="text-gray-500 dark:text-gray-400 text-xs">
+                                      {comment.user?.firstName?.charAt(
+                                        0
+                                      ) || "?"}
+                                    </span>
+                                  </div>
+                                )}
+                                <span className="font-medium text-xs mr-2 text-gray-700 dark:text-gray-300">
+                                  {comment.user?.firstName}{" "}
+                                  {comment.user?.lastName}
+                                </span>
+                                <span className="text-xs text-gray-500 dark:text-gray-400">
+                                  {new Date(
+                                    comment.createdAt
+                                  ).toLocaleDateString("en-US", {
                                     month: "short",
                                     day: "numeric",
-                                  }
-                                )}
-                              </span>
+                                  })}
+                                </span>
+                              </div>
+
+                              {/* Delete button - only visible to comment author */}
+                              {comment.commenter === userId && (
+                                <button
+                                  onClick={() => handleCommentDelete(comment._id, true)}
+                                  disabled={isCommentDeleting === comment._id}
+                                  className="p-1 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors"
+                                  title="Delete comment"
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </button>
+                              )}
                             </div>
-                            <div className="text-gray-700 dark:text-gray-300 text-sm break-words whitespace-pre-wrap max-w-[125ch] overflow-auto w-max">
+                            <div className="text-gray-700 dark:text-gray-300 text-sm break-words whitespace-pre-wrap max-w-[125ch] overflow-x-auto">
                               {parse(comment.content)}
                             </div>
                           </div>
@@ -750,6 +839,7 @@ const QuestionPage = () => {
                 setIsLoadingAnswers={setIsLoadingAnswers}
                 setAnswers={setAnswers}
                 answers={answers}
+                isLoadingAnswers={isLoadingAnswers}
               />
             </div>
           </div>
@@ -779,42 +869,68 @@ const QuestionPage = () => {
                       index > 0
                         ? "border-t border-gray-100 dark:border-gray-800 pt-8"
                         : ""
-                    } transition-all`}
+                    } transition-all relative`}
                   >
-                    {/* Answer header with better styling */}
-                    <div className="flex items-center mb-4">
-                      {answer.user?.imageUrl ? (
-                        <div className="rounded-full overflow-hidden border-2 border-gray-100 dark:border-gray-700 mr-3">
-                          <Image
-                            src={answer.user.imageUrl}
-                            alt={answer.user.firstName || "User"}
-                            width={36}
-                            height={36}
-                            className="rounded-full"
-                          />
-                        </div>
-                      ) : (
-                        <div className="w-9 h-9 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mr-3">
-                          <span className="text-gray-500 dark:text-gray-400 font-semibold text-sm">
-                            {answer.user?.firstName?.charAt(0) || "?"}
+                    {/* Loader overlay for the entire answer */}
+                    {isAnswerDeleting === answer._id && (
+                      <div className="absolute inset-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm flex items-center justify-center z-20 rounded-lg">
+                        <div className="flex flex-col items-center gap-3">
+                          <LoaderDemo />
+                          <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                            Deleting answer...
                           </span>
                         </div>
-                      )}
-                      <div>
-                        <span className="font-medium text-gray-800 dark:text-gray-200">
-                          {answer.user?.firstName} {answer.user?.lastName}
-                        </span>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          {new Date(answer.createdAt).toLocaleDateString(
-                            "en-US",
-                            {
-                              year: "numeric",
-                              month: "short",
-                              day: "numeric",
-                            }
-                          )}
-                        </p>
                       </div>
+                    )}
+
+                    {/* Answer header with better styling */}
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center">
+                        {answer.user?.imageUrl ? (
+                          <div className="rounded-full overflow-hidden border-2 border-gray-100 dark:border-gray-700 mr-3">
+                            <Image
+                              src={answer.user.imageUrl}
+                              alt={answer.user.firstName || "User"}
+                              width={36}
+                              height={36}
+                              className="rounded-full"
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-9 h-9 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mr-3">
+                            <span className="text-gray-500 dark:text-gray-400 font-semibold text-sm">
+                              {answer.user?.firstName?.charAt(0) || "?"}
+                            </span>
+                          </div>
+                        )}
+                        <div>
+                          <span className="font-medium text-gray-800 dark:text-gray-200">
+                            {answer.user?.firstName} {answer.user?.lastName}
+                          </span>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            {new Date(answer.createdAt).toLocaleDateString(
+                              "en-US",
+                              {
+                                year: "numeric",
+                                month: "short",
+                                day: "numeric",
+                              }
+                            )}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Delete button - only visible to answer author */}
+                      {answer.answerer === userId && (
+                        <button
+                          onClick={() => handleAnswerDelete(answer._id)}
+                          disabled={isAnswerDeleting === answer._id}
+                          className="p-2 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors group cursor-pointer"
+                          title="Delete answer"
+                        >
+                          <Trash2 className="h-5 w-5" />
+                        </button>
+                      )}
                     </div>
 
                     {/* Answer content with better styling */}
@@ -934,6 +1050,7 @@ const QuestionPage = () => {
                           questionId={questionId as string}
                           userId={userId || ""}
                           setIsCommentLoading={setIsCommentLoading}
+                          isCommentLoading={isCommentLoading}
                           setAnswers={setAnswers}
                           answers={answers}
                           answerId={answer._id}
@@ -966,14 +1083,26 @@ const QuestionPage = () => {
                                 ) => (
                                   <div
                                     key={commentIndex}
-                                    className="text-sm p-3 bg-gray-50 dark:bg-gray-800/40 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800/70 transition-colors"
+                                    className="text-sm p-3 bg-gray-50 dark:bg-gray-800/40 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800/70 transition-colors relative"
                                   >
+                                    {/* Loader overlay for deleting comment */}
+                                    {isCommentDeleting === comment._id && (
+                                      <div className="absolute inset-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm flex items-center justify-center z-20 rounded-lg">
+                                        <div className="flex flex-col items-center gap-3">
+                                          <LoaderDemo />
+                                          <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                                            Deleting comment...
+                                          </span>
+                                        </div>
+                                      </div>
+                                    )}
+
                                     <div className="flex items-start">
                                       {/* Vote buttons for comment */}
                                       <div className="flex flex-col items-center mr-3">
                                         <button
                                           onClick={(e) => {
-                                            e.stopPropagation(); // Prevent event bubbling
+                                            e.stopPropagation();
                                             comment.isLikedByLoggedInUser
                                               ? deleteLike(
                                                   null,
@@ -992,6 +1121,7 @@ const QuestionPage = () => {
                                               ? "text-blue-500 dark:text-blue-400"
                                               : "text-gray-500 dark:text-gray-400"
                                           }`}
+                                          disabled={isCommentDeleting === comment._id}
                                         >
                                           <ArrowUp
                                             className={`w-4 h-4 ${
@@ -1028,7 +1158,7 @@ const QuestionPage = () => {
 
                                         <button
                                           onClick={(e) => {
-                                            e.stopPropagation(); // Prevent event bubbling
+                                            e.stopPropagation();
                                             comment.isDislikedByLoggedInUser
                                               ? deleteLike(
                                                   null,
@@ -1047,6 +1177,7 @@ const QuestionPage = () => {
                                               ? "text-red-500 dark:text-red-400"
                                               : "text-gray-500 dark:text-gray-400"
                                           }`}
+                                          disabled={isCommentDeleting === comment._id}
                                         >
                                           <ArrowDown
                                             className={`w-4 h-4 ${
@@ -1060,38 +1191,52 @@ const QuestionPage = () => {
 
                                       {/* Comment content */}
                                       <div className="flex-1">
-                                        <div className="flex items-center mb-2">
-                                          {comment.user?.imageUrl ? (
-                                            <Image
-                                              src={comment.user.imageUrl}
-                                              alt={
-                                                comment.user.firstName || "User"
-                                              }
-                                              width={24}
-                                              height={24}
-                                              className="rounded-full mr-2 border border-gray-200 dark:border-gray-700"
-                                            />
-                                          ) : (
-                                            <div className="w-6 h-6 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mr-2">
-                                              <span className="text-gray-500 dark:text-gray-400 text-xs">
-                                                {comment.user?.firstName?.charAt(
-                                                  0
-                                                ) || "?"}
-                                              </span>
-                                            </div>
+                                        <div className="flex items-center justify-between mb-2">
+                                          <div className="flex items-center">
+                                            {comment.user?.imageUrl ? (
+                                              <Image
+                                                src={comment.user.imageUrl}
+                                                alt={
+                                                  comment.user.firstName || "User"
+                                                }
+                                                width={24}
+                                                height={24}
+                                                className="rounded-full mr-2 border border-gray-200 dark:border-gray-700"
+                                              />
+                                            ) : (
+                                              <div className="w-6 h-6 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mr-2">
+                                                <span className="text-gray-500 dark:text-gray-400 text-xs">
+                                                  {comment.user?.firstName?.charAt(
+                                                    0
+                                                  ) || "?"}
+                                                </span>
+                                              </div>
+                                            )}
+                                            <span className="font-medium text-xs mr-2 text-gray-700 dark:text-gray-300">
+                                              {comment.user?.firstName}{" "}
+                                              {comment.user?.lastName}
+                                            </span>
+                                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                                              {new Date(
+                                                comment.createdAt
+                                              ).toLocaleDateString("en-US", {
+                                                month: "short",
+                                                day: "numeric",
+                                              })}
+                                            </span>
+                                          </div>
+
+                                          {/* Delete button - only visible to comment author */}
+                                          {comment.commenter === userId && (
+                                            <button
+                                              onClick={() => handleCommentDelete(comment._id, false)}
+                                              disabled={isCommentDeleting === comment._id}
+                                              className="p-1 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors"
+                                              title="Delete comment"
+                                            >
+                                              <Trash2 className="h-3 w-3" />
+                                            </button>
                                           )}
-                                          <span className="font-medium text-xs mr-2 text-gray-700 dark:text-gray-300">
-                                            {comment.user?.firstName}{" "}
-                                            {comment.user?.lastName}
-                                          </span>
-                                          <span className="text-xs text-gray-500 dark:text-gray-400">
-                                            {new Date(
-                                              comment.createdAt
-                                            ).toLocaleDateString("en-US", {
-                                              month: "short",
-                                              day: "numeric",
-                                            })}
-                                          </span>
                                         </div>
                                         <div className="text-gray-700 dark:text-gray-300 text-sm break-words whitespace-pre-wrap max-w-[125ch] overflow-x-auto">
                                           {parse(comment.content)}
