@@ -32,7 +32,9 @@ export const GET = errorHandler(async (req: NextRequest) => {
     // Escape each character individually
     const escapedChars = chars.map((char) => escapeRegex(char));
     // Join with .* between each character
-    const flexiblePattern = escapedChars.join(".*");
+    const flexiblePattern = escapedChars
+      .map((char) => (char === " " ? "\\s*" : char))
+      .join(".*");
 
     searchQuery = { title: { $regex: flexiblePattern, $options: "i" } };
   }

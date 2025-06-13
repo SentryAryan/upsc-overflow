@@ -2,6 +2,7 @@
 
 import { AnswerFormTA } from "@/components/Forms/AnswerFormTA";
 import { CommentFormTA } from "@/components/Forms/CommentFormTA";
+import { UpdateQuestionForm } from "@/components/Forms/UpdateQuestionForm";
 import { LoaderDemo } from "@/components/Loaders/LoaderDemo";
 import { AnswerTypeSchema } from "@/db/models/answer.model";
 import { QuestionType } from "@/db/models/question.model";
@@ -14,6 +15,7 @@ import {
   ArrowUp,
   ChevronDown,
   ChevronUp,
+  Edit,
   MessageCircle,
   Trash2,
 } from "lucide-react";
@@ -75,6 +77,7 @@ const QuestionPage = () => {
     useState(false);
   const [isQuestionCommentLoading, setIsQuestionCommentLoading] =
     useState(false);
+  const [isQuestionEditFormExpanded, setIsQuestionEditFormExpanded] = useState(false);
 
   const getQuestionById = async (questionId: string) => {
     try {
@@ -421,6 +424,10 @@ const QuestionPage = () => {
     });
   };
 
+  const toggleQuestionEditForm = () => {
+    setIsQuestionEditFormExpanded((prev) => !prev);
+  };
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -446,15 +453,24 @@ const QuestionPage = () => {
             {question.title}
           </h1>
 
-          {/* Delete button - only visible to question author */}
+          {/* Edit and Delete buttons - only visible to question author */}
           {question.asker === userId && (
-            <button
-              onClick={handleQuestionDelete}
-              className="ml-4 p-2 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors group cursor-pointer"
-              title="Delete question"
-            >
-              <Trash2 className="h-5 w-5" />
-            </button>
+            <div className="flex items-center gap-2 ml-4">
+              <button
+                onClick={toggleQuestionEditForm}
+                className="p-2 text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-full transition-colors group cursor-pointer"
+                title="Edit question"
+              >
+                <Edit className="h-5 w-5" />
+              </button>
+              <button
+                onClick={handleQuestionDelete}
+                className="p-2 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors group cursor-pointer"
+                title="Delete question"
+              >
+                <Trash2 className="h-5 w-5" />
+              </button>
+            </div>
           )}
         </div>
 
@@ -498,6 +514,29 @@ const QuestionPage = () => {
             </span>
           )}
         </div>
+
+        {/* Question Edit Form - Always rendered with smooth transitions */}
+        {question.asker === userId && (
+          <div
+            className={`mt-6 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-100 dark:border-gray-700 transition-all duration-300 ease-in-out overflow-hidden flex justify-center items-center ${
+              isQuestionEditFormExpanded
+                ? "h-max opacity-100 p-4"
+                : "max-h-0 opacity-0 p-0 mt-0"
+            }`}
+          >
+            <UpdateQuestionForm
+              userId={userId}
+              id={question._id}
+              title={question.title}
+              description={question.description}
+              subject={question.subject}
+              currentTags={question.tags || []}
+              setIsLoading={setIsLoading}
+              question={question}
+              setQuestion={setQuestion}
+            />
+          </div>
+        )}
 
         {/* Content with vote buttons on left like Stack Overflow */}
         <div className="flex">

@@ -28,7 +28,7 @@ export interface QuestionType {
 
 const questionSchema: Schema<QuestionTypeSchema> = new mongoose.Schema(
   {
-    title: { type: String, required: true },
+    title: { type: String, required: true, trim: true },
     description: { type: String, required: true, trim: true },
     subject: {
       type: String,

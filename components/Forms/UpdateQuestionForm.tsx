@@ -18,6 +18,7 @@ import TextAreaFormField from "./TextAreaFormField";
 import TiptapFormField from "./TiptapFormField";
 import HugeRTEFormField from "./HugeRTEFormField2";
 import TinyMCEFormField from "./TinyMCEFormField";
+import { QuestionType } from "@/db/models/question.model";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -31,52 +32,70 @@ const formSchema = z.object({
   }).trim(),
 });
 
-export function AskQuestionFormTA({
+export function UpdateQuestionForm({
   userId,
-  isLoading,
+  id,
+  title,
+  description,
+  subject,
+  currentTags,
+  question,
   setIsLoading,
+  setQuestion,
 }: {
   userId: string | null;
-  isLoading: boolean;
+  id: string;
+  title: string;
+  description: string;
+  subject: string;
+  currentTags: string[];
+  question: QuestionType;
   setIsLoading: (isLoading: boolean) => void;
+  setQuestion: (question: QuestionType) => void;
 }) {
+  console.log("UpdateQuestionForm.tsx");
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
-      description: "",
-      subject: "",
+      title: title,
+      description: description,
+      subject: subject,
     },
     mode: "all",
   });
-  const [tags, setTags] = useState<string[]>([]);
+  const [tags, setTags] = useState<string[]>(currentTags);
   const [tag, setTag] = useState<string>("");
   const dispatch = useDispatch();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       setIsLoading(true);
-      const question = await axios.post("/api/questions/ask-question", {
+      const response = await axios.patch("/api/questions/update", {
+        id: id,
         ...values,
         asker: userId,
         tags: tags,
       });
-      console.log(question);
-      toast.success("Question created successfully");
+      console.log("question in UpdateQuestionForm.tsx", question);
+      console.log("response.data.data in UpdateQuestionForm.tsx", response.data.data);
+      const updatedQuestion = {
+        ...question,
+        ...response.data.data
+      };
+      console.log("updatedQuestion in UpdateQuestionForm.tsx", updatedQuestion);
+      setQuestion(updatedQuestion);
+      toast.success("Question updated successfully");
       dispatch(setQuestions([]));
     } catch (error: any) {
       console.log(error);
       const errors = error.response.data.errors.map(
         (error: any) => error.message
       );
-      toast.error("Failed to create question", {
+      toast.error("Failed to update question", {
         description: errors.join(", "),
       });
     } finally {
       setIsLoading(false);
-      form.reset();
-      setTags([]);
-      setTag("");
     }
   }
 

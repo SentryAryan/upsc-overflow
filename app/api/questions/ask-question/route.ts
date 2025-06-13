@@ -6,15 +6,28 @@ import Question from "@/db/models/question.model";
 import { z } from "zod";
 import dbConnect from "@/db/dbConnect";
 
+const SUBJECT_ENUM = [
+  "science",
+  "math",
+  "english",
+  "physics",
+  "chemistry",
+  "biology",
+  "history",
+  "geography",
+  "other",
+] as const;
+
 const questionSchema = z.object({
-  title: z.string().min(1, { message: "Title is required" }),
-  description: z.string().min(1, { message: "Description is required" }),
-  subject: z.string().min(1, { message: "Subject is required" }),
-  tags: z.array(
-    z.string({ invalid_type_error: "Tags must be an array of strings" }),
-    {
-      invalid_type_error: "Tags must be an array of strings",
-    }
+  title: z.string().min(1, { message: "Title is required" }).trim(),
+  description: z.string().min(1, { message: "Description is required" }).trim(),
+  subject: z.enum(SUBJECT_ENUM, {
+    message: "Subject must be a valid subject",
+  }),
+  tags: z.optional(
+    z.array(z.string({ message: "Tag must be a string" }), {
+      message: "Tags must be an array of strings",
+    })
   ),
   asker: z.string().min(1, { message: "Asker is required" }),
 });
