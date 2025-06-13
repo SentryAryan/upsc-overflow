@@ -67,6 +67,7 @@ export default function HomePage() {
         }
       });
       dispatch(setAvailableSubjects(uniqueSubjects));
+      dispatch(setSelectedSubject(null));
     } catch (error: any) {
       console.log(error.response.data.message);
       toast.error(`Questions not found, visit previous pages`);
