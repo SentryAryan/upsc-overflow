@@ -1,11 +1,11 @@
 import { useEffect, useRef } from "react";
 import { Control, FieldValues, Path } from "react-hook-form";
 import {
- FormControl,
- FormField,
- FormItem,
- FormLabel,
- FormMessage,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "../ui/form";
 
 // Import HugeRTE directly
@@ -37,8 +37,8 @@ const HugeRTEFormField = <T extends FieldValues>({
   useEffect(() => {
     // Load HugeRTE from CDN
     if (!window.hugerte) {
-      const script = document.createElement('script');
-      script.src = 'https://cdn.jsdelivr.net/npm/hugerte@1/hugerte.min.js';
+      const script = document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/npm/hugerte@1/hugerte.min.js";
       script.onload = () => {
         initEditor();
       };
@@ -59,20 +59,39 @@ const HugeRTEFormField = <T extends FieldValues>({
       window.hugerte.init({
         target: editorRef.current,
         plugins: [
-          "advlist", "autolink", "lists", "link", "image", "charmap", "preview",
-          "anchor", "searchreplace", "visualblocks", "code", "codesample",
-          "fullscreen", "insertdatetime", "media", "table", "emoticons", "help"
+          "advlist",
+          "autolink",
+          "lists",
+          "link",
+          "image",
+          "charmap",
+          "preview",
+          "anchor",
+          "searchreplace",
+          "visualblocks",
+          "code",
+          "codesample",
+          "fullscreen",
+          "insertdatetime",
+          "media",
+          "table",
+          "emoticons",
+          "help",
         ],
-        toolbar: "undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | insertfile image link media table codesample | removeformat | help",
+        toolbar:
+          "undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | insertfile image link media table codesample | removeformat | help",
         height: height,
         skin: "oxide-dark",
         content_css: "dark",
+        content_style:
+          "table { border-collapse: separate; border: 1px solid #414144; border-radius: 6px; } " +
+          "th, td { border: 1px solid #414144; padding: 0.5rem; }",
         branding: false,
         promotion: false,
         placeholder: placeholder,
         setup: (editor: any) => {
           editorInstanceRef.current = editor;
-        }
+        },
       });
     }
   };
@@ -84,15 +103,18 @@ const HugeRTEFormField = <T extends FieldValues>({
       render={({ field: { onChange, value } }) => {
         // Update editor content when form value changes
         useEffect(() => {
-          if (editorInstanceRef.current && value !== editorInstanceRef.current.getContent()) {
-            editorInstanceRef.current.setContent(value || '');
+          if (
+            editorInstanceRef.current &&
+            value !== editorInstanceRef.current.getContent()
+          ) {
+            editorInstanceRef.current.setContent(value || "");
           }
         }, [value]);
 
         // Set up change handler
         useEffect(() => {
           if (editorInstanceRef.current) {
-            editorInstanceRef.current.on('change keyup', () => {
+            editorInstanceRef.current.on("change keyup", () => {
               const content = editorInstanceRef.current.getContent();
               onChange(content);
             });
@@ -106,7 +128,7 @@ const HugeRTEFormField = <T extends FieldValues>({
               <textarea
                 ref={editorRef}
                 defaultValue={value}
-                style={{ width: '100%', height: `${height}px` }}
+                style={{ width: "100%", height: `${height}px` }}
               />
             </FormControl>
             {description && (

@@ -114,15 +114,15 @@ export function SimpleSidebar({ ...props }: SimpleSidebarProps) {
 
   return (
     <Sidebar
-      className="flex flex-col border-r bg-background text-foreground w-64"
+      className="flex flex-col border-2 border-border bg-background text-foreground w-64 shadow-md"
       {...props}
     >
-      <SidebarHeader className="p-4 h-16 border-b border-border flex items-center justify-center">
-        <span className="text-lg font-semibold">UPSC Overflow</span>
+      <SidebarHeader className="p-4 h-16 border-b-2 border-border flex items-center justify-center bg-background">
+        <span className="text-lg font-semibold text-card-foreground">UPSC Overflow</span>
       </SidebarHeader>
 
-      <SidebarContent className="flex-1 overflow-y-auto p-2">
-        <SidebarMenu className="space-y-1">
+      <SidebarContent className="flex-1 overflow-y-auto p-3 bg-background">
+        <SidebarMenu className="space-y-2">
           {sidebarItems.map((item) => {
             // Extract just the pathname part for comparison (ignore search params for active state)
             const itemPathname = item.path.split('?')[0];
@@ -132,16 +132,16 @@ export function SimpleSidebar({ ...props }: SimpleSidebarProps) {
               (itemPathname !== "/" && pathname.startsWith(itemPathname));
 
             return (
-              <SidebarMenuItem key={item.name} className="rounded-md">
+              <SidebarMenuItem key={item.name} className="rounded-lg">
                 <SidebarMenuButton
                   asChild
                   isActive={isActive}
                   className={cn(
-                    "flex items-center gap-3 w-full justify-start px-3 py-2 text-sm font-medium rounded-md transition-colors",
-                    "hover:bg-accent hover:text-accent-foreground",
+                    "flex items-center gap-3 w-full justify-start px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 border-3 border-border",
+                    "hover:bg-accent hover:text-accent-foreground hover:shadow-md font-semibold",
                     isActive
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground",
+                      ? "bg-primary text-primary-foreground shadow-md border-2 border-primary"
+                      : "text-foreground bg-background hover:border-accent",
                     "[&>svg]:h-5 [&>svg]:w-5"
                   )}
                 >
@@ -156,28 +156,31 @@ export function SimpleSidebar({ ...props }: SimpleSidebarProps) {
         </SidebarMenu>
       </SidebarContent>
 
-      <SidebarFooter className="p-4 border-t border-border">
+      <SidebarFooter className="p-4 border-t-2 border-border bg-background">
         <Accordion type="single" collapsible className="w-full">
-          <AccordionItem value="faq">
-            <AccordionTrigger className="flex items-center gap-2 text-sm py-1">
+          <AccordionItem value="faq" className="border-border">
+            <AccordionTrigger className="flex items-center gap-2 text-sm py-2 px-3 rounded-lg hover:bg-accent hover:text-accent-foreground transition-all duration-200 text-muted-foreground">
               <HelpCircle className="h-4 w-4" />
               <span>FAQ</span>
             </AccordionTrigger>
-            <AccordionContent>
-              <div className="text-xs space-y-2 mt-1">
+            <AccordionContent className="pt-2">
+              <div className="text-xs space-y-3 mt-1 bg-secondary/50 rounded-lg p-3 border border-border">
                 <Link
                   href="/faq/how-to-ask"
-                  className="block hover:text-primary"
+                  className="block hover:text-primary transition-colors duration-200 text-muted-foreground hover:bg-accent px-2 py-1 rounded"
                 >
                   How to ask questions?
                 </Link>
                 <Link
                   href="/faq/guidelines"
-                  className="block hover:text-primary"
+                  className="block hover:text-primary transition-colors duration-200 text-muted-foreground hover:bg-accent px-2 py-1 rounded"
                 >
                   Community guidelines
                 </Link>
-                <Link href="/help" className="block hover:text-primary">
+                <Link 
+                  href="/help" 
+                  className="block hover:text-primary transition-colors duration-200 text-muted-foreground hover:bg-accent px-2 py-1 rounded"
+                >
                   Need help?
                 </Link>
               </div>

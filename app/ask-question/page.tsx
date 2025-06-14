@@ -1,34 +1,43 @@
 "use client";
 
-import { useAuth } from "@clerk/nextjs";
-import { AskQuestionForm } from "../../components/Forms/AskQuestionForm";
-import { useState } from "react";
-import { LoaderDemo } from "@/components/Loaders/LoaderDemo";
 import { AskQuestionFormTA } from "@/components/Forms/AskQuestionFormTA";
+import { LoaderDemo } from "@/components/Loaders/LoaderDemo";
+import { useAuth } from "@clerk/nextjs";
+import { useState } from "react";
 
 const AskQuestionPage = () => {
   const { userId } = useAuth();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   return (
-    <div className="flex flex-col items-center justify-center py-8">
-      <h1 className="text-2xl font-bold mb-6">Ask Question</h1>
-      {isLoading ? (
-        <div className="flex items-center justify-center h-[70vh]">
-          <LoaderDemo />
+    <div className="flex flex-col items-center justify-center py-8 px-4 bg-background min-h-screen w-full max-w-6xl mx-auto">
+      <div className="w-full px-4">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-card-foreground mb-3">Ask Question</h1>
+          <p className="text-muted-foreground text-base">
+            Share your question with the community and get expert answers
+          </p>
         </div>
-      ) : (
-        // <AskQuestionForm
-        //   userId={userId || null}
-        //   isLoading={isLoading}
-        //   setIsLoading={setIsLoading}
-        // />
-        <AskQuestionFormTA
-          userId={userId || null}
-          isLoading={isLoading}
-          setIsLoading={setIsLoading}
-        />
-      )}
+        
+        {isLoading ? (
+          <div className="flex items-center justify-center h-[70vh] bg-background rounded-lg shadow-md border-2 border-border">
+            <LoaderDemo />
+          </div>
+        ) : (
+          <div className="flex justify-center bg-background rounded-lg shadow-md border-2 border-border w-full">
+            {/* <AskQuestionForm
+              userId={userId || null}
+              isLoading={isLoading}
+              setIsLoading={setIsLoading}
+            /> */}
+            <AskQuestionFormTA
+              userId={userId || null}
+              isLoading={isLoading}
+              setIsLoading={setIsLoading}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 };

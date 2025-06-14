@@ -34,7 +34,7 @@ const InputFormField = <T extends FieldValues>({
           <FormLabel className="label">{label}</FormLabel>
           <FormControl>
             <Input
-              className="input"
+              className="input bg-background! border-3 border-border"
               placeholder={placeholder}
               type={type}
               {...field}

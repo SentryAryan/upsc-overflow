@@ -1,6 +1,7 @@
 import { Editor } from "@tinymce/tinymce-react";
 import { useRef } from "react";
 import { Control, FieldValues, Path } from "react-hook-form";
+import { useSelector } from "react-redux";
 import {
   FormControl,
   FormField,
@@ -8,6 +9,7 @@ import {
   FormLabel,
   FormMessage,
 } from "../ui/form";
+import { RootState } from "../../lib/redux/store";
 
 interface FormFieldProps<T extends FieldValues> {
   control: Control<T>;
@@ -52,6 +54,7 @@ const TinyMCEFormField = <T extends FieldValues>({
     "insertfile image link media table codesample | removeformat | help" +
     "alignright alignjustify | bullist numlist outdent indent | ";
   const height = label === "Comment" ? 200 : 400;
+  const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
 
   return (
     <FormField
@@ -69,12 +72,12 @@ const TinyMCEFormField = <T extends FieldValues>({
               onEditorChange={onChange}
               value={value}
               init={{
-                skin: "oxide-dark",
-                content_css: "dark",
+                skin: isDarkMode ? "oxide-dark" : "oxide",
+                content_css: isDarkMode ? "dark" : "light",
                 plugins: plugins,
                 toolbar: toolbar,
                 height: height,
-                content_style: "body { margin: 2rem 10%; }",
+                content_style: "body { margin: 2rem 10%; background-color: " + (isDarkMode ? "#1a1a1a" : "#f0f0f0") + "; }",
                 placeholder: placeholder,
                 tinydrive_token_provider: "/api/tinymce/tinydrive-token",
                 tinydrive_skin: "oxide-dark",

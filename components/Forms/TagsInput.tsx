@@ -40,6 +40,7 @@ const TagsInput = ({
       <Label htmlFor="tags">Tags</Label>
       <Input
         type="text"
+        className="input bg-background! border-3 border-border"
         id="tags"
         placeholder="Add tags (press enter to add)"
         value={tag}
@@ -51,18 +52,17 @@ const TagsInput = ({
           <div
             key={index}
             className={cn(
-              "inline-flex items-center rounded-md border px-2 py-1 text-sm font-semibold",
-              "bg-secondary text-secondary-foreground",
+              "inline-flex items-center rounded-md border px-2 py-1 text-sm font-semibold bg-secondary text-secondary-foreground",
               "transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
             )}
           >
             {tag}
             <button
               type="button"
-              className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2 transition-all duration-300"
+              className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2 transition-all duration-300 cursor-pointer bg-background! border-3 border-border"
               onClick={() => handleRemoveTag(tag)}
             >
-              <X className="h-3 w-3 text-muted-foreground hover:text-foreground cursor-pointer transition-all duration-300" />
+              <X className="h-3 w-3 text-foreground  hover:text-foreground cursor-pointer transition-all duration-300" />
             </button>
           </div>
         ))}

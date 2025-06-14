@@ -6,17 +6,15 @@ import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
+import { setQuestions } from "@/lib/redux/slices/questions.slice";
+import axios from "axios";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { toast } from "sonner";
 import InputFormField from "./InputFormField";
 import SelectFormField from "./SelectFormField";
-import CheckBoxFormField from "./CheckBoxFormField";
-import axios from "axios";
-import { toast } from "sonner";
-import { useState } from "react";
 import TagsInput from "./TagsInput";
-import TextAreaFormField from "./TextAreaFormField";
 import TinyMCEFormField from "./TinyMCEFormField";
-import { setQuestions } from "@/lib/redux/slices/questions.slice";
-import { useDispatch } from "react-redux";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -122,7 +120,7 @@ export function AskQuestionForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full max-w-2xl p-6 border rounded-md space-y-6"
+        className="w-full max-w-2xl p-6 bg-background! rounded-lg shadow-md hover:shadow-lg transition-all duration-200 border-3 border-border space-y-6"
       >
         <InputFormField
           control={form.control}
@@ -161,7 +159,10 @@ export function AskQuestionForm({
           ]}
         />
         <TagsInput tags={tags} setTags={setTags} tag={tag} setTag={setTag} />
-        <Button type="submit" className="btn-auth">
+        <Button 
+          type="submit"
+          variant="outline"
+        >
           Submit
         </Button>
       </form>

@@ -1,13 +1,3 @@
-import React from "react";
-import {
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "../ui/form";
-import Link from "next/link";
 import {
   Select,
   SelectContent,
@@ -15,7 +5,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FieldValues, Control, Path } from "react-hook-form";
+import { Control, FieldValues, Path } from "react-hook-form";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../ui/form";
 
 interface FormFieldProps<T extends FieldValues> {
   control: Control<T>;
@@ -24,6 +21,7 @@ interface FormFieldProps<T extends FieldValues> {
   placeholder?: string;
   type?: "text" | "email" | "password";
   options: string[];
+  isDarkMode?: boolean;
 }
 
 const SelectFormField = <T extends FieldValues>({
@@ -32,6 +30,7 @@ const SelectFormField = <T extends FieldValues>({
   label,
   placeholder,
   options,
+  isDarkMode,
 }: FormFieldProps<T>) => {
   return (
     <FormField
@@ -42,13 +41,17 @@ const SelectFormField = <T extends FieldValues>({
           <FormLabel>{label}</FormLabel>
           <Select onValueChange={field.onChange} defaultValue={field.value}>
             <FormControl>
-              <SelectTrigger>
+              <SelectTrigger className="input bg-background! border-3 border-border cursor-pointer">
                 <SelectValue placeholder={placeholder} />
               </SelectTrigger>
             </FormControl>
-            <SelectContent>
+            <SelectContent className={`border-1 border-border ${isDarkMode ? "dark" : ""}`}>
               {options.map((option: string, index: number) => (
-                <SelectItem key={index} value={option}>
+                <SelectItem
+                  key={index}
+                  value={option}
+                  className="cursor-pointer"
+                >
                   {option}
                 </SelectItem>
               ))}

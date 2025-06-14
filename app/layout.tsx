@@ -7,25 +7,21 @@ import {
   UserButton
 } from "@clerk/nextjs";
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono, Merriweather } from "next/font/google";
+import { JetBrains_Mono, Open_Sans } from "next/font/google";
 
 import ReduxProvider from "@/components/Providers/ReduxProvider";
+import { ThemeWrapper } from "@/components/Providers/ThemeWrapper";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { currentUser } from "@clerk/nextjs/server";
 import { SimpleSidebar } from "../components/SideBar/SimpleSidebar";
+import { SwitchDemo } from "../components/Switch/SwitchDemo";
 import { Button } from "../components/ui/button";
 import "./globals.css";
 
-const inter = Inter({
+const openSans = Open_Sans({
   variable: "--font-sans",
   subsets: ["latin"],
-});
-
-const merriweather = Merriweather({
-  variable: "--font-serif",
-  subsets: ["latin"],
-  weight: ["300", "400", "700", "900"],
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -48,48 +44,45 @@ export default async function RootLayout({
   return (
     <ClerkProvider>
       <ReduxProvider>
-        <html lang="en" className="dark">
+        <html lang="en">
           <body
-            className={`${inter.variable} ${merriweather.variable} ${jetbrainsMono.variable} font-serif antialiased w-screen min-h-screen overflow-x-hidden relative`}
+            className={`${openSans.variable} ${jetbrainsMono.variable} font-mono antialiased w-screen min-h-screen overflow-x-hidden relative`}
           >
-            <SidebarProvider>
-              <SimpleSidebar />
-              <main className="flex-1 flex flex-col items-center justify-center">
-                <header className="fixed top-0 right-0 flex justify-end items-center p-4 gap-4 z-10 bg-background/80 backdrop-blur-sm">
-                  <SignedOut>
-                    <SignInButton>
-                      <Button variant="outline" className="cursor-pointer">
-                        Sign In
-                      </Button>
-                    </SignInButton>
-                    <SignUpButton>
-                      <Button variant="outline" className="cursor-pointer">
-                        Sign Up
-                      </Button>
-                    </SignUpButton>
-                  </SignedOut>
-                  <SignedIn>
-                    <UserButton />
-                    {/* <p className="text-sm text-white font-bold">
-                      {user?.firstName} {user?.lastName}
-                    </p> */}
-                    {/* <SignOutButton>
-                      <Button variant="outline" className="cursor-pointer">
-                        Sign Out
-                      </Button>
-                    </SignOutButton> */}
-                  </SignedIn>
-                </header>
+            <ThemeWrapper>
+              <SidebarProvider>
+                <SimpleSidebar />
+                <main className="flex-1 flex flex-col items-center justify-center">
+                  <header className="fixed top-0 right-0 flex justify-end items-center p-4 gap-4 z-10 rounded-full">
+                    <div className="rounded-full p-1">
+                      <SwitchDemo />
+                    </div>
+                    <SignedOut>
+                      <SignInButton>
+                        <Button className="cursor-pointer">
+                          Sign In
+                        </Button>
+                      </SignInButton>
+                      <SignUpButton>
+                        <Button className="cursor-pointer">
+                          Sign Up
+                        </Button>
+                      </SignUpButton>
+                    </SignedOut>
+                    <SignedIn>
+                      <UserButton />
+                    </SignedIn>
+                  </header>
 
-                <div className="fixed left-2 top-3 z-50">
-                  <SidebarTrigger className="cursor-pointer bg-background/80 backdrop-blur-sm border shadow-sm hover:shadow-md transition-all size-10" />
-                </div>
+                  <div className="fixed left-2 top-3 z-50">
+                    <SidebarTrigger className="cursor-pointer bg-background/80 backdrop-blur-sm border shadow-sm hover:shadow-md transition-all size-10" />
+                  </div>
 
-                {children}
+                  {children}
 
-                <Toaster />
-              </main>
-            </SidebarProvider>
+                  <Toaster />
+                </main>
+              </SidebarProvider>
+            </ThemeWrapper>
           </body>
         </html>
       </ReduxProvider>

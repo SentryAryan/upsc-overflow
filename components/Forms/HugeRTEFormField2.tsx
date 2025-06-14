@@ -2,11 +2,11 @@ import { Editor } from "@hugerte/hugerte-react";
 import { useRef } from "react";
 import { Control, FieldValues, Path } from "react-hook-form";
 import {
- FormControl,
- FormField,
- FormItem,
- FormLabel,
- FormMessage,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "../ui/form";
 
 interface FormFieldProps<T extends FieldValues> {
@@ -15,6 +15,7 @@ interface FormFieldProps<T extends FieldValues> {
   label: string;
   placeholder?: string;
   description?: string;
+  isDarkMode?: boolean;
 }
 
 const HugeRTEFormField = <T extends FieldValues>({
@@ -23,6 +24,7 @@ const HugeRTEFormField = <T extends FieldValues>({
   label,
   placeholder,
   description,
+  isDarkMode,
 }: FormFieldProps<T>) => {
   const editorRef = useRef(null);
   
@@ -57,7 +59,6 @@ const HugeRTEFormField = <T extends FieldValues>({
     "alignright alignjustify | bullist numlist outdent indent | ";
   
   const height = 400;
-
   return (
     <FormField
       control={control}
@@ -68,17 +69,34 @@ const HugeRTEFormField = <T extends FieldValues>({
           <FormControl>
             <Editor
               // Use CDN version (no API key needed)
+              key={isDarkMode ? "dark" : "light"}
               cdnVersion="1"
               hugerteScriptSrc="https://cdn.jsdelivr.net/npm/hugerte@1/hugerte.min.js"
               onEditorChange={onChange}
               value={value}
               init={{
-                skin: "oxide-dark",
-                content_css: "dark",
+                skin: isDarkMode ? "oxide-dark" : "oxide",
+                content_css: isDarkMode ? "dark" : "light",
                 plugins: plugins,
                 toolbar: toolbar,
                 height: height,
-                content_style: "body { margin: 2rem 10%; }",
+                content_style:
+                  `/* This selector targets only the body of this specific editor */
+                  body#hugerte.mce-content-body { 
+                    margin: 0.5rem 1rem; /* Reduced margin for a tighter look */
+                    background-color: ${isDarkMode ? "#1a1a1a" : "#f0f0f0"};
+                  }
+                  
+                  /* Table styling with hardcoded colors since CSS variables are not available here */
+                  table { 
+                    border-collapse: separate; 
+                    border: 1px solid ${isDarkMode ? '#414144' : '#E4E4E7'}; 
+                    border-radius: 6px; 
+                  }
+                  th, td { 
+                    border: 1px solid ${isDarkMode ? '#414144' : '#E4E4E7'}; 
+                    padding: 0.5rem; 
+                  }`,
                 placeholder: placeholder,
                 menu: {
                   insert: {

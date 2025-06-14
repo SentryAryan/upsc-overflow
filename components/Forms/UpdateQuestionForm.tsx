@@ -9,7 +9,7 @@ import { Form } from "@/components/ui/form";
 import { setQuestions } from "@/lib/redux/slices/questions.slice";
 import axios from "axios";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import InputFormField from "./InputFormField";
 import SelectFormField from "./SelectFormField";
@@ -19,6 +19,7 @@ import TiptapFormField from "./TiptapFormField";
 import HugeRTEFormField from "./HugeRTEFormField2";
 import TinyMCEFormField from "./TinyMCEFormField";
 import { QuestionType } from "@/db/models/question.model";
+import { RootState } from "../../lib/redux/store";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -54,6 +55,7 @@ export function UpdateQuestionForm({
   setQuestion: (question: QuestionType) => void;
 }) {
   console.log("UpdateQuestionForm.tsx");
+  const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -103,7 +105,7 @@ export function UpdateQuestionForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full max-w-2xl p-6 border rounded-md space-y-6"
+        className="w-full p-6 border-4 border-border rounded-md space-y-6"
       >
         <InputFormField
           control={form.control}
@@ -129,6 +131,7 @@ export function UpdateQuestionForm({
           name="description"
           label="Description"
           placeholder="Enter your content..."
+          isDarkMode={isDarkMode}
         />
         {/* <TinyMCEFormField
           control={form.control}
@@ -152,9 +155,10 @@ export function UpdateQuestionForm({
             "geography",
             "other",
           ]}
+          isDarkMode={isDarkMode}
         />
         <TagsInput tags={tags} setTags={setTags} tag={tag} setTag={setTag} />
-        <Button type="submit" className="btn-auth">
+        <Button type="submit" className="cursor-pointer" title="Submit question">
           Submit
         </Button>
       </form>

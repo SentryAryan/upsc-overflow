@@ -13,6 +13,8 @@ import { toast } from "sonner";
 import { z } from "zod";
 import TextAreaFormField from "./TextAreaFormField";
 import HugeRTEFormField from "./HugeRTEFormField2";
+import { useSelector } from "react-redux";
+import { RootState } from "../../lib/redux/store";
 
 const formSchema = z.object({
   content: z.string().min(2, {
@@ -45,6 +47,7 @@ export function CommentFormTA({
   isQuestionCommentLoading: boolean;
   setIsQuestionCommentLoading: (isLoading: boolean) => void;
 }) {
+  const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -132,7 +135,7 @@ export function CommentFormTA({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full p-6 border rounded-md space-y-6"
+        className="w-full p-2 rounded-md space-y-6"
       >
         {/* <TextAreaFormField
           control={form.control}
@@ -146,12 +149,14 @@ export function CommentFormTA({
           name="content"
           label="Comment"
           placeholder="Enter your comment"
+          isDarkMode={isDarkMode}
         />
 
         <Button
           type="submit"
-          className="btn-auth"
           disabled={isQuestionCommentLoading || isCommentLoading === answerId}
+          title="Submit comment"
+          className="cursor-pointer"
         >
           Submit
         </Button>

@@ -18,6 +18,7 @@ import {
 } from "../lib/redux/slices/filterSubjects.slice";
 import SearchBar from "@/components/Forms/SearchBar";
 import SortFilter from "@/components/Filters/SortFilter";
+import { useUser } from "@clerk/nextjs";
 
 export interface QuestionCardProps extends QuestionType {
   likesAnswersComments: {
@@ -30,6 +31,7 @@ export interface QuestionCardProps extends QuestionType {
 
 export default function HomePage() {
   console.log("HomePage.jsx");
+  const { user, isSignedIn } = useUser();
   const searchParams = useSearchParams();
   const dispatch = useDispatch();
   const questions = useSelector(
@@ -92,7 +94,7 @@ export default function HomePage() {
     : questions;
 
   return (
-    <div className="flex flex-col items-center w-full p-10 min-h-screen gap-4">
+    <div className={`flex flex-col items-center w-full p-10 min-h-screen gap-4 ${isSignedIn ? "" : "pt-20"}`}>
       <SearchBar />
       <HomePagination totalPages={totalPages} />
 

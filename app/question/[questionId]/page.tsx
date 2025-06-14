@@ -445,9 +445,9 @@ const QuestionPage = () => {
   }
 
   return (
-    <div className="container mx-auto py-8 px-4 md:px-6 flex flex-col gap-6 max-w-[1200px] min-h-screen bg-background">
+    <div className="container mx-auto py-8 px-4 md:px-6 flex flex-col gap-6 max-w-[1200px] min-h-screen bg-background transition-all duration-300 ease-in-out pt-16">
       {/* Question Section - Enhanced */}
-      <div className="bg-card rounded-xl shadow-lg p-6 md:p-8 border border-border transition-all hover:shadow-xl">
+      <div className="bg-background rounded-lg shadow-md hover:shadow-lg p-6 md:p-8 border-2 border-border transition-all">
         <div className="flex justify-between items-start mb-4">
           <h1 className="text-2xl md:text-3xl font-bold text-card-foreground flex-1">
             {question.title}
@@ -458,14 +458,14 @@ const QuestionPage = () => {
             <div className="flex items-center gap-2 ml-4">
               <button
                 onClick={toggleQuestionEditForm}
-                className="p-2 text-primary hover:text-primary/80 hover:bg-primary/10 rounded-full transition-colors group cursor-pointer"
+                className="p-2 text-primary hover:text-primary/80 hover:bg-primary/10 rounded-full transition-all duration-300 ease-in-out group cursor-pointer"
                 title="Edit question"
               >
                 <Edit className="h-5 w-5" />
               </button>
               <button
                 onClick={handleQuestionDelete}
-                className="p-2 text-destructive hover:text-destructive/80 hover:bg-destructive/10 rounded-full transition-colors group cursor-pointer"
+                className="p-2 text-destructive hover:text-destructive/80 hover:bg-destructive/10 rounded-full transition-all duration-300 ease-in-out group cursor-pointer"
                 title="Delete question"
               >
                 <Trash2 className="h-5 w-5" />
@@ -478,7 +478,7 @@ const QuestionPage = () => {
         <div className="flex flex-wrap items-center mb-6 pb-4 border-b border-border">
           <div className="flex items-center mr-4 mb-2">
             {question.user?.imageUrl ? (
-              <div className="rounded-full overflow-hidden border-2 border-primary/20 mr-3">
+              <div className="rounded-full overflow-hidden border-2 border-primary/20 mr-3 transition-all duration-300 ease-in-out">
                 <Image
                   src={question.user.imageUrl}
                   alt={question.user.firstName || "User"}
@@ -488,17 +488,17 @@ const QuestionPage = () => {
                 />
               </div>
             ) : (
-              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mr-3">
+              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mr-3 transition-all duration-300 ease-in-out">
                 <span className="text-primary font-semibold text-sm">
                   {question.user?.firstName?.charAt(0) || "?"}
                 </span>
               </div>
             )}
             <div>
-              <span className="font-medium text-card-foreground">
+              <span className="font-medium text-card-foreground transition-all duration-300 ease-in-out">
                 {question.user?.firstName} {question.user?.lastName}
               </span>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground transition-all duration-300 ease-in-out">
                 {new Date(question.createdAt).toLocaleDateString("en-US", {
                   year: "numeric",
                   month: "short",
@@ -509,7 +509,7 @@ const QuestionPage = () => {
           </div>
 
           {question.subject && (
-            <span className="ml-auto text-xs px-3 py-1.5 rounded-full font-semibold bg-primary/10 text-primary border border-primary/20">
+            <span className="ml-auto text-sm px-2.5 py-1 rounded-full font-bold bg-primary/10 text-primary whitespace-nowrap hover:bg-primary/20 transition-all duration-300">
               {question.subject}
             </span>
           )}
@@ -518,7 +518,7 @@ const QuestionPage = () => {
         {/* Question Edit Form - Always rendered with smooth transitions */}
         {question.asker === userId && (
           <div
-            className={`mt-6 bg-muted/50 rounded-lg border border-border transition-all duration-300 ease-in-out overflow-hidden flex justify-center items-center ${
+            className={`mt-6 bg-background rounded-lg  transition-all duration-300 ease-in-out overflow-hidden flex justify-start items-center ${
               isQuestionEditFormExpanded
                 ? "h-max opacity-100 p-4"
                 : "max-h-0 opacity-0 p-0 mt-0"
@@ -548,7 +548,7 @@ const QuestionPage = () => {
                   ? deleteLike(question._id, null, null)
                   : toggleLike(true, question._id, null, null)
               }
-              className={`p-1 rounded hover:bg-muted transition-colors ${
+              className={`p-1 rounded hover:bg-muted transition-all duration-300 ease-in-out ${
                 question.isLikedByLoggedInUser
                   ? "text-primary"
                   : "text-muted-foreground"
@@ -562,12 +562,12 @@ const QuestionPage = () => {
             </button>
 
             <span
-              className={`text-center font-bold my-2 flex items-center justify-center ${
+              className={`text-center font-bold my-2 flex items-center justify-center transition-all duration-300 ease-in-out ${
                 (question.questionLikes || 0) -
                   (question.questionDislikes || 0) >=
                 0
-                  ? "text-green-500"
-                  : "text-red-500"
+                  ? "text-green-600 dark:text-green-400"
+                  : "text-red-600 dark:text-red-400"
               }`}
             >
               {(question.questionLikes || 0) -
@@ -591,7 +591,7 @@ const QuestionPage = () => {
                   ? deleteLike(question._id, null, null)
                   : toggleLike(false, question._id, null, null)
               }
-              className={`p-1 rounded hover:bg-muted transition-colors ${
+              className={`p-1 rounded hover:bg-muted transition-all duration-300 ease-in-out ${
                 question.isDislikedByLoggedInUser
                   ? "text-destructive"
                   : "text-muted-foreground"
@@ -606,7 +606,7 @@ const QuestionPage = () => {
           </div>
 
           {/* Question content */}
-          <div className="prose prose-lg dark:prose-invert max-w-[1030px] flex-1 text-foreground overflow-x-auto">
+          <div className="prose prose-lg dark:prose-invert max-w-[1030px] flex-1 text-foreground overflow-x-auto transition-all duration-300 ease-in-out">
             <div className="w-max">{parse(question.description)}</div>
           </div>
         </div>
@@ -617,7 +617,8 @@ const QuestionPage = () => {
             {question.tags.map((tag, index) => (
               <span
                 key={index}
-                className="text-xs font-medium bg-accent/20 text-accent-foreground border border-accent/30 px-3 py-1.5 rounded-full hover:bg-accent/30 hover:border-accent/50 transition-colors"
+                className="text-sm font-bold bg-secondary text-secondary-foreground px-3 py-1.5 rounded-full hover:bg-secondary/80 transition-all duration-300 ease-in-out"
+                title={tag}
               >
                 #{tag}
               </span>
@@ -631,7 +632,7 @@ const QuestionPage = () => {
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setIsQuestionCommentsVisible((prev) => !prev)}
-                className="text-sm text-muted-foreground flex items-center hover:text-foreground transition-colors"
+                className="text-sm text-muted-foreground flex items-center hover:text-foreground transition-all duration-300 ease-in-out"
               >
                 <MessageCircle className="h-4 w-4 mr-1" />
                 <span>{questionComments?.length || 0} Comments</span>
@@ -645,7 +646,7 @@ const QuestionPage = () => {
                 onClick={() =>
                   setIsQuestionCommentFormExpanded((prev) => !prev)
                 }
-                className="text-sm text-primary hover:text-primary/80 flex items-center bg-primary/10 hover:bg-primary/20 border border-primary/20 px-3 py-1 rounded-full transition-colors"
+                className="text-sm text-primary hover:text-primary/80 flex items-center bg-primary/10 hover:bg-primary/20 border border-primary/20 px-3 py-1 rounded-full transition-all duration-300 ease-in-out"
               >
                 {isQuestionCommentFormExpanded ? "Cancel" : "Add Comment"}
               </button>
@@ -654,7 +655,7 @@ const QuestionPage = () => {
 
           {/* Question Comment Form - Always rendered with smooth transitions */}
           <div
-            className={`mt-3 mb-6 bg-muted/50 rounded-lg border border-border transition-all duration-100 ease-in-out overflow-hidden ${
+            className={`mt-3 mb-6 bg-background rounded-lg border border-border transition-all duration-300 ease-in-out overflow-hidden ${
               isQuestionCommentFormExpanded
                 ? "h-max opacity-100 p-4"
                 : "max-h-0 opacity-0 p-0 mb-0 mt-0"
@@ -681,7 +682,7 @@ const QuestionPage = () => {
             <>
               {questionComments && questionComments.length > 0 && (
                 <div
-                  className={`mt-4 pl-2 border-l-2 border-accent/30 space-y-4 overflow-hidden transition-all duration-300 ease-in-out ${
+                  className={`mt-4 pl-2 border-l-4 border-accent space-y-4 overflow-hidden transition-all duration-300 ease-in-out ${
                     isQuestionCommentsVisible
                       ? "h-max opacity-100"
                       : "max-h-0 opacity-0"
@@ -691,11 +692,11 @@ const QuestionPage = () => {
                     (comment: CommentWithUser, commentIndex: number) => (
                       <div
                         key={commentIndex}
-                        className="text-sm p-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors relative border border-border/50"
+                        className="text-sm p-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition-all duration-300 ease-in-out relative border border-border/50"
                       >
                         {/* Loader overlay for deleting comment */}
                         {isCommentDeleting === comment._id && (
-                          <div className="absolute inset-0 bg-background/90 backdrop-blur-sm flex items-center justify-center z-20 rounded-lg">
+                          <div className="absolute inset-0 bg-background/90 backdrop-blur-sm flex items-center justify-center z-20 rounded-lg transition-all duration-300 ease-in-out">
                             <div className="flex flex-col items-center gap-3">
                               <LoaderDemo />
                               <span className="text-sm text-muted-foreground font-medium">
@@ -715,7 +716,7 @@ const QuestionPage = () => {
                                   ? deleteLike(null, comment._id, null)
                                   : toggleLike(true, null, comment._id, null);
                               }}
-                              className={`p-1 rounded hover:bg-muted transition-colors ${
+                              className={`p-1 rounded hover:bg-muted transition-all duration-300 ease-in-out ${
                                 comment.isLikedByLoggedInUser
                                   ? "text-primary"
                                   : "text-muted-foreground"
@@ -732,12 +733,12 @@ const QuestionPage = () => {
                             </button>
 
                             <span
-                              className={`text-center font-medium text-xs my-1 flex items-center justify-center ${
+                              className={`text-center font-medium text-xs my-1 flex items-center justify-center transition-all duration-300 ease-in-out ${
                                 (comment.commentLikes || 0) -
                                   (comment.commentDislikes || 0) >=
                                 0
-                                  ? "text-green-500"
-                                  : "text-red-500"
+                                  ? "text-green-600 dark:text-green-400"
+                                  : "text-red-600 dark:text-red-400"
                               }`}
                             >
                               {(comment.commentLikes || 0) -
@@ -762,7 +763,7 @@ const QuestionPage = () => {
                                   ? deleteLike(null, comment._id, null)
                                   : toggleLike(false, null, comment._id, null);
                               }}
-                              className={`p-1 rounded hover:bg-muted transition-colors ${
+                              className={`p-1 rounded hover:bg-muted transition-all duration-300 ease-in-out ${
                                 comment.isDislikedByLoggedInUser
                                   ? "text-destructive"
                                   : "text-muted-foreground"
@@ -791,10 +792,10 @@ const QuestionPage = () => {
                                     }
                                     width={24}
                                     height={24}
-                                    className="rounded-full mr-2 border border-border"
+                                    className="rounded-full mr-2 border border-border transition-all duration-300 ease-in-out"
                                   />
                                 ) : (
-                                  <div className="w-6 h-6 bg-muted rounded-full flex items-center justify-center mr-2">
+                                  <div className="w-6 h-6 bg-muted rounded-full flex items-center justify-center mr-2 transition-all duration-300 ease-in-out">
                                     <span className="text-muted-foreground text-xs">
                                       {comment.user?.firstName?.charAt(
                                         0
@@ -802,11 +803,11 @@ const QuestionPage = () => {
                                     </span>
                                   </div>
                                 )}
-                                <span className="font-medium text-xs mr-2 text-foreground">
+                                <span className="font-medium text-xs mr-2 text-foreground transition-all duration-300 ease-in-out">
                                   {comment.user?.firstName}{" "}
                                   {comment.user?.lastName}
                                 </span>
-                                <span className="text-xs text-muted-foreground">
+                                <span className="text-xs text-muted-foreground transition-all duration-300 ease-in-out">
                                   {new Date(
                                     comment.createdAt
                                   ).toLocaleDateString("en-US", {
@@ -821,14 +822,14 @@ const QuestionPage = () => {
                                 <button
                                   onClick={() => handleCommentDelete(comment._id, true)}
                                   disabled={isCommentDeleting === comment._id}
-                                  className="p-1 text-destructive hover:text-destructive/80 hover:bg-destructive/10 rounded-full transition-colors"
+                                  className="p-1 text-destructive hover:text-destructive/80 hover:bg-destructive/10 rounded-full transition-all duration-300 ease-in-out"
                                   title="Delete comment"
                                 >
                                   <Trash2 className="h-3 w-3" />
                                 </button>
                               )}
                             </div>
-                            <div className="text-foreground text-sm break-words whitespace-pre-wrap max-w-[125ch] overflow-x-auto">
+                            <div className="text-foreground text-sm break-words whitespace-pre-wrap max-w-[125ch] overflow-x-auto transition-all duration-300 ease-in-out">
                               {parse(comment.content)}
                             </div>
                           </div>
@@ -851,14 +852,14 @@ const QuestionPage = () => {
       ) : (
         <>
           {/* Add Answer Button */}
-          <div className="bg-card rounded-xl shadow-md p-6 md:p-8 border border-border">
+          <div className="bg-background rounded-lg shadow-md hover:shadow-lg p-6 md:p-8 border-2 border-border transition-all">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl md:text-2xl font-bold text-card-foreground">
+              <h2 className="text-xl md:text-2xl font-bold text-card-foreground transition-all duration-300 ease-in-out">
                 Your Answer
               </h2>
               <button
                 onClick={toggleAnswerForm}
-                className="text-sm text-primary hover:text-primary/80 flex items-center bg-primary/10 hover:bg-primary/20 border border-primary/20 px-4 py-2 rounded-full transition-colors cursor-pointer"
+                className="text-sm text-primary hover:text-primary/80 flex items-center bg-primary/10 hover:bg-primary/20 border border-primary/20 px-4 py-2 rounded-full transition-all duration-300 ease-in-out cursor-pointer"
               >
                 {isAnswerFormExpanded ? "Cancel" : "Give Answer"}
               </button>
@@ -866,7 +867,7 @@ const QuestionPage = () => {
 
             {/* Answer form - Always rendered with smooth transitions */}
             <div
-              className={`mt-6 transition-all duration-100 ease-in-out overflow-hidden ${
+              className={`mt-6 transition-all duration-300 ease-in-out overflow-hidden ${
                 isAnswerFormExpanded
                   ? "max-h-[600px] opacity-100"
                   : "max-h-0 opacity-0 mt-0"
@@ -884,18 +885,18 @@ const QuestionPage = () => {
           </div>
 
           {/* Answers Section - Enhanced */}
-          <div className="bg-card rounded-xl shadow-md p-6 md:p-8 border border-border">
-            <h2 className="text-xl md:text-2xl font-bold mb-6 text-card-foreground flex items-center">
+          <div className="bg-background rounded-lg shadow-md hover:shadow-lg p-6 md:p-8 border-2 border-border transition-all">
+            <h2 className="text-xl md:text-2xl font-bold mb-6 text-card-foreground flex items-center transition-all duration-300 ease-in-out">
               Answers
-              <span className="ml-2 text-sm bg-secondary/80 text-secondary-foreground border border-secondary px-2.5 py-0.5 rounded-full">
+              <span className="ml-3 text-sm bg-secondary text-secondary-foreground font-medium px-2.5 py-1 rounded-full">
                 {answers.length}
               </span>
             </h2>
 
             {answers.length === 0 ? (
-              <div className="text-center py-12 border border-dashed border-border rounded-lg">
-                <MessageCircle className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                <p className="text-muted-foreground font-medium">
+              <div className="text-center py-12 border border-dashed border-border rounded-lg transition-all duration-300 ease-in-out">
+                <MessageCircle className="h-12 w-12 mx-auto text-muted-foreground mb-4 transition-all duration-300 ease-in-out" />
+                <p className="text-muted-foreground font-medium transition-all duration-300 ease-in-out">
                   No answers yet. Be the first to answer!
                 </p>
               </div>
@@ -906,13 +907,13 @@ const QuestionPage = () => {
                     key={index}
                     className={`${
                       index > 0
-                        ? "border-t border-border pt-8"
+                        ? "border-t-3 border-border pt-8"
                         : ""
-                    } transition-all relative`}
+                    } transition-all duration-300 ease-in-out relative`}
                   >
                     {/* Loader overlay for the entire answer */}
                     {isAnswerDeleting === answer._id && (
-                      <div className="absolute inset-0 bg-background/90 backdrop-blur-sm flex items-center justify-center z-20 rounded-lg">
+                      <div className="absolute inset-0 bg-background/90 backdrop-blur-sm flex items-center justify-center z-20 rounded-lg transition-all duration-300 ease-in-out">
                         <div className="flex flex-col items-center gap-3">
                           <LoaderDemo />
                           <span className="text-sm text-muted-foreground font-medium">
@@ -926,7 +927,7 @@ const QuestionPage = () => {
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center">
                         {answer.user?.imageUrl ? (
-                          <div className="rounded-full overflow-hidden border-2 border-primary/20 mr-3">
+                          <div className="rounded-full overflow-hidden border-2 border-primary/20 mr-3 transition-all duration-300 ease-in-out">
                             <Image
                               src={answer.user.imageUrl}
                               alt={answer.user.firstName || "User"}
@@ -936,17 +937,17 @@ const QuestionPage = () => {
                             />
                           </div>
                         ) : (
-                          <div className="w-9 h-9 bg-primary/10 rounded-full flex items-center justify-center mr-3">
+                          <div className="w-9 h-9 bg-primary/10 rounded-full flex items-center justify-center mr-3 transition-all duration-300 ease-in-out">
                             <span className="text-primary font-semibold text-sm">
                               {answer.user?.firstName?.charAt(0) || "?"}
                             </span>
                           </div>
                         )}
                         <div>
-                          <span className="font-medium text-card-foreground">
+                          <span className="font-medium text-card-foreground transition-all duration-300 ease-in-out">
                             {answer.user?.firstName} {answer.user?.lastName}
                           </span>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-xs text-muted-foreground transition-all duration-300 ease-in-out">
                             {new Date(answer.createdAt).toLocaleDateString(
                               "en-US",
                               {
@@ -964,7 +965,7 @@ const QuestionPage = () => {
                         <button
                           onClick={() => handleAnswerDelete(answer._id)}
                           disabled={isAnswerDeleting === answer._id}
-                          className="p-2 text-destructive hover:text-destructive/80 hover:bg-destructive/10 rounded-full transition-colors group cursor-pointer"
+                          className="p-2 text-destructive hover:text-destructive/80 hover:bg-destructive/10 rounded-full transition-all duration-300 ease-in-out group cursor-pointer"
                           title="Delete answer"
                         >
                           <Trash2 className="h-5 w-5" />
@@ -982,7 +983,7 @@ const QuestionPage = () => {
                               ? deleteLike(null, null, answer._id)
                               : toggleLike(true, null, null, answer._id)
                           }
-                          className={`p-1 rounded hover:bg-muted transition-colors ${
+                          className={`p-1 rounded hover:bg-muted transition-all duration-300 ease-in-out ${
                             answer.isLikedByLoggedInUser
                               ? "text-primary"
                               : "text-muted-foreground"
@@ -996,12 +997,12 @@ const QuestionPage = () => {
                         </button>
 
                         <span
-                          className={`text-center font-bold my-2 flex items-center justify-center ${
+                          className={`text-center font-bold my-2 flex items-center justify-center transition-all duration-300 ease-in-out ${
                             (answer.answerLikes || 0) -
                               (answer.answerDislikes || 0) >=
                             0
-                              ? "text-green-500"
-                              : "text-red-500"
+                              ? "text-green-600 dark:text-green-400"
+                              : "text-red-600 dark:text-red-400"
                           }`}
                         >
                           {(answer.answerLikes || 0) -
@@ -1025,7 +1026,7 @@ const QuestionPage = () => {
                               ? deleteLike(null, null, answer._id)
                               : toggleLike(false, null, null, answer._id)
                           }
-                          className={`p-1 rounded hover:bg-muted transition-colors ${
+                          className={`p-1 rounded hover:bg-muted transition-all duration-300 ease-in-out ${
                             answer.isDislikedByLoggedInUser
                               ? "text-destructive"
                               : "text-muted-foreground"
@@ -1042,7 +1043,7 @@ const QuestionPage = () => {
                       </div>
 
                       {/* Answer content */}
-                      <div className="prose prose-md dark:prose-invert max-w-none flex-1 text-foreground overflow-x-auto">
+                      <div className="prose prose-md dark:prose-invert max-w-none flex-1 text-foreground overflow-x-auto transition-all duration-300 ease-in-out">
                         <div className="w-max">{parse(answer.content)}</div>
                       </div>
                     </div>
@@ -1054,7 +1055,7 @@ const QuestionPage = () => {
                         <div className="flex items-center gap-3">
                           <button
                             onClick={() => toggleCommentsVisibility(answer._id)}
-                            className="text-sm text-muted-foreground flex items-center hover:text-foreground transition-colors"
+                            className="text-sm text-muted-foreground flex items-center hover:text-foreground transition-all duration-300 ease-in-out"
                           >
                             <MessageCircle className="h-4 w-4 mr-1" />
                             <span>{answer.comments?.length || 0} Comments</span>
@@ -1068,7 +1069,7 @@ const QuestionPage = () => {
                             onClick={() =>
                               answer._id && toggleCommentForm(answer._id)
                             }
-                            className="text-sm text-primary hover:text-primary/80 flex items-center bg-primary/10 hover:bg-primary/20 border border-primary/20 px-3 py-1 rounded-full transition-colors"
+                            className="text-sm text-primary hover:text-primary/80 flex items-center bg-primary/10 hover:bg-primary/20 border border-primary/20 px-3 py-1 rounded-full transition-all duration-300 ease-in-out"
                           >
                             {expandedCommentAnswer === answer._id
                               ? "Cancel"
@@ -1079,7 +1080,7 @@ const QuestionPage = () => {
 
                       {/* Comment form - Always rendered with smooth transitions */}
                       <div
-                        className={`mt-3 mb-6 bg-muted/30 rounded-lg border border-border transition-all duration-100 ease-in-out overflow-hidden ${
+                        className={`mt-3 mb-6 bg-background rounded-lg border border-border transition-all duration-300 ease-in-out overflow-hidden ${
                           answer._id && expandedCommentAnswer === answer._id
                             ? "h-max opacity-100 p-4"
                             : "max-h-0 opacity-0 p-0 mb-0 mt-0"
@@ -1109,7 +1110,7 @@ const QuestionPage = () => {
                         <>
                           {answer.comments && answer.comments.length > 0 && (
                             <div
-                              className={`mt-4 pl-2 border-l-2 border-accent/30 space-y-4 overflow-hidden transition-all duration-300 ease-in-out ${
+                              className={`mt-4 pl-2 border-l-4 border-accent space-y-4 overflow-hidden transition-all duration-300 ease-in-out ${
                                 visibleComments[answer._id]
                                   ? "max-h-[2000px] opacity-100"
                                   : "max-h-0 opacity-0"
@@ -1122,11 +1123,11 @@ const QuestionPage = () => {
                                 ) => (
                                   <div
                                     key={commentIndex}
-                                    className="text-sm p-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors relative border border-border/50"
+                                    className="text-sm p-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition-all duration-300 ease-in-out relative border border-border/50"
                                   >
                                     {/* Loader overlay for deleting comment */}
                                     {isCommentDeleting === comment._id && (
-                                      <div className="absolute inset-0 bg-background/90 backdrop-blur-sm flex items-center justify-center z-20 rounded-lg">
+                                      <div className="absolute inset-0 bg-background/90 backdrop-blur-sm flex items-center justify-center z-20 rounded-lg transition-all duration-300 ease-in-out">
                                         <div className="flex flex-col items-center gap-3">
                                           <LoaderDemo />
                                           <span className="text-sm text-muted-foreground font-medium">
@@ -1155,7 +1156,7 @@ const QuestionPage = () => {
                                                   null
                                                 );
                                           }}
-                                          className={`p-1 rounded hover:bg-muted transition-colors ${
+                                          className={`p-1 rounded hover:bg-muted transition-all duration-300 ease-in-out ${
                                             comment.isLikedByLoggedInUser
                                               ? "text-primary"
                                               : "text-muted-foreground"
@@ -1172,12 +1173,12 @@ const QuestionPage = () => {
                                         </button>
 
                                         <span
-                                          className={`text-center font-medium text-xs my-1 flex items-center justify-center ${
+                                          className={`text-center font-medium text-xs my-1 flex items-center justify-center transition-all duration-300 ease-in-out ${
                                             (comment.commentLikes || 0) -
                                               (comment.commentDislikes || 0) >=
                                             0
-                                              ? "text-green-500"
-                                              : "text-red-500"
+                                              ? "text-green-600 dark:text-green-400"
+                                              : "text-red-600 dark:text-red-400"
                                           }`}
                                         >
                                           {(comment.commentLikes || 0) -
@@ -1211,7 +1212,7 @@ const QuestionPage = () => {
                                                   null
                                                 );
                                           }}
-                                          className={`p-1 rounded hover:bg-muted transition-colors ${
+                                          className={`p-1 rounded hover:bg-muted transition-all duration-300 ease-in-out ${
                                             comment.isDislikedByLoggedInUser
                                               ? "text-destructive"
                                               : "text-muted-foreground"
@@ -1240,10 +1241,10 @@ const QuestionPage = () => {
                                                 }
                                                 width={24}
                                                 height={24}
-                                                className="rounded-full mr-2 border border-border"
+                                                className="rounded-full mr-2 border border-border transition-all duration-300 ease-in-out"
                                               />
                                             ) : (
-                                              <div className="w-6 h-6 bg-muted rounded-full flex items-center justify-center mr-2">
+                                              <div className="w-6 h-6 bg-muted rounded-full flex items-center justify-center mr-2 transition-all duration-300 ease-in-out">
                                                 <span className="text-muted-foreground text-xs">
                                                   {comment.user?.firstName?.charAt(
                                                     0
@@ -1251,11 +1252,11 @@ const QuestionPage = () => {
                                                 </span>
                                               </div>
                                             )}
-                                            <span className="font-medium text-xs mr-2 text-foreground">
+                                            <span className="font-medium text-xs mr-2 text-foreground transition-all duration-300 ease-in-out">
                                               {comment.user?.firstName}{" "}
                                               {comment.user?.lastName}
                                             </span>
-                                            <span className="text-xs text-muted-foreground">
+                                            <span className="text-xs text-muted-foreground transition-all duration-300 ease-in-out">
                                               {new Date(
                                                 comment.createdAt
                                               ).toLocaleDateString("en-US", {
@@ -1270,14 +1271,14 @@ const QuestionPage = () => {
                                             <button
                                               onClick={() => handleCommentDelete(comment._id, false)}
                                               disabled={isCommentDeleting === comment._id}
-                                              className="p-1 text-destructive hover:text-destructive/80 hover:bg-destructive/10 rounded-full transition-colors"
+                                              className="p-1 text-destructive hover:text-destructive/80 hover:bg-destructive/10 rounded-full transition-all duration-300 ease-in-out"
                                               title="Delete comment"
                                             >
                                               <Trash2 className="h-3 w-3" />
                                             </button>
                                           )}
                                         </div>
-                                        <div className="text-foreground text-sm break-words whitespace-pre-wrap max-w-[125ch] overflow-x-auto">
+                                        <div className="text-foreground text-sm break-words whitespace-pre-wrap max-w-[125ch] overflow-x-auto transition-all duration-300 ease-in-out">
                                           {parse(comment.content)}
                                         </div>
                                       </div>

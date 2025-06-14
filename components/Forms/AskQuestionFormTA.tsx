@@ -9,7 +9,7 @@ import { Form } from "@/components/ui/form";
 import { setQuestions } from "@/lib/redux/slices/questions.slice";
 import axios from "axios";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import InputFormField from "./InputFormField";
 import SelectFormField from "./SelectFormField";
@@ -18,6 +18,7 @@ import TextAreaFormField from "./TextAreaFormField";
 import TiptapFormField from "./TiptapFormField";
 import HugeRTEFormField from "./HugeRTEFormField2";
 import TinyMCEFormField from "./TinyMCEFormField";
+import { RootState } from "../../lib/redux/store";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -80,11 +81,13 @@ export function AskQuestionFormTA({
     }
   }
 
+  const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
+
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full max-w-2xl p-6 border rounded-md space-y-6"
+        className="w-full p-6 border-2 border-border rounded-md space-y-6"
       >
         <InputFormField
           control={form.control}
@@ -110,6 +113,7 @@ export function AskQuestionFormTA({
           name="description"
           label="Description"
           placeholder="Enter your content..."
+          isDarkMode={isDarkMode}
         />
         {/* <TinyMCEFormField
           control={form.control}
@@ -133,9 +137,10 @@ export function AskQuestionFormTA({
             "geography",
             "other",
           ]}
+          isDarkMode={isDarkMode}
         />
         <TagsInput tags={tags} setTags={setTags} tag={tag} setTag={setTag} />
-        <Button type="submit" className="btn-auth">
+        <Button type="submit" variant="default" className="cursor-pointer">
           Submit
         </Button>
       </form>

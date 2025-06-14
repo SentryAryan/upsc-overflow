@@ -170,28 +170,28 @@ export default function SearchBar() {
             onFocus={handleFocus}
             onBlur={handleBlur}
             placeholder="Search questions, tags, or subjects..."
-            className="input pr-10 h-12 text-base shadow-sm border-2 focus:border-primary transition-all duration-200"
+            className="input pr-10 h-12 text-base shadow-sm border-3 border-border dark:border-border focus:border-primary dark:focus:border-primary transition-all duration-200 bg-background! text-foreground"
           />
           <div
             className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer group"
             onClick={handleSearch}
           >
-            <Search className="h-5 w-5 text-gray-500 group-hover:text-primary transition-colors duration-200" />
+            <Search className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors duration-200" />
           </div>
 
           {isInstructionsVisible && (
-            <div className="absolute top-full left-0 right-0 mt-2 p-0 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 rounded-lg shadow-xl z-20 max-h-[600px] overflow-hidden">
+            <div className="absolute top-full left-0 right-0 mt-2 p-0 bg-background border-2 border-border rounded-lg shadow-xl z-20 max-h-[600px] overflow-hidden text-foreground">
               {/* Search Tips */}
-              <div className="p-4 bg-gradient-to-r from-blue-50 to-primary/10 dark:from-gray-700 dark:to-gray-600 border-b border-gray-200 dark:border-gray-600">
-                <h3 className="font-semibold mb-3 text-gray-800 dark:text-gray-100 flex items-center">
-                  <Search className="h-4 w-4 mr-2 text-primary" />
+              <div className="p-4 bg-background border-b border-border">
+                <h3 className="font-semibold mb-3 text-foreground flex items-center">
+                  <Search className="h-4 w-4 mr-2 text-foreground" />
                   Search Tips
                 </h3>
-                <ul className="text-sm space-y-2 text-gray-600 dark:text-gray-300">
+                <ul className="text-sm space-y-2 text-foreground">
                   <li className="flex items-center">
                     <span className="w-2 h-2 bg-primary rounded-full mr-2"></span>
                     Use{" "}
-                    <code className="px-1.5 py-0.5 bg-white/80 dark:bg-gray-800 rounded text-xs font-mono border border-gray-200 dark:border-gray-500">
+                    <code className="px-1.5 py-0.5 bg-muted rounded text-xs font-mono border border-border text-foreground">
                       [tag-name]
                     </code>{" "}
                     for tags (e.g., [physics])
@@ -199,7 +199,7 @@ export default function SearchBar() {
                   <li className="flex items-center">
                     <span className="w-2 h-2 bg-primary rounded-full mr-2"></span>
                     Use{" "}
-                    <code className="px-1.5 py-0.5 bg-white/80 dark:bg-gray-800 rounded text-xs font-mono border border-gray-200 dark:border-gray-500">
+                    <code className="px-1.5 py-0.5 bg-muted rounded text-xs font-mono border border-border text-foreground">
                       "subject-name"
                     </code>{" "}
                     for subjects (e.g., "history")
@@ -213,17 +213,17 @@ export default function SearchBar() {
 
               {(suggestions.length > 0 || isLoading) && (
                 <div className="max-h-[450px] overflow-y-auto">
-                  <div className="p-4 border-b border-gray-200 dark:border-gray-600 bg-gray-100 dark:bg-gray-800">
-                    <h3 className="font-semibold text-gray-800 dark:text-gray-100 flex items-center">
+                  <div className="p-4 border-b border-border bg-background">
+                    <h3 className="font-semibold text-foreground flex items-center">
                       <MessageSquare className="h-4 w-4 mr-2 text-primary" />
                       Suggested Questions
                     </h3>
                   </div>
-                  <div className="divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-800">
+                  <div className="divide-y divide-border bg-background">
                     {isLoading ? (
-                      <div className="p-6 flex items-center justify-center bg-white dark:bg-gray-800">
+                      <div className="p-6 flex items-center justify-center bg-background">
                         <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                        <span className="ml-3 text-gray-600 dark:text-gray-300">
+                        <span className="ml-3 text-muted-foreground">
                           Loading suggestions...
                         </span>
                       </div>
@@ -247,12 +247,12 @@ export default function SearchBar() {
                         return (
                           <div
                             key={q._id}
-                            className="p-4 bg-white dark:bg-gray-800  transition-all duration-200 cursor-pointer group border-b border-gray-100 dark:border-gray-700 last:border-b-0"
+                            className="p-4 bg-background hover:bg-accent transition-all duration-200 cursor-pointer group border-b border-border last:border-b-0"
                             onMouseDown={() => handleSuggestionClick(q._id)}
                           >
                             {/* Title and Subject */}
                             <div className="flex items-start justify-between mb-3">
-                              <h4 className="font-semibold text-base text-gray-900 dark:text-gray-100 group-hover:text-primary transition-colors duration-200 flex-1 line-clamp-2">
+                              <h4 className="font-semibold text-base text-foreground group-hover:text-primary transition-colors duration-200 flex-1 line-clamp-2">
                                 {q.title}
                               </h4>
 
@@ -260,7 +260,7 @@ export default function SearchBar() {
                                 <TooltipProvider>
                                   <Tooltip>
                                     <TooltipTrigger
-                                      className="ml-2 text-xs px-2.5 py-1 rounded-full font-bold bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200 whitespace-nowrap cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-700 transition-all duration-300"
+                                      className="ml-2 text-xs px-2.5 py-1 rounded-full font-bold bg-primary/10 text-primary whitespace-nowrap cursor-pointer hover:bg-primary/20 transition-all duration-300"
                                       onMouseDown={(e) => {
                                         e.stopPropagation();
                                         router.push(
@@ -271,8 +271,6 @@ export default function SearchBar() {
                                       {q.subject}
                                     </TooltipTrigger>
                                     <TooltipContent
-                                      type="subject"
-                                      className="dark:bg-blue-700 dark:hover:bg-blue-900 text-blue-200 cursor-pointer font-bold"
                                       onMouseDown={(e) => {
                                         e.stopPropagation();
                                         router.push(
@@ -288,17 +286,17 @@ export default function SearchBar() {
                             </div>
 
                             {/* User info */}
-                            <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 mb-3">
+                            <div className="flex items-center text-sm text-muted-foreground mb-3">
                               {q.user?.imageUrl ? (
                                 <Image
                                   src={q.user.imageUrl}
                                   alt={askerName}
                                   width={24}
                                   height={24}
-                                  className="rounded-full mr-2 border border-gray-200 dark:border-gray-600"
+                                  className="rounded-full mr-2 border border-border"
                                 />
                               ) : (
-                                <div className="w-6 h-6 bg-gradient-to-br from-primary/20 to-primary/40 dark:from-primary/30 dark:to-primary/50 rounded-full flex items-center justify-center mr-2 text-xs font-medium text-primary dark:text-primary-foreground">
+                                <div className="w-6 h-6 bg-primary/20 rounded-full flex items-center justify-center mr-2 text-xs font-medium text-primary">
                                   {askerName.charAt(0).toUpperCase()}
                                 </div>
                               )}
@@ -316,7 +314,7 @@ export default function SearchBar() {
                                     <TooltipProvider key={index}>
                                       <Tooltip>
                                         <TooltipTrigger
-                                          className="text-xs font-medium bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300 px-3 py-1.5 rounded-full cursor-pointer hover:bg-gray-200 hover:dark:bg-gray-700 transition-all duration-200"
+                                          className="text-xs font-medium bg-secondary text-secondary-foreground px-3 py-1.5 rounded-full cursor-pointer hover:bg-secondary/80 transition-all duration-200"
                                           onMouseDown={(e) => {
                                             e.stopPropagation();
                                             router.push(
@@ -329,8 +327,6 @@ export default function SearchBar() {
                                           #{tag}
                                         </TooltipTrigger>
                                         <TooltipContent
-                                          type="tag"
-                                          className="dark:bg-gray-700 dark:hover:dark:bg-gray-900 text-blue-200 cursor-pointer font-bold"
                                           onMouseDown={(e) => {
                                             e.stopPropagation();
                                             router.push(
@@ -346,7 +342,7 @@ export default function SearchBar() {
                                     </TooltipProvider>
                                   ))}
                                 {q.tags.length > 3 && (
-                                  <span className="text-xs text-gray-500 dark:text-gray-400 px-2 py-1">
+                                  <span className="text-xs text-muted-foreground px-2 py-1">
                                     +{q.tags.length - 3} more
                                   </span>
                                 )}
@@ -356,7 +352,7 @@ export default function SearchBar() {
                             {/* Stats */}
                             <div className="flex items-center justify-start space-x-4 text-sm">
                               <span
-                                className={`font-medium ${voteColor} flex items-center bg-gray-100 dark:bg-gray-700/80 px-3 py-1.5 rounded-full border border-gray-200 dark:border-gray-600`}
+                                className={`font-medium ${voteColor} flex items-center bg-secondary text-secondary-foreground px-3 py-1.5 rounded-full border border-border`}
                               >
                                 {voteCount >= 0 ? (
                                   <ArrowUp size={14} className="mr-1" />
@@ -365,11 +361,11 @@ export default function SearchBar() {
                                 )}
                                 {Math.abs(voteCount)}
                               </span>
-                              <span className="flex items-center text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 px-2 py-1 rounded-full">
+                              <span className="flex items-center text-secondary-foreground bg-secondary px-2 py-1 rounded-full border border-border">
                                 <MessageSquare size={14} className="mr-1" />
                                 {q.likesAnswersComments?.answers || 0}
                               </span>
-                              <span className="flex items-center text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 px-2 py-1 rounded-full">
+                              <span className="flex items-center text-secondary-foreground bg-secondary px-2 py-1 rounded-full border border-border">
                                 <MessageCircle size={14} className="mr-1" />
                                 {q.likesAnswersComments?.comments || 0}
                               </span>
@@ -385,14 +381,14 @@ export default function SearchBar() {
               {!isLoading &&
                 debouncedSearchTerm &&
                 suggestions.length === 0 && (
-                  <div className="p-8 text-center bg-white dark:bg-gray-800">
-                    <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Search className="h-8 w-8 text-gray-400 dark:text-gray-500" />
+                  <div className="p-8 text-center bg-background">
+                    <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Search className="h-8 w-8 text-muted-foreground" />
                     </div>
-                    <p className="text-gray-600 dark:text-gray-300 font-medium">
+                    <p className="text-foreground font-medium">
                       No suggestions found
                     </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    <p className="text-sm text-muted-foreground mt-1">
                       Try a different search term
                     </p>
                   </div>
