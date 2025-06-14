@@ -1,30 +1,35 @@
 import {
   ClerkProvider,
   SignInButton,
-  SignOutButton,
   SignUpButton,
   SignedIn,
   SignedOut,
-  UserButton,
+  UserButton
 } from "@clerk/nextjs";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono, Merriweather } from "next/font/google";
 
+import ReduxProvider from "@/components/Providers/ReduxProvider";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { currentUser } from "@clerk/nextjs/server";
 import { SimpleSidebar } from "../components/SideBar/SimpleSidebar";
 import { Button } from "../components/ui/button";
-import ReduxProvider from "@/components/Providers/ReduxProvider";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-sans",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const merriweather = Merriweather({
+  variable: "--font-serif",
+  subsets: ["latin"],
+  weight: ["300", "400", "700", "900"],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-mono",
   subsets: ["latin"],
 });
 
@@ -45,7 +50,7 @@ export default async function RootLayout({
       <ReduxProvider>
         <html lang="en" className="dark">
           <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased w-screen min-h-screen overflow-x-hidden relative`}
+            className={`${inter.variable} ${merriweather.variable} ${jetbrainsMono.variable} font-serif antialiased w-screen min-h-screen overflow-x-hidden relative`}
           >
             <SidebarProvider>
               <SimpleSidebar />
@@ -91,3 +96,4 @@ export default async function RootLayout({
     </ClerkProvider>
   );
 }
+

@@ -93,7 +93,7 @@ export function SimpleSidebar({ ...props }: SimpleSidebarProps) {
   const loggedOutSidebarItems: SidebarItemType[] = [
     {
       name: "Home",
-      path: "/",
+      path: homePath,
       icon: Home,
     },
   ];
