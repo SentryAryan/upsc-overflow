@@ -80,42 +80,16 @@ const HugeRTEFormField = <T extends FieldValues>({
                 plugins: plugins,
                 toolbar: toolbar,
                 height: height,
-                content_style:
-                  `/* This selector targets only the body of this specific editor */
-                  body#hugerte.mce-content-body { 
-                    margin: 0.5rem 1rem; /* Reduced margin for a tighter look */
-                    background-color: ${isDarkMode ? "#1a1a1a" : "#f0f0f0"};
-                  }
-                  
-                  /* Table styling with hardcoded colors since CSS variables are not available here */
-                  table { 
-                    border-collapse: separate; 
-                    border: 1px solid ${isDarkMode ? '#414144' : '#E4E4E7'}; 
-                    border-radius: 6px; 
-                  }
-                  th, td { 
-                    border: 1px solid ${isDarkMode ? '#414144' : '#E4E4E7'}; 
-                    padding: 0.5rem; 
-                  }`,
+                content_style: "body { background-color: " + (isDarkMode ? "oklch(0 0 0)" : "oklch(1.0000 0 0)") + "; }",
                 placeholder: placeholder,
+                tinydrive_token_provider: "/api/tinymce/tinydrive-token",
+                tinydrive_skin: "oxide-dark",
                 menu: {
                   insert: {
                     title: "Insert",
-                    items: "image link media insertfile",
+                    items: "image link media insertfile codesample",
                   },
                 },
-                // HugeRTE specific configurations
-                branding: false,
-                promotion: false,
-                menubar: true,
-                statusbar: true,
-                resize: true,
-                contextmenu: "link image table",
-                browser_spellcheck: true,
-                convert_urls: false,
-                relative_urls: false,
-                remove_script_host: false,
-                document_base_url: "/",
               }}
             />
           </FormControl>

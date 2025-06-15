@@ -137,7 +137,7 @@ export function SimpleSidebar({ ...props }: SimpleSidebarProps) {
                   asChild
                   isActive={isActive}
                   className={cn(
-                    "flex items-center gap-3 w-full justify-start px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 border-3 border-border",
+                    "flex items-center gap-3 w-full justify-start px-4 py-3 text-sm font-medium rounded-lg transition-all duration-300 border-mode",
                     "hover:bg-accent hover:text-accent-foreground hover:shadow-md font-semibold",
                     isActive
                       ? "bg-primary text-primary-foreground shadow-md border-2 border-primary"

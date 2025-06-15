@@ -45,6 +45,8 @@ const SelectFormField = <T extends FieldValues>({
                 <SelectValue placeholder={placeholder} />
               </SelectTrigger>
             </FormControl>
+
+            {/* Applying dark class separately becuase radix portal is used inside SelectContent */}
             <SelectContent className={`border-1 border-border ${isDarkMode ? "dark" : ""}`}>
               {options.map((option: string, index: number) => (
                 <SelectItem

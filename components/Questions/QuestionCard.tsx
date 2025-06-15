@@ -92,7 +92,7 @@ const QuestionCard = ({ question }: { question: QuestionCardProps }) => {
 
   return (
     <div
-      className="bg-background rounded-lg shadow-md hover:shadow-lg transition-all p-6 border-2 border-border w-full h-full flex flex-col cursor-pointer hover:bg-accent"
+      className="bg-background rounded-lg card-shadow transition-all p-6 border-mode w-full h-full flex flex-col cursor-pointer hover:bg-accent"
       onClick={() => router.push(`/question/${question._id}`)}
     >
       <div className="flex items-start justify-between mb-3">
@@ -160,7 +160,7 @@ const QuestionCard = ({ question }: { question: QuestionCardProps }) => {
         )}
       </div>
 
-      <div className="flex flex-wrap items-center justify-between pt-4 border-t-3 border-border mt-auto gap-3">
+      <div className="flex flex-wrap items-center justify-between pt-4 border-t border-secondary dark:border-border mt-auto gap-3">
         <div className="flex items-center text-sm text-muted-foreground">
           {askerImageUrl ? (
             <Image

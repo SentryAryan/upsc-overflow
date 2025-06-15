@@ -77,7 +77,7 @@ const TinyMCEFormField = <T extends FieldValues>({
                 plugins: plugins,
                 toolbar: toolbar,
                 height: height,
-                content_style: "body { margin: 2rem 10%; background-color: " + (isDarkMode ? "#1a1a1a" : "#f0f0f0") + "; }",
+                content_style: "body { background-color: " + (isDarkMode ? "#1a1a1a" : "#f0f0f0") + "; }",
                 placeholder: placeholder,
                 tinydrive_token_provider: "/api/tinymce/tinydrive-token",
                 tinydrive_skin: "oxide-dark",
