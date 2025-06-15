@@ -248,7 +248,7 @@ export default function SearchBar() {
                         return (
                           <div
                             key={q._id}
-                            className="p-4 bg-background hover:bg-accent transition-all duration-200 cursor-pointer group border-b border-[rgba(29,161,242,1)] last:border-b-0"
+                            className="p-4 bg-background hover:bg-accent transition-all duration-200 cursor-pointer group border-b border-[rgba(29,161,242,1)] last:border-b-0 group"
                             onMouseDown={() => handleSuggestionClick(q._id)}
                           >
                             {/* Title and Subject */}
@@ -261,7 +261,7 @@ export default function SearchBar() {
                                 <TooltipProvider>
                                   <Tooltip>
                                     <TooltipTrigger
-                                      className="ml-2 text-xs px-2.5 py-1 rounded-full font-bold bg-primary/10 text-primary whitespace-nowrap cursor-pointer hover:bg-primary/20 transition-all duration-300"
+                                      className="ml-2 text-xs px-2.5 py-1 rounded-full bg-primary/10 text-primary whitespace-nowrap cursor-pointer hover:bg-primary/20 transition-all duration-300 group-hover:filter-shadow font-[900] border border-[rgba(29,161,242,1)] dark:border-border"
                                       onMouseDown={(e) => {
                                         e.stopPropagation();
                                         router.push(
@@ -315,7 +315,7 @@ export default function SearchBar() {
                                     <TooltipProvider key={index}>
                                       <Tooltip>
                                         <TooltipTrigger
-                                          className="text-xs font-medium bg-secondary text-secondary-foreground px-3 py-1.5 rounded-full cursor-pointer hover:bg-secondary/80 transition-all duration-200"
+                                          className="text-xs bg-secondary text-secondary-foreground px-3 py-1.5 rounded-full cursor-pointer hover:bg-secondary/80 transition-all duration-200 group-hover:filter-shadow hover:shadow-none font-[900] hover:scale-90"
                                           onMouseDown={(e) => {
                                             e.stopPropagation();
                                             router.push(
@@ -353,7 +353,7 @@ export default function SearchBar() {
                             {/* Stats */}
                             <div className="flex items-center justify-start space-x-4 text-sm">
                               <span
-                                className={`font-medium ${voteColor} flex items-center bg-secondary text-secondary-foreground px-3 py-1.5 rounded-full border border-border`}
+                                className={`font-medium ${voteColor} flex items-center bg-secondary px-3 py-1.5 rounded-full group-hover:filter-shadow font-[900] hover:scale-90 transition-all duration-300`}
                               >
                                 {voteCount >= 0 ? (
                                   <ArrowUp size={14} className="mr-1" />
@@ -362,11 +362,11 @@ export default function SearchBar() {
                                 )}
                                 {Math.abs(voteCount)}
                               </span>
-                              <span className="flex items-center text-secondary-foreground bg-secondary px-2 py-1 rounded-full border border-border">
+                              <span className="flex items-center text-secondary-foreground bg-secondary px-2 py-1 rounded-full group-hover:filter-shadow font-[900] hover:scale-90 transition-all duration-300">
                                 <MessageSquare size={14} className="mr-1" />
                                 {q.likesAnswersComments?.answers || 0}
                               </span>
-                              <span className="flex items-center text-secondary-foreground bg-secondary px-2 py-1 rounded-full border border-border">
+                              <span className="flex items-center text-secondary-foreground bg-secondary px-2 py-1 rounded-full group-hover:filter-shadow font-[900] hover:scale-90 transition-all duration-300">
                                 <MessageCircle size={14} className="mr-1" />
                                 {q.likesAnswersComments?.comments || 0}
                               </span>

@@ -447,7 +447,7 @@ const QuestionPage = () => {
   return (
     <div className="container mx-auto py-8 px-4 md:px-6 flex flex-col gap-6 max-w-[1200px] min-h-screen bg-background transition-all duration-300 ease-in-out pt-16">
       {/* Question Section - Enhanced */}
-      <div className="bg-background rounded-lg shadow-md hover:shadow-lg p-6 md:p-8 border-2 border-border transition-all">
+      <div className="bg-background rounded-lg shadow-md hover:shadow-lg p-6 md:p-8 border-2 border-border transition-all group">
         <div className="flex justify-between items-start mb-4">
           <h1 className="text-2xl md:text-3xl font-bold text-card-foreground flex-1">
             {question.title}
@@ -509,7 +509,7 @@ const QuestionPage = () => {
           </div>
 
           {question.subject && (
-            <span className="ml-auto text-sm px-2.5 py-1 rounded-full font-bold bg-primary/10 text-primary whitespace-nowrap hover:bg-primary/20 transition-all duration-300">
+            <span className="ml-auto text-sm px-2.5 py-1 rounded-full bg-primary/10 text-primary whitespace-nowrap hover:bg-primary/20 transition-all duration-300 group-hover:filter-shadow font-[900] border border-[rgba(29,161,242,1)] dark:border-border cursor">
               {question.subject}
             </span>
           )}
@@ -617,7 +617,7 @@ const QuestionPage = () => {
             {question.tags.map((tag, index) => (
               <span
                 key={index}
-                className="text-sm font-bold bg-secondary text-secondary-foreground px-3 py-1.5 rounded-full hover:bg-secondary/80 transition-all duration-300 ease-in-out"
+                className="text-sm bg-secondary text-secondary-foreground px-3 py-1.5 rounded-full hover:bg-secondary/80 transition-all duration-300 ease-in-out group-hover:filter-shadow font-[900] border border-border dark:border-border hover:scale-90 hover:shadow-none"
                 title={tag}
               >
                 #{tag}

@@ -92,7 +92,7 @@ const QuestionCard = ({ question }: { question: QuestionCardProps }) => {
 
   return (
     <div
-      className="bg-background rounded-lg card-shadow transition-all p-6 border-mode w-full h-full flex flex-col cursor-pointer hover:bg-accent"
+      className="bg-background rounded-lg card-shadow transition-all p-6 border-mode w-full h-full flex flex-col cursor-pointer hover:bg-accent group"
       onClick={() => router.push(`/question/${question._id}`)}
     >
       <div className="flex items-start justify-between mb-3">
@@ -104,7 +104,7 @@ const QuestionCard = ({ question }: { question: QuestionCardProps }) => {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger
-                className="ml-2 text-xs px-2.5 py-1 rounded-full font-bold bg-primary/10 text-primary whitespace-nowrap cursor-pointer hover:bg-primary/20 transition-all duration-300"
+                className="ml-2 text-sm px-2.5 py-1 rounded-full bg-primary/10 text-primary whitespace-nowrap cursor-pointer hover:bg-primary/20 transition-all duration-300 group-hover:filter-shadow font-[900] border border-[rgba(29,161,242,1)] dark:border-border"
                 onClick={(e) => {
                   e.stopPropagation();
                   router.push(`/subjects?subject=${question.subject}`);
@@ -137,7 +137,7 @@ const QuestionCard = ({ question }: { question: QuestionCardProps }) => {
               <TooltipProvider key={index}>
                 <Tooltip>
                   <TooltipTrigger
-                    className="text-xs font-medium bg-secondary text-secondary-foreground px-3 py-1.5 rounded-full cursor-pointer hover:bg-secondary/80 transition-all duration-200"
+                    className="text-xs bg-secondary text-secondary-foreground px-3 py-1.5 rounded-full cursor-pointer hover:bg-secondary/80 transition-all duration-300 hover:scale-90 group-hover:filter-shadow hover:shadow-none font-[900]"
                     onClick={(e) => {
                       e.stopPropagation();
                       router.push(`/tags?tag=${encodeURIComponent(tag)}`);
@@ -185,7 +185,7 @@ const QuestionCard = ({ question }: { question: QuestionCardProps }) => {
         <div className="flex items-center space-x-3">
           {/* Vote count */}
           <span
-            className={`font-medium ${voteColor} flex items-center bg-secondary px-2 py-1 rounded-full border border-border text-sm min-w-[60px] justify-center`}
+            className={`font-medium ${voteColor} flex items-center bg-secondary px-2 py-1 rounded-full border border-border text-sm min-w-[60px] justify-center group-hover:filter-shadow hover:shadow-none font-[900] hover:scale-90 transition-all duration-300`}
           >
             {voteCount >= 0 ? (
               <ArrowUp className="h-4 w-4 mr-1.5" />
@@ -196,13 +196,13 @@ const QuestionCard = ({ question }: { question: QuestionCardProps }) => {
           </span>
 
           {/* Answer count */}
-          <span className="flex items-center text-secondary-foreground bg-secondary px-2 py-1 rounded-full border border-border text-sm min-w-[50px] justify-center">
-            <MessageSquare className="h-4 w-4 mr-1.5" />
+          <span className="flex items-center text-secondary-foreground bg-secondary px-2 py-1 rounded-full border border-border text-sm min-w-[50px] justify-center group-hover:filter-shadow hover:shadow-none font-[900] hover:scale-90 transition-all duration-300">
+            <MessageSquare className="h-4 w-4 mr-1.5 font-[900]" />
             {question.likesAnswersComments?.answers || 0}
           </span>
 
           {/* Comment count */}
-          <span className="flex items-center text-secondary-foreground bg-secondary px-2 py-1 rounded-full border border-border text-sm min-w-[50px] justify-center">
+          <span className="flex items-center text-secondary-foreground bg-secondary px-2 py-1 rounded-full border border-border text-sm min-w-[50px] justify-center group-hover:filter-shadow hover:shadow-none font-[900] hover:scale-90 transition-all duration-300">
             <MessageCircle className="h-4 w-4 mr-1.5" />
             {question.likesAnswersComments?.comments || 0}
           </span>
