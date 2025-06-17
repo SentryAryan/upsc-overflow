@@ -1,13 +1,16 @@
 "use client";
 
 import HomePagination from "@/components/Filters/HomePagination";
-import SubjectFilter from "@/components/Filters/SubjectFilter";
+import SubjectFilter from "@/components/Filters/SubjectFilter2";
 import { LoaderDemo } from "@/components/Loaders/LoaderDemo";
 import { QuestionType } from "@/db/models/question.model";
-import { setQuestions } from "@/lib/redux/slices/questions.slice";
+import {
+  setQuestions,
+  setTotalPages,
+} from "@/lib/redux/slices/questions.slice";
 import { RootState } from "@/lib/redux/store";
 import axios from "axios";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
@@ -19,6 +22,15 @@ import {
 import SearchBar from "@/components/Forms/SearchBar";
 import SortFilter from "@/components/Filters/SortFilter";
 import { useUser } from "@clerk/nextjs";
+import {
+  setPreviousPath,
+  setPreviousSubject,
+  setPreviousTag,
+  setPreviousQuestion,
+  setPreviousSortBy,
+  setPreviousPage,
+} from "@/lib/redux/slices/previousPath.slice";
+import { setQuestionUpdate } from "@/lib/redux/slices/questionUpdate.slice";
 
 export interface QuestionCardProps extends QuestionType {
   likesAnswersComments: {
@@ -32,10 +44,14 @@ export interface QuestionCardProps extends QuestionType {
 export default function HomePage() {
   console.log("HomePage.jsx");
   const { user, isSignedIn } = useUser();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const dispatch = useDispatch();
   const questions = useSelector(
     (state: RootState) => state.questions.questions
+  );
+  const totalPages = useSelector(
+    (state: RootState) => state.questions.totalPages
   );
   const availableSubjects = useSelector(
     (state: RootState) => state.filterSubjects.availableSubjects
@@ -43,10 +59,31 @@ export default function HomePage() {
   const selectedSubject = useSelector(
     (state: RootState) => state.filterSubjects.selectedSubject
   );
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const previousPath = useSelector(
+    (state: RootState) => state.previousPath.previousPath
+  );
+  const previousSubject = useSelector(
+    (state: RootState) => state.previousPath.previousSubject
+  );
+  const previousTag = useSelector(
+    (state: RootState) => state.previousPath.previousTag
+  );
+  const previousQuestion = useSelector(
+    (state: RootState) => state.previousPath.previousQuestion
+  );
+  const previousSortBy = useSelector(
+    (state: RootState) => state.previousPath.previousSortBy
+  );
+  const previousPage = useSelector(
+    (state: RootState) => state.previousPath.previousPage
+  );
+  const questionUpdate = useSelector(
+    (state: RootState) => state.questionUpdate
+  );
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const currentPage = Number(searchParams.get("page")) || 1;
   const sortBy = searchParams.get("sortBy");
-  const [totalPages, setTotalPages] = useState<number>(0);
+  const subject = searchParams.get("subject");
 
   const fetchQuestions = async () => {
     try {
@@ -54,27 +91,41 @@ export default function HomePage() {
       const response = await axios.get(
         `/api/questions/get-all?page=${currentPage}&limit=10${
           sortBy ? `&sortBy=${encodeURIComponent(sortBy)}` : ""
-        }`
+        }${subject ? `&subject=${encodeURIComponent(subject)}` : ""}`
       );
-      const fetchedQuestions = response.data.data;
+      if (availableSubjects.length === 0) {
+        await fetchSubjects();
+      }
       console.log(response.data.data);
       console.log(typeof response.data.data[0]?.createdAt);
       console.log(response.data.data[0]);
       dispatch(setQuestions(response.data.data));
-      setTotalPages(response.data.data[0].totalPages);
-      const uniqueSubjects: string[] = [];
-      fetchedQuestions.forEach((question: QuestionType) => {
-        if (!uniqueSubjects.includes(question.subject)) {
-          uniqueSubjects.push(question.subject);
-        }
-      });
-      dispatch(setAvailableSubjects(uniqueSubjects));
-      dispatch(setSelectedSubject(null));
+      dispatch(setTotalPages(response.data.data[0].totalPages));
+      // const uniqueSubjects: string[] = [];
+      // fetchedQuestions.forEach((question: QuestionType) => {
+      //   if (!uniqueSubjects.includes(question.subject)) {
+      //     uniqueSubjects.push(question.subject);
+      //   }
+      // });
     } catch (error: any) {
+      console.log(error);
       console.log(error.response.data.message);
-      toast.error(`Questions not found, visit previous pages`);
+      toast.error(
+        error.response.data.message ||
+          "Questions not found, visit previous pages"
+      );
+      dispatch(setQuestions([]));
+      dispatch(setTotalPages(0));
     } finally {
       setIsLoading(false);
+      dispatch(setPreviousPath(pathname));
+      dispatch(setPreviousSubject(searchParams.get("subject")));
+      dispatch(setPreviousTag(searchParams.get("tag")));
+      dispatch(setPreviousQuestion(searchParams.get("question")));
+      dispatch(setPreviousSortBy(sortBy));
+      dispatch(setPreviousPage(Number(searchParams.get("page"))));
+      dispatch(setSelectedSubject(subject || null));
+      dispatch(setQuestionUpdate(false));
     }
   };
 
@@ -82,26 +133,96 @@ export default function HomePage() {
     dispatch(setSelectedSubject(subject));
   };
 
+  const fetchSubjects = async () => {
+    try {
+      const response = await axios.get("/api/questions/getAllSubjects");
+      dispatch(setAvailableSubjects(response.data.data));
+    } catch (error: any) {
+      console.log(error.response.data.message);
+      toast.error(`Subjects not found, visit previous pages`);
+    }
+  };
+
   useEffect(() => {
     // if (questions.length === 0) {
     //   fetchQuestions();
     // }
-    fetchQuestions();
-  }, [currentPage, sortBy]);
+    // if (availableSubjects.length === 0) {
+    //   fetchSubjects();
+    // }
+    // console.log(
+    //   `selectedSubject = ${selectedSubject === null ? "null" : selectedSubject}`
+    // );
+    // console.log(
+    //   `previousSubject = ${previousSubject === null ? "null" : previousSubject}`
+    // );
+    // console.log(
+    //   `searchParams.get("subject") !== previousSubject = ${
+    //     searchParams.get("subject") !== previousSubject
+    //   }`
+    // );
+    // console.log(
+    //   `searchParams.get("tag") !== previousTag = ${
+    //     searchParams.get("tag") !== previousTag
+    //   }`
+    // );
+    // console.log(
+    //   `searchParams.get("question") !== previousQuestion = ${
+    //     searchParams.get("question") !== previousQuestion
+    //   }`
+    // );
+    // console.log(
+    //   `searchParams.get("sortBy") !== previousSortBy = ${
+    //     searchParams.get("sortBy") !== previousSortBy
+    //   }`
+    // );
+    // console.log(
+    //   `Number(searchParams.get("page")) !== previousPage = ${
+    //     Number(searchParams.get("page")) !== previousPage
+    //   }`
+    // );
+    // console.log(`pathname !== previousPath = ${pathname !== previousPath}`);
+    // console.log(`Number(null) = ${Number(null)}`);
+    // console.log(
+    //   `Number(searchParams.get("page")) = ${Number(searchParams.get("page"))}`
+    // );
+    // console.log(`questionUpdate = ${questionUpdate}`);
 
-  const filteredQuestions = selectedSubject
-    ? questions.filter((q: QuestionType) => q.subject === selectedSubject)
-    : questions;
+    //TODO: Add back the previous path check
+    // if (
+    //   pathname !== previousPath ||
+    //   searchParams.get("subject") !== previousSubject ||
+    //   searchParams.get("tag") !== previousTag ||
+    //   searchParams.get("question") !== previousQuestion ||
+    //   searchParams.get("sortBy") !== previousSortBy ||
+    //   Number(searchParams.get("page")) !== previousPage ||
+    //   questionUpdate
+    // ) {
+    //   fetchQuestions();
+    // } else {
+    //   setIsLoading(false);
+    // }
+
+    fetchQuestions();
+  }, [currentPage, sortBy, subject]);
+
+  // const filteredQuestions = selectedSubject
+  //   ? questions.filter((q: QuestionType) => q.subject === selectedSubject)
+  //   : questions;
 
   return (
-    <div className={`flex flex-col items-center w-full p-10 min-h-screen gap-4 ${isSignedIn ? "" : "pt-20"}`}>
+    <div
+      className={`flex flex-col items-center w-full p-10 min-h-screen gap-4 ${
+        isSignedIn ? "" : "pt-20"
+      }`}
+    >
       <SearchBar />
-      <HomePagination totalPages={totalPages} />
+      <HomePagination totalPages={totalPages || 1} subject={subject || undefined} />
 
       <SubjectFilter
         subjects={availableSubjects}
         selectedSubject={selectedSubject}
-        onSelectSubject={handleSelectSubject}
+        handleSelectSubject={handleSelectSubject}
       />
 
       <SortFilter />
@@ -110,15 +231,15 @@ export default function HomePage() {
         <div className="flex items-center justify-center h-[70vh]">
           <LoaderDemo />
         </div>
-      ) : filteredQuestions.length === 0 && selectedSubject !== null ? (
+      ) : questions.length === 0 && selectedSubject !== null ? (
         <p className="text-center mt-4 text-muted-foreground">
           No questions found for the selected subject.
         </p>
       ) : currentPage > totalPages ? (
-        <p className="text-center mt-4 text-muted-foreground">No more pages</p>
+        <p className="text-center mt-4 text-muted-foreground">No more pages currently</p>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
-          {filteredQuestions.map((question: QuestionCardProps) => (
+          {questions.map((question: QuestionCardProps) => (
             <QuestionCard key={question._id} question={question} />
           ))}
         </div>

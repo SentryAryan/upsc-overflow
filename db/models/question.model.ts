@@ -26,6 +26,18 @@ export interface QuestionType {
   user: User;
 }
 
+export const subjects = [
+  "science",
+  "math",
+  "english",
+  "physics",
+  "chemistry",
+  "biology",
+  "history",
+  "geography",
+  "other",
+];
+
 const questionSchema: Schema<QuestionTypeSchema> = new mongoose.Schema(
   {
     title: { type: String, required: true, trim: true },
@@ -33,17 +45,7 @@ const questionSchema: Schema<QuestionTypeSchema> = new mongoose.Schema(
     subject: {
       type: String,
       required: true,
-      enum: [
-        "science",
-        "math",
-        "english",
-        "physics",
-        "chemistry",
-        "biology",
-        "history",
-        "geography",
-        "other",
-      ],
+      enum: subjects,
     },
     tags: {
       type: [

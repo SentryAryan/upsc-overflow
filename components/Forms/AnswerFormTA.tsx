@@ -10,8 +10,9 @@ import { toast } from "sonner";
 import { z } from "zod";
 import TextAreaFormField from "./TextAreaFormField";
 import HugeRTEFormField from "./HugeRTEFormField2";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../lib/redux/store";
+import { setQuestionUpdate } from "../../lib/redux/slices/questionUpdate.slice";
 
 const formSchema = z.object({
   content: z.string().min(2, {
@@ -35,6 +36,7 @@ export function AnswerFormTA({
   answers: AnswerWithUser[];
 }) {
   const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
+  const dispatch = useDispatch();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -68,6 +70,7 @@ export function AnswerFormTA({
     } finally {
       setIsLoadingAnswers(false);
       form.reset();
+      dispatch(setQuestionUpdate(true));
     }
   }
 

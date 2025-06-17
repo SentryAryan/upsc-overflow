@@ -107,7 +107,7 @@ export default function SearchBar() {
           setSuggestions([]);
         }
       } catch (error) {
-        console.error("Error fetching suggestions:", error);
+        console.log("Error fetching suggestions:", error);
         setSuggestions([]);
       } finally {
         setIsLoading(false);
@@ -181,9 +181,9 @@ export default function SearchBar() {
           </div>
 
           {isInstructionsVisible && (
-            <div className="absolute top-full left-0 right-0 mt-2 p-0 bg-background border border-[rgba(29,161,242,1)] rounded-lg shadow-xl z-20 max-h-[600px] overflow-hidden text-foreground">
+            <div className="absolute top-full left-0 right-0 mt-2 p-0 bg-background border border-primary rounded-lg shadow-xl z-20 max-h-[600px] overflow-hidden text-foreground">
               {/* Search Tips */}
-              <div className="p-4 bg-background border-b border-[rgba(29,161,242,1)]">
+              <div className="p-4 bg-background border-b border-primary">
                 <h3 className="font-semibold mb-3 text-foreground flex items-center">
                   <Search className="h-4 w-4 mr-2 text-foreground" />
                   Search Tips
@@ -214,13 +214,13 @@ export default function SearchBar() {
 
               {(suggestions.length > 0 || isLoading) && (
                 <div className="max-h-[450px] overflow-y-auto">
-                  <div className="p-4 border-b border-[rgba(29,161,242,1)] bg-background">
+                  <div className="p-4 border-b border-primary bg-background">
                     <h3 className="font-semibold text-foreground flex items-center">
                       <MessageSquare className="h-4 w-4 mr-2 text-primary" />
                       Suggested Questions
                     </h3>
                   </div>
-                  <div className="divide-y divide-[rgba(29,161,242,1)] bg-background">
+                  <div className="divide-y divide-primary bg-background">
                     {isLoading ? (
                       <div className="p-6 flex items-center justify-center bg-background">
                         <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
@@ -248,7 +248,7 @@ export default function SearchBar() {
                         return (
                           <div
                             key={q._id}
-                            className="p-4 bg-background hover:bg-accent transition-all duration-200 cursor-pointer group border-b border-[rgba(29,161,242,1)] last:border-b-0 group"
+                            className="p-4 bg-background hover:bg-accent transition-all duration-200 cursor-pointer group border-b border-primary last:border-b-0 group"
                             onMouseDown={() => handleSuggestionClick(q._id)}
                           >
                             {/* Title and Subject */}
@@ -261,7 +261,7 @@ export default function SearchBar() {
                                 <TooltipProvider>
                                   <Tooltip>
                                     <TooltipTrigger
-                                      className="ml-2 text-xs px-2.5 py-1 rounded-full bg-primary/10 text-primary whitespace-nowrap cursor-pointer hover:bg-primary/20 transition-all duration-300 group-hover:filter-shadow font-[900] border border-[rgba(29,161,242,1)] dark:border-border"
+                                      className="ml-2 text-xs px-2.5 py-1 rounded-full bg-primary/10 text-primary whitespace-nowrap cursor-pointer hover:bg-primary/20 transition-all duration-300 group-hover:filter-shadow font-[900] border border-primary dark:border-border"
                                       onMouseDown={(e) => {
                                         e.stopPropagation();
                                         router.push(
@@ -353,12 +353,12 @@ export default function SearchBar() {
                             {/* Stats */}
                             <div className="flex items-center justify-start space-x-4 text-sm">
                               <span
-                                className={`font-medium ${voteColor} flex items-center bg-secondary px-3 py-1.5 rounded-full group-hover:filter-shadow font-[900] hover:scale-90 transition-all duration-300`}
+                                className={`font-[900] ${voteColor} flex items-center bg-secondary px-3 py-1.5 rounded-full group-hover:filter-shadow font-[900] hover:scale-90 transition-all duration-300`}
                               >
                                 {voteCount >= 0 ? (
-                                  <ArrowUp size={14} className="mr-1" />
+                                  <ArrowUp size={14} className="mr-1 font-[900]" />
                                 ) : (
-                                  <ArrowDown size={14} className="mr-1" />
+                                  <ArrowDown size={14} className="mr-1 font-[900]" />
                                 )}
                                 {Math.abs(voteCount)}
                               </span>

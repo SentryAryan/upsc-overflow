@@ -31,7 +31,7 @@ export default function QuestionsPage() {
       const response = await axios.get(
         `/api/questions/get-all?page=${currentPage}&limit=10&question=${encodeURIComponent(
           questionQuery
-        )}${sortBy ? `&sortBy=${sortBy}` : ""}`
+        )}${sortBy ? `&sortBy=${encodeURIComponent(sortBy)}` : ""}`
       );
       dispatch(setQuestions(response.data.data));
       setTotalPages(response.data.data[0]?.totalPages || 0);
@@ -58,7 +58,7 @@ export default function QuestionsPage() {
 
       <HomePagination
         question={encodeURIComponent(questionQuery)}
-        totalPages={totalPages}
+        totalPages={totalPages || 1}
       />
 
       <SortFilter />

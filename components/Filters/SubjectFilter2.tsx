@@ -1,5 +1,6 @@
 // components/Filters/SubjectFilter.tsx
 import React from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface SubjectFilterProps {
   subjects: string[]; // Array of available subjects
@@ -12,6 +13,25 @@ const SubjectFilter: React.FC<SubjectFilterProps> = ({
   selectedSubject,
   handleSelectSubject,
 }) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const handleSelectCurrentSubject = (subject: string | null) => {
+    const page = searchParams.get("page");
+    const question = searchParams.get("question");
+    const sortBy = searchParams.get("sortBy");
+    const tag = searchParams.get("tag");
+    const pathToPush = `?page=1&sortBy=${encodeURIComponent(sortBy || "")}&question=${encodeURIComponent(question || "")}&subject=${encodeURIComponent(subject || "")}&tag=${encodeURIComponent(tag || "")}`;
+    const pathToPush2 = `?${page ? `page=1` : ""}${
+      sortBy ? `&sortBy=${encodeURIComponent(sortBy)}` : ""
+    }${question ? `&question=${encodeURIComponent(question)}` : ""}${
+      subject ? `&subject=${encodeURIComponent(subject)}` : ""
+    }${tag ? `&tag=${encodeURIComponent(tag)}` : ""}`;
+
+    handleSelectSubject(subject);
+    router.push(pathToPush2);
+  };
+
   return (
     <div className="mb-4 flex flex-wrap gap-3 items-center">
       <span className="text-foreground font-semibold mr-2">
@@ -23,7 +43,7 @@ const SubjectFilter: React.FC<SubjectFilterProps> = ({
             ? "bg-primary text-primary-foreground"
             : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
         }`}
-        onClick={() => handleSelectSubject(null)}
+        onClick={() => handleSelectCurrentSubject(null)}
       >
         All Subjects
       </button>
@@ -35,7 +55,7 @@ const SubjectFilter: React.FC<SubjectFilterProps> = ({
               ? "bg-primary text-primary-foreground"
               : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
           }`}
-          onClick={() => handleSelectSubject(subject)}
+          onClick={() => handleSelectCurrentSubject(subject)}
         >
           {subject}
         </button>

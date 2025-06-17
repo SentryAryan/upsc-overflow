@@ -52,7 +52,7 @@ export default function SubjectPage() {
     <div className="flex flex-col items-center w-full p-10 min-h-screen gap-4">
       <h1 className="text-2xl font-bold mb-4">Questions in subject = "{subject}"</h1>
       <SearchBar />
-      <HomePagination subject={subject} totalPages={totalPages} />
+      <HomePagination subject={encodeURIComponent(subject)} totalPages={totalPages || 1} />
 
       <SortFilter />
 

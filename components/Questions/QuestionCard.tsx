@@ -96,7 +96,7 @@ const QuestionCard = ({ question }: { question: QuestionCardProps }) => {
       onClick={() => router.push(`/question/${question._id}`)}
     >
       <div className="flex items-start justify-between mb-3">
-        <h1 className="text-xl font-semibold text-card-foreground mb-2 flex-1">
+        <h1 className="text-xl font-semibold text-card-foreground mb-2 flex-1 group-hover:text-primary">
           {question.title}
         </h1>
 
@@ -104,7 +104,7 @@ const QuestionCard = ({ question }: { question: QuestionCardProps }) => {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger
-                className="ml-2 text-sm px-2.5 py-1 rounded-full bg-primary/10 text-primary whitespace-nowrap cursor-pointer hover:bg-primary/20 transition-all duration-300 group-hover:filter-shadow font-[900] border border-[rgba(29,161,242,1)] dark:border-border"
+                className="ml-2 text-sm px-2.5 py-1 rounded-full bg-primary/10 text-primary whitespace-nowrap cursor-pointer hover:bg-primary/20 transition-all duration-300 group-hover:filter-shadow font-[900] border border-primary dark:border-border"
                 onClick={(e) => {
                   e.stopPropagation();
                   router.push(`/subjects?subject=${question.subject}`);
@@ -137,7 +137,7 @@ const QuestionCard = ({ question }: { question: QuestionCardProps }) => {
               <TooltipProvider key={index}>
                 <Tooltip>
                   <TooltipTrigger
-                    className="text-xs bg-secondary text-secondary-foreground px-3 py-1.5 rounded-full cursor-pointer hover:bg-secondary/80 transition-all duration-300 hover:scale-90 group-hover:filter-shadow hover:shadow-none font-[900]"
+                    className="text-xs bg-secondary text-secondary-foreground px-3 py-1.5 rounded-full cursor-pointer hover:bg-secondary/80 transition-all duration-300 hover:scale-90 group-hover:filter-shadow hover:shadow-none font-[900] hover:font-[900]!"
                     onClick={(e) => {
                       e.stopPropagation();
                       router.push(`/tags?tag=${encodeURIComponent(tag)}`);
@@ -185,12 +185,12 @@ const QuestionCard = ({ question }: { question: QuestionCardProps }) => {
         <div className="flex items-center space-x-3">
           {/* Vote count */}
           <span
-            className={`font-medium ${voteColor} flex items-center bg-secondary px-2 py-1 rounded-full border border-border text-sm min-w-[60px] justify-center group-hover:filter-shadow hover:shadow-none font-[900] hover:scale-90 transition-all duration-300`}
+            className={`font-[900] ${voteColor} flex items-center bg-secondary px-2 py-1 rounded-full border border-border text-sm min-w-[60px] justify-center group-hover:filter-shadow hover:shadow-none font-[900] hover:scale-90 transition-all duration-300`}
           >
             {voteCount >= 0 ? (
-              <ArrowUp className="h-4 w-4 mr-1.5" />
+              <ArrowUp className="h-4 w-4 mr-1.5 font-[900]" />
             ) : (
-              <ArrowDown className="h-4 w-4 mr-1.5" />
+              <ArrowDown className="h-4 w-4 mr-1.5 font-[900]" />
             )}
             {Math.abs(voteCount)}
           </span>

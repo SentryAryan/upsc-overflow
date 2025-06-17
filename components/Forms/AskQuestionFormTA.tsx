@@ -87,7 +87,7 @@ export function AskQuestionFormTA({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full p-6 border-2 border-border rounded-md space-y-6"
+        className="w-full p-6 border-3 border-secondary! dark:border-border! card-shadow rounded-md space-y-6 transition-all duration-300 ease-in-out group"
       >
         <InputFormField
           control={form.control}

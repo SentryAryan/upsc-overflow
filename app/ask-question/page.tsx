@@ -20,11 +20,11 @@ const AskQuestionPage = () => {
         </div>
         
         {isLoading ? (
-          <div className="flex items-center justify-center h-[70vh] bg-background rounded-lg shadow-md border-2 border-border">
+          <div className="flex items-center justify-center h-[70vh] bg-background rounded-lg shadow-md border-mode">
             <LoaderDemo />
           </div>
         ) : (
-          <div className="flex justify-center bg-background rounded-lg shadow-md border-2 border-border w-full">
+          <div className="flex justify-center bg-background rounded-lg w-full">
             {/* <AskQuestionForm
               userId={userId || null}
               isLoading={isLoading}

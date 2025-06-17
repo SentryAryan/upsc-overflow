@@ -65,7 +65,7 @@ const HugeRTEFormField = <T extends FieldValues>({
       name={name}
       render={({ field: { onChange, value } }) => (
         <FormItem>
-          <FormLabel>{label}</FormLabel>
+          <FormLabel className="font-[900] group-hover:text-primary transition-all duration-300 ease-in-out">{label}</FormLabel>
           <FormControl>
             <Editor
               // Use CDN version (no API key needed)
@@ -98,7 +98,7 @@ const HugeRTEFormField = <T extends FieldValues>({
               {description}
             </p>
           )}
-          <FormMessage />
+          <FormMessage className="font-[900]" />
         </FormItem>
       )}
     />

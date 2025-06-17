@@ -25,6 +25,7 @@ const HomePagination = ({
   const searchParams = useSearchParams();
   const currentPage = Number(searchParams.get("page")) || 1;
   const sortBy = searchParams.get("sortBy");
+  const baseRouteToPush = `${pathname}?${searchParams.toString()}`;
   console.log(searchParams.get("page"));
 
   return (

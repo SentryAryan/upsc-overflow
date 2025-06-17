@@ -37,10 +37,10 @@ const TagsInput = ({
 
   return (
     <div className="space-y-2">
-      <Label htmlFor="tags">Tags</Label>
+      <Label htmlFor="tags" className="font-[900] group-hover:text-primary transition-all duration-300 ease-in-out">Tags</Label>
       <Input
         type="text"
-        className="input bg-background! border-3 border-border"
+        className="input bg-background! border-3 border-secondary dark:border-border cursor-pointer shadow-lg dark:focus-visible:border-ring dark:focus-visible:ring-ring/50 dark:focus-visible:ring-[3px] dark:aria-invalid:border-destructive dark:aria-invalid:shadow-none"
         id="tags"
         placeholder="Add tags (press enter to add)"
         value={tag}

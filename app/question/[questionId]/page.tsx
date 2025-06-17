@@ -23,6 +23,8 @@ import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useDispatch } from "react-redux";
+import { setQuestionUpdate } from "@/lib/redux/slices/questionUpdate.slice";
 
 export interface AnswerWithUser extends AnswerTypeSchema {
   user: User;
@@ -51,6 +53,7 @@ export interface CommentWithUser {
 
 const QuestionPage = () => {
   const { questionId } = useParams();
+  const dispatch = useDispatch();
   const router = useRouter();
   console.log("This is the questionId", questionId);
   const [question, setQuestion] = useState<QuestionType | null>(null);
@@ -140,6 +143,7 @@ const QuestionPage = () => {
             }
           : null;
         setQuestion(updatedQuestion);
+        dispatch(setQuestionUpdate(true));
       }
       // If we're updating an answer
       else if (answerId) {
@@ -163,6 +167,7 @@ const QuestionPage = () => {
         );
 
         setAnswers(updatedAnswers as AnswerWithUser[]);
+        dispatch(setQuestionUpdate(true));
       }
       // If we're updating a comment
       else if (commentId) {
@@ -213,6 +218,7 @@ const QuestionPage = () => {
               : comment
           )
         );
+        dispatch(setQuestionUpdate(true));
       }
     } catch (error: any) {
       console.log(error.message);
@@ -250,6 +256,7 @@ const QuestionPage = () => {
             }
           : null;
         setQuestion(updatedQuestion);
+        dispatch(setQuestionUpdate(true));
       }
       // If we're updating an answer
       else if (answerId) {
@@ -273,6 +280,7 @@ const QuestionPage = () => {
         );
 
         setAnswers(updatedAnswers as AnswerWithUser[]);
+        dispatch(setQuestionUpdate(true));
       }
       // If we're updating a comment
       else if (commentId) {
@@ -323,6 +331,7 @@ const QuestionPage = () => {
               : comment
           )
         );
+        dispatch(setQuestionUpdate(true));
       }
     } catch (error: any) {
       console.log(error.message);
@@ -338,6 +347,7 @@ const QuestionPage = () => {
       if (response.data.success) {
         toast.success("Question deleted successfully");
         router.push("/");
+        dispatch(setQuestionUpdate(true));
       }
     } catch (error: any) {
       console.log(error.message);
@@ -355,6 +365,7 @@ const QuestionPage = () => {
       if (response.data.success) {
         toast.success("Answer deleted successfully");
         setAnswers(answers.filter((answer) => answer._id !== answerId));
+        dispatch(setQuestionUpdate(true));
       }
     } catch (error: any) {
       console.log(error.message);
@@ -376,6 +387,7 @@ const QuestionPage = () => {
         if (isQuestionComment) {
           // Remove from question comments
           setQuestionComments(questionComments.filter((comment) => comment._id !== commentId));
+          dispatch(setQuestionUpdate(true));
         } else {
           // Remove from answer comments
           const updatedAnswers = answers.map((answer) => {
@@ -388,6 +400,7 @@ const QuestionPage = () => {
             return answer;
           });
           setAnswers(updatedAnswers as AnswerWithUser[]);
+          dispatch(setQuestionUpdate(true));
         }
       }
     } catch (error: any) {

@@ -25,10 +25,17 @@ const SortFilter: React.FC<SortFilterProps> = () => {
     const question = searchParams.get("question");
     const subject = searchParams.get("subject");
     const tag = searchParams.get("tag");
+
+    console.log("currentSortBy", currentSortBy);
+    console.log("page", page);
+    console.log("question", question);
+    console.log("subject", subject);
+    console.log("tag", tag);
+
     router.push(
-      `?${page ? `page=1` : ""}&sortBy=${sortByValue}${
-        question ? `&question=${question}` : ""
-      }${subject ? `&subject=${subject}` : ""}${tag ? `&tag=${tag}` : ""}`
+      `?${page ? `page=1` : ""}&sortBy=${encodeURIComponent(sortByValue || "")}${
+        question ? `&question=${encodeURIComponent(question)}` : ""
+      }${subject ? `&subject=${encodeURIComponent(subject)}` : ""}${tag ? `&tag=${encodeURIComponent(tag)}` : ""}`
     );
   };
 

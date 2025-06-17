@@ -13,8 +13,9 @@ import { toast } from "sonner";
 import { z } from "zod";
 import TextAreaFormField from "./TextAreaFormField";
 import HugeRTEFormField from "./HugeRTEFormField2";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../lib/redux/store";
+import { setQuestionUpdate } from "../../lib/redux/slices/questionUpdate.slice";
 
 const formSchema = z.object({
   content: z.string().min(2, {
@@ -48,6 +49,7 @@ export function CommentFormTA({
   setIsQuestionCommentLoading: (isLoading: boolean) => void;
 }) {
   const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
+  const dispatch = useDispatch();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -91,6 +93,7 @@ export function CommentFormTA({
       } finally {
         setIsCommentLoading("");
         form.reset();
+        dispatch(setQuestionUpdate(true));
       }
     }
   }
@@ -119,6 +122,7 @@ export function CommentFormTA({
       } finally {
         setIsQuestionCommentLoading(false);
         form.reset();
+        dispatch(setQuestionUpdate(true));
       }
     }
   }

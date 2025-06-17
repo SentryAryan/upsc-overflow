@@ -10,6 +10,7 @@ import { generateApiResponse } from "@/lib/helpers/api-response.helper";
 import { errorHandler } from "@/lib/helpers/error-handler.helper";
 import getClerkUserById from "@/lib/helpers/getClerkUserById";
 import { NextRequest, NextResponse as res } from "next/server";
+import { generateApiError } from "@/lib/helpers/api-error.helper";
 
 // Helper function to escape special regex characters
 function escapeRegex(string: string) {
@@ -163,6 +164,7 @@ export const GET = errorHandler(async (req: NextRequest) => {
       : question && searchQuery
       ? await Question.find(searchQuery)
       : await Question.find({});
+
     totalQuestions = subject
       ? await Question.countDocuments({ subject })
       : tag
@@ -170,6 +172,10 @@ export const GET = errorHandler(async (req: NextRequest) => {
       : question && searchQuery
       ? await Question.countDocuments(searchQuery)
       : await Question.countDocuments();
+
+    if (baseQuestions.length === 0) {
+      throw generateApiError(404, "No questions found", ["No questions found"]);
+    }
 
     // Step 2: Calculate sorting metrics for each question
     const questionsWithMetrics = await Promise.all(
@@ -285,6 +291,11 @@ export const GET = errorHandler(async (req: NextRequest) => {
       : await Question.find({})
           .skip((page - 1) * limit)
           .limit(limit);
+
+    if (questions.length === 0) {
+      throw generateApiError(404, "No questions found", ["No questions found"]);
+    }
+
     totalQuestions = subject
       ? await Question.countDocuments({ subject })
       : tag

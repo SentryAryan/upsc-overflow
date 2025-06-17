@@ -106,7 +106,6 @@
   --font-serif: Georgia, serif;
   --font-mono: Menlo, monospace;
   --shadow-color: rgba(29, 161, 242, 0.15);
-  --shadow-color-2: var(--primary);
   --shadow-opacity: 0;
   --shadow-blur: 0px;
   --shadow-spread: 0px;
@@ -114,28 +113,28 @@
   --shadow-offset-y: 2px;
   --letter-spacing: 0em;
   --spacing: 0.25rem;
-  --shadow-2xs: 0px 2px 0px 0px var(--shadow-color-2);
-  --shadow-xs: 0px 2px 0px 0px var(--shadow-color-2);
-  --shadow-sm: 0px 2px 0px 0px var(--shadow-color-2),
-    0px 1px 2px -1px var(--shadow-color-2);
-  --shadow: 0px 2px 0px 0px var(--shadow-color-2),
-    0px 1px 2px -1px var(--shadow-color-2);
-  --shadow-md: 0px 2px 0px 0px var(--shadow-color-2),
-    0px 2px 4px -1px var(--shadow-color-2);
-  --shadow-lg: 0px 2px 0px 0px var(--shadow-color-2),
-    0px 4px 6px -1px var(--shadow-color-2);
-  --shadow-xl: 0px 2px 0px 0px var(--shadow-color-2),
-    0px 8px 10px -1px var(--shadow-color-2);
-  --shadow-2xl: 0px 2px 0px 0px var(--shadow-color-2);
+  --shadow-2xs: 0px 2px 0px 0px rgba(29, 161, 242, 1);
+  --shadow-xs: 0px 2px 0px 0px rgba(29, 161, 242, 1);
+  --shadow-sm: 0px 2px 0px 0px rgba(29, 161, 242, 1),
+    0px 1px 2px -1px rgba(29, 161, 242, 1);
+  --shadow: 0px 2px 0px 0px rgba(29, 161, 242, 1),
+    0px 1px 2px -1px rgba(29, 161, 242, 1);
+  --shadow-md: 0px 2px 0px 0px rgba(29, 161, 242, 1),
+    0px 2px 4px -1px rgba(29, 161, 242, 1);
+  --shadow-lg: 0px 2px 0px 0px rgba(29, 161, 242, 1),
+    0px 4px 6px -1px rgba(29, 161, 242, 1);
+  --shadow-xl: 0px 2px 0px 0px rgba(29, 161, 242, 1),
+    0px 8px 10px -1px rgba(29, 161, 242, 1);
+  --shadow-2xl: 0px 2px 0px 0px rgba(29, 161, 242, 1);
   --tracking-normal: 0em;
   --border-broad: 1px;
-  --shadow-mode: 0px 1px 8px var(--shadow-color-2),
-    0px -1px 8px var(--shadow-color-2), 1px 0 8px var(--shadow-color-2),
-    -1px 0 8px var(--shadow-color-2);
-  --shadow-mode-hover: inset 0px 2px 8px var(--shadow-color-2),
-    inset 0px -2px 8px var(--shadow-color-2),
-    inset 2px 0 8px var(--shadow-color-2),
-    inset -2px 0 8px var(--shadow-color-2);
+  --shadow-mode: 0px 1px 8px var(--primary),
+    0px -1px 8px var(--primary), 1px 0 8px var(--primary),
+    -1px 0 8px var(--primary);
+  --shadow-mode-hover: inset 0px 2px 8px var(--primary),
+    inset 0px -2px 8px var(--primary),
+    inset 2px 0 8px var(--primary),
+    inset -2px 0 8px var(--primary);
 }
 
 .dark {
@@ -176,7 +175,6 @@
   --font-serif: Georgia, serif;
   --font-mono: Menlo, monospace;
   --shadow-color: rgba(29, 161, 242, 0.25);
-  --shadow-color-2: var(--primary);
   --shadow-opacity: 0;
   --shadow-blur: 0px;
   --shadow-spread: 0px;
@@ -184,25 +182,27 @@
   --shadow-offset-y: 2px;
   --letter-spacing: 0em;
   --spacing: 0.25rem;
-  --shadow-2xs: 0px 2px 0px 0px var(--shadow-color-2);
-  --shadow-xs: 0px 2px 0px 0px var(--shadow-color-2);
-  --shadow-sm: 0px 2px 0px 0px var(--shadow-color-2),
-    0px 1px 2px -1px var(--shadow-color-2);
-  --shadow: 0px 2px 0px 0px var(--shadow-color-2),
-    0px 1px 2px -1px var(--shadow-color-2);
-  --shadow-md: 0px 2px 0px 0px var(--shadow-color-2),
-    0px 2px 4px -1px var(--shadow-color-2);
-  --shadow-lg: 0px 2px 0px 0px var(--shadow-color-2),
-    0px 4px 6px -1px var(--shadow-color-2);
-  --shadow-2xl: 0px 2px 0px 0px var(--shadow-color-2);
+  --shadow-2xs: 0px 2px 0px 0px rgba(29, 161, 242, 1);
+  --shadow-xs: 0px 2px 0px 0px rgba(29, 161, 242, 1);
+  --shadow-sm: 0px 2px 0px 0px rgba(29, 161, 242, 1),
+    0px 1px 2px -1px rgba(29, 161, 242, 1);
+  --shadow: 0px 2px 0px 0px rgba(29, 161, 242, 1),
+    0px 1px 2px -1px rgba(29, 161, 242, 1);
+  --shadow-md: 0px 2px 0px 0px rgba(29, 161, 242, 1),
+    0px 2px 4px -1px rgba(29, 161, 242, 1);
+  --shadow-lg: 0px 2px 0px 0px rgba(29, 161, 242, 1),
+    0px 4px 6px -1px rgba(29, 161, 242, 1);
+  --shadow-xl: 0px 2px 0px 0px rgba(29, 161, 242, 1),
+    0px 8px 10px -1px rgba(29, 161, 242, 1);
+  --shadow-2xl: 0px 2px 0px 0px rgba(29, 161, 242, 1);
   --border-broad: 3px;
-  --shadow-mode: 0px 0.5px 8px var(--shadow-color-2),
-    0px -0.5px 8px var(--shadow-color-2), 0.5px 0 8px var(--shadow-color-2),
-    -0.5px 0 8px var(--shadow-color-2);
-  --shadow-mode-hover: inset 0px 1px 8px var(--shadow-color-2),
-    inset 0px -1px 8px var(--shadow-color-2),
-    inset 1px 0 8px var(--shadow-color-2),
-    inset -1px 0 8px var(--shadow-color-2);
+  --shadow-mode: 0px 0.5px 8px var(--primary),
+    0px -0.5px 8px var(--primary), 0.5px 0 8px var(--primary),
+    -0.5px 0 8px var(--primary);
+  --shadow-mode-hover: inset 0px 1px 8px var(--primary),
+    inset 0px -1px 8px var(--primary),
+    inset 1px 0 8px var(--primary),
+    inset -1px 0 8px var(--primary);
 }
 
 .btn-auth {
