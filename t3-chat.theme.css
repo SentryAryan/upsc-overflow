@@ -64,6 +64,8 @@
   --shadow-spread: var(--shadow-spread);
   --shadow-blur: var(--shadow-blur);
   --shadow-opacity: var(--shadow-opacity);
+  --shadow-aryan: var(--shadow-mode);
+  --shadow-aryan-hover: var(--shadow-mode-hover);
   --color-shadow-color: var(--shadow-color);
   --color-destructive-foreground: var(--destructive-foreground);
 }

@@ -27,7 +27,7 @@ const HugeRTEFormField = <T extends FieldValues>({
   isDarkMode,
 }: FormFieldProps<T>) => {
   const editorRef = useRef(null);
-  
+
   // Exact same plugins as TinyMCEFormField in same order (excluding tinydrive)
   const plugins = [
     "advlist",
@@ -50,37 +50,43 @@ const HugeRTEFormField = <T extends FieldValues>({
     "help",
     // "tinydrive" - TinyMCE specific, not available in HugeRTE
   ];
-  
+
   // Exact same toolbar as TinyMCEFormField in same order
   const toolbar =
     "undo redo | formatselect | " +
     "bold italic backcolor | alignleft aligncenter " +
     "insertfile image link media table codesample | removeformat | help" +
     "alignright alignjustify | bullist numlist outdent indent | ";
-  
+
   const height = 400;
   return (
     <FormField
       control={control}
       name={name}
-      render={({ field: { onChange, value } }) => (
+      render={({ field }) => (
         <FormItem>
-          <FormLabel className="font-[900] group-hover:text-primary transition-all duration-300 ease-in-out">{label}</FormLabel>
+          <FormLabel className="font-[900] group-hover:text-primary transition-all duration-300 ease-in-out">
+            {label}
+          </FormLabel>
           <FormControl>
             <Editor
               // Use CDN version (no API key needed)
               key={isDarkMode ? "dark" : "light"}
               cdnVersion="1"
               hugerteScriptSrc="https://cdn.jsdelivr.net/npm/hugerte@1/hugerte.min.js"
-              onEditorChange={onChange}
-              value={value}
+              value={field.value}
+              onEditorChange={field.onChange}
+              onBlur={field.onBlur}
               init={{
                 skin: isDarkMode ? "oxide-dark" : "oxide",
                 content_css: isDarkMode ? "dark" : "light",
                 plugins: plugins,
                 toolbar: toolbar,
                 height: height,
-                content_style: "body { background-color: " + (isDarkMode ? "oklch(0 0 0)" : "oklch(1.0000 0 0)") + "; }",
+                content_style:
+                  "body { background-color: " +
+                  (isDarkMode ? "oklch(0 0 0)" : "oklch(1.0000 0 0)") +
+                  "; }",
                 placeholder: placeholder,
                 tinydrive_token_provider: "/api/tinymce/tinydrive-token",
                 tinydrive_skin: "oxide-dark",
@@ -98,7 +104,7 @@ const HugeRTEFormField = <T extends FieldValues>({
               {description}
             </p>
           )}
-          <FormMessage className="font-[900]" />
+          <FormMessage className="font-[900] transition-all duration-300 ease-in-out" />
         </FormItem>
       )}
     />

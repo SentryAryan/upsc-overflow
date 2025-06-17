@@ -22,15 +22,24 @@ import { QuestionType } from "@/db/models/question.model";
 import { RootState } from "../../lib/redux/store";
 
 const formSchema = z.object({
-  title: z.string().min(2, {
-    message: "Title must be at least 2 characters.",
-  }).trim(),
-  description: z.string().min(2, {
-    message: "Description must be at least 2 characters.",
-  }).trim(),
-  subject: z.string().min(2, {
-    message: "Subject must be at least 2 characters.",
-  }).trim(),
+  title: z
+    .string({message: "Title is required"})
+    .min(2, {
+      message: "Title must be at least 2 characters.",
+    })
+    .trim(),
+  description: z
+    .string({message: "Description is required"})
+    .min(2, {
+      message: "Description must be at least 2 characters.",
+    })
+    .trim(),
+  subject: z
+    .string({message: "Subject is required"})
+    .min(2, {
+      message: "Subject must be at least 2 characters.",
+    })
+    .trim(),
 });
 
 export function UpdateQuestionForm({
@@ -59,9 +68,9 @@ export function UpdateQuestionForm({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: title,
-      description: description,
-      subject: subject,
+      title,
+      description,
+      subject,
     },
     mode: "all",
   });
@@ -79,10 +88,13 @@ export function UpdateQuestionForm({
         tags: tags,
       });
       console.log("question in UpdateQuestionForm.tsx", question);
-      console.log("response.data.data in UpdateQuestionForm.tsx", response.data.data);
+      console.log(
+        "response.data.data in UpdateQuestionForm.tsx",
+        response.data.data
+      );
       const updatedQuestion = {
         ...question,
-        ...response.data.data
+        ...response.data.data,
       };
       console.log("updatedQuestion in UpdateQuestionForm.tsx", updatedQuestion);
       setQuestion(updatedQuestion);
@@ -158,7 +170,11 @@ export function UpdateQuestionForm({
           isDarkMode={isDarkMode}
         />
         <TagsInput tags={tags} setTags={setTags} tag={tag} setTag={setTag} />
-        <Button type="submit" className="cursor-pointer" title="Submit question">
+        <Button
+          type="submit"
+          className="cursor-pointer"
+          title="Submit question"
+        >
           Submit
         </Button>
       </form>

@@ -21,15 +21,24 @@ import TinyMCEFormField from "./TinyMCEFormField";
 import { RootState } from "../../lib/redux/store";
 
 const formSchema = z.object({
-  title: z.string().min(2, {
-    message: "Title must be at least 2 characters.",
-  }).trim(),
-  description: z.string().min(2, {
-    message: "Description must be at least 2 characters.",
-  }).trim(),
-  subject: z.string().min(2, {
-    message: "Subject must be at least 2 characters.",
-  }).trim(),
+  title: z
+    .string({ message: "Title is required" })
+    .min(2, {
+      message: "Title must be at least 2 characters.",
+    })
+    .trim(),
+  description: z
+    .string({ message: "Description is required" })
+    .min(2, {
+      message: "Description must be at least 2 characters.",
+    })
+    .trim(),
+  subject: z
+    .string({ message: "Subject is required" })
+    .min(2, {
+      message: "Subject must be at least 2 characters.",
+    })
+    .trim(),
 });
 
 export function AskQuestionFormTA({

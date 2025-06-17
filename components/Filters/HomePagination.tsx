@@ -45,7 +45,11 @@ const HomePagination = ({
         </PaginationItem>
 
         {/* Pages */}
-        {totalPages <= 10 ? (
+        {totalPages === 0 ? (
+          <PaginationItem>
+            <PaginationEllipsis />
+          </PaginationItem>
+        ) : totalPages <= 10 ? (
           <>
             {Array.from({ length: totalPages }, (_, i) => (
               <PaginationItem key={i}>

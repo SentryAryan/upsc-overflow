@@ -217,7 +217,7 @@ export default function HomePage() {
       }`}
     >
       <SearchBar />
-      <HomePagination totalPages={totalPages || 1} subject={subject || undefined} />
+      <HomePagination totalPages={totalPages} subject={subject || undefined} />
 
       <SubjectFilter
         subjects={availableSubjects}

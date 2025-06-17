@@ -58,7 +58,7 @@ export default function QuestionsPage() {
 
       <HomePagination
         question={encodeURIComponent(questionQuery)}
-        totalPages={totalPages || 1}
+        totalPages={totalPages}
       />
 
       <SortFilter />

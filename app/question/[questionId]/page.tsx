@@ -522,7 +522,7 @@ const QuestionPage = () => {
           </div>
 
           {question.subject && (
-            <span className="ml-auto text-sm px-2.5 py-1 rounded-full bg-primary/10 text-primary whitespace-nowrap hover:bg-primary/20 transition-all duration-300 group-hover:filter-shadow font-[900] border border-[rgba(29,161,242,1)] dark:border-border cursor">
+            <span className="ml-auto text-sm px-2.5 py-1 rounded-full bg-primary/10 text-primary whitespace-nowrap hover:bg-primary/20 transition-all duration-300 group-hover:filter-shadow font-[900] border border-primary dark:border-border cursor">
               {question.subject}
             </span>
           )}

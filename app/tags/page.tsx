@@ -65,7 +65,7 @@ export default function TagPage() {
 
       <HomePagination
         tag={encodeURIComponent(decodedTag)}
-        totalPages={totalPages || 1}
+        totalPages={totalPages}
       />
 
       <SortFilter />

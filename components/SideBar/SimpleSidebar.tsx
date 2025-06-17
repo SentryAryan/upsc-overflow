@@ -114,7 +114,7 @@ export function SimpleSidebar({ ...props }: SimpleSidebarProps) {
 
   return (
     <Sidebar
-      className="flex flex-col border-2 border-border bg-background text-foreground w-64 shadow-md"
+      className="flex flex-col border-2 border-border bg-background text-foreground w-64 shadow-xl"
       {...props}
     >
       <SidebarHeader className="p-4 h-16 border-b-2 border-border flex items-center justify-center bg-background">

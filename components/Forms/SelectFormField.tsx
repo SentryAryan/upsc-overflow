@@ -59,7 +59,7 @@ const SelectFormField = <T extends FieldValues>({
               ))}
             </SelectContent>
           </Select>
-          <FormMessage className="font-[900]" />
+          <FormMessage className="font-[900] transition-all duration-300 ease-in-out" />
         </FormItem>
       )}
     />

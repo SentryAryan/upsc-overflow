@@ -46,6 +46,7 @@ const questionSchema: Schema<QuestionTypeSchema> = new mongoose.Schema(
       type: String,
       required: true,
       enum: subjects,
+      lowercase: true,
     },
     tags: {
       type: [

@@ -1,6 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { QuestionCardProps } from "@/app/page";
 
-const initialState = {
+export interface initialStateType {
+  questions: QuestionCardProps[] | [];
+  totalPages: number;
+}
+
+const initialState: initialStateType = {
   questions: [],
   totalPages: 0,
 };

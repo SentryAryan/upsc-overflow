@@ -64,6 +64,10 @@
   --shadow-spread: var(--shadow-spread);
   --shadow-blur: var(--shadow-blur);
   --shadow-opacity: var(--shadow-opacity);
+  --shadow-aryan: var(--shadow-mode);
+  --shadow-aryan-hover: var(--shadow-mode-hover);
+  --aryan: var(--shadow-mode);
+  --aryan-hover: var(--shadow-mode-hover);
   --color-shadow-color: var(--shadow-color);
   --color-destructive-foreground: var(--destructive-foreground);
 }
@@ -132,6 +136,9 @@
   --shadow-mode: 0px 1px 8px var(--shadow-color-2),
     0px -1px 8px var(--shadow-color-2), 1px 0 8px var(--shadow-color-2),
     -1px 0 8px var(--shadow-color-2);
+  --shadow-mode-2: 0px 1px 6.5px var(--shadow-color-2),
+    0px -1px 6.5px var(--shadow-color-2), 1px 0 6.5px var(--shadow-color-2),
+    -1px 0 6.5px var(--shadow-color-2);
   --shadow-mode-hover: inset 0px 2px 8px var(--shadow-color-2),
     inset 0px -2px 8px var(--shadow-color-2),
     inset 2px 0 8px var(--shadow-color-2),
@@ -199,6 +206,9 @@
   --shadow-mode: 0px 0.5px 8px var(--shadow-color-2),
     0px -0.5px 8px var(--shadow-color-2), 0.5px 0 8px var(--shadow-color-2),
     -0.5px 0 8px var(--shadow-color-2);
+  --shadow-mode-2: 0px 0.5px 6.5px var(--shadow-color-2),
+    0px -0.5px 6.5px var(--shadow-color-2), 0.5px 0 6.5px var(--shadow-color-2),
+    -0.5px 0 6.5px var(--shadow-color-2);
   --shadow-mode-hover: inset 0px 1px 8px var(--shadow-color-2),
     inset 0px -1px 8px var(--shadow-color-2),
     inset 1px 0 8px var(--shadow-color-2),
