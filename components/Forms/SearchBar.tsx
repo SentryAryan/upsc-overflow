@@ -278,6 +278,7 @@ export default function SearchBar() {
                                           `/subjects?subject=${q.subject}`
                                         );
                                       }}
+                                      className="cursor-pointer"
                                     >
                                       View all questions in {q.subject}
                                     </TooltipContent>
@@ -336,6 +337,7 @@ export default function SearchBar() {
                                               )}`
                                             );
                                           }}
+                                          className="cursor-pointer"
                                         >
                                           View all questions in #{tag}
                                         </TooltipContent>

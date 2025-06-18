@@ -64,10 +64,14 @@
   --shadow-spread: var(--shadow-spread);
   --shadow-blur: var(--shadow-blur);
   --shadow-opacity: var(--shadow-opacity);
+  --shadow-mode: var(--shadow-mode);
+  --shadow-mode-hover: var(--shadow-mode-hover);
   --shadow-aryan: var(--shadow-mode);
   --shadow-aryan-hover: var(--shadow-mode-hover);
   --aryan: var(--shadow-mode);
   --aryan-hover: var(--shadow-mode-hover);
+  --animate-slide-in-right: var(--animate-slide-in-right);
+  --animate-slide-up: var(--animate-slide-up);
   --color-shadow-color: var(--shadow-color);
   --color-destructive-foreground: var(--destructive-foreground);
 }
@@ -143,6 +147,8 @@
     inset 0px -2px 8px var(--shadow-color-2),
     inset 2px 0 8px var(--shadow-color-2),
     inset -2px 0 8px var(--shadow-color-2);
+  --animate-slide-in-right: slideInRight 0.3s ease-out;
+  --animate-slide-up: slideUp 0.3s ease-out;
 }
 
 .dark {
@@ -213,6 +219,8 @@
     inset 0px -1px 8px var(--shadow-color-2),
     inset 1px 0 8px var(--shadow-color-2),
     inset -1px 0 8px var(--shadow-color-2);
+  --animate-slide-in-right: slideInRight 0.3s ease-out;
+  --animate-slide-up: slideUp 0.3s ease-out;
 }
 
 .btn-auth {
@@ -656,4 +664,55 @@ colgroup col {
 table p {
   margin: 0;
   padding: 0;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Register as utilities */
+/* @utility animate-slide-in-right {
+  animation: slideInRight 0.5s ease-out;
+} */
+
+@utility animate-fade-in-scale {
+  animation: fadeInScale 0.3s ease-out;
+}
+
+@utility animate-shimmer {
+  animation: shimmer 2s infinite;
 }

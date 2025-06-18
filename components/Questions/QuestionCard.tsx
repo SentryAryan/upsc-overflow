@@ -92,10 +92,15 @@ const QuestionCard = ({ question }: { question: QuestionCardProps }) => {
 
   return (
     <div
-      className="bg-background rounded-lg card-shadow transition-all p-6 border-mode w-full h-full flex flex-col cursor-pointer hover:bg-accent group"
+      // Card Filter on hover using translate
+      // className="bg-background rounded-lg card-shadow transition-all duration-300 p-6 border-mode w-full h-full flex flex-col cursor-pointer group relative before:absolute before:bg-accent before:inset-0 before:translate-x-[-100%] before:transition-transform overflow-hidden before:duration-300 before:ease-in-out before:rounded-lg hover:before:translate-x-0 before:z-[-1] z-1 animate-slide-up before:shadow-mode-hover"
+
+      // Card Filter on hover using animation
+      className="bg-background rounded-lg card-shadow transition-all duration-300 p-6 border-mode w-full h-full flex flex-col cursor-pointer group relative before:absolute before:bg-accent before:rounded-lg overflow-hidden animate-slide-up before:shadow-mode-hover before:transition-[right] before:duration-300 before:ease-in-out before:inset-0 before:right-full hover:before:right-0"
       onClick={() => router.push(`/question/${question._id}`)}
     >
-      <div className="flex items-start justify-between mb-3">
+      {/* Card Title and Subject */}
+      <div className="flex items-start justify-between mb-3 relative">
         <h1 className="text-xl font-semibold text-card-foreground mb-2 flex-1 group-hover:text-primary">
           {question.title}
         </h1>
@@ -117,6 +122,7 @@ const QuestionCard = ({ question }: { question: QuestionCardProps }) => {
                   e.stopPropagation();
                   router.push(`/subjects?subject=${question.subject}`);
                 }}
+                className="cursor-pointer"
               >
                 View all questions in {question.subject}
               </TooltipContent>
@@ -125,12 +131,13 @@ const QuestionCard = ({ question }: { question: QuestionCardProps }) => {
         )}
       </div>
 
-      <div className="text-muted-foreground mb-4 line-clamp-3 flex-grow">
+      {/* Card Description */}
+      <div className="text-muted-foreground mb-4 line-clamp-3 flex-grow relative">
         {truncatedDescription ? parse(truncatedDescription) : null}
       </div>
 
       {/* Tags section with fixed height */}
-      <div className="min-h-[40px] mb-4">
+      <div className="min-h-[40px] mb-4 relative">
         {question.tags && question.tags.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {question.tags.map((tag: string, index: number) => (
@@ -150,6 +157,7 @@ const QuestionCard = ({ question }: { question: QuestionCardProps }) => {
                       e.stopPropagation();
                       router.push(`/tags?tag=${encodeURIComponent(tag)}`);
                     }}
+                    className="cursor-pointer"
                   >
                     View all questions in #{tag}
                   </TooltipContent>
@@ -160,7 +168,8 @@ const QuestionCard = ({ question }: { question: QuestionCardProps }) => {
         )}
       </div>
 
-      <div className="flex flex-wrap items-center justify-between pt-4 border-t border-secondary dark:border-border mt-auto gap-3">
+      {/* Card Footer */}
+      <div className="flex flex-wrap items-center justify-between pt-4 border-t border-secondary dark:border-border mt-auto gap-3 relative">
         <div className="flex items-center text-sm text-muted-foreground">
           {askerImageUrl ? (
             <Image
