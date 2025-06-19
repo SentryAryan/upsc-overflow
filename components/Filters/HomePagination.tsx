@@ -41,13 +41,14 @@ const HomePagination = ({
             }${question ? `&question=${question}` : ""}${
               sortBy ? `&sortBy=${sortBy}` : ""
             }`}
+            className="animate-slide-up"
           />
         </PaginationItem>
 
         {/* Pages */}
         {totalPages === 0 ? (
           <PaginationItem>
-            <PaginationEllipsis />
+            <PaginationEllipsis className="animate-slide-up" />
           </PaginationItem>
         ) : totalPages <= 10 ? (
           <>
@@ -60,6 +61,7 @@ const HomePagination = ({
                     question ? `&question=${question}` : ""
                   }${sortBy ? `&sortBy=${sortBy}` : ""}`}
                   isActive={currentPage === i + 1}
+                  className="animate-slide-up"
                 >
                   {i + 1}
                 </PaginationLink>
@@ -77,13 +79,14 @@ const HomePagination = ({
                     question ? `&question=${question}` : ""
                   }${sortBy ? `&sortBy=${sortBy}` : ""}`}
                   isActive={currentPage === i + 1}
+                  className="animate-slide-up"
                 >
                   {i + 1}
                 </PaginationLink>
               </PaginationItem>
             ))}
             <PaginationItem>
-              <PaginationEllipsis />
+              <PaginationEllipsis className="animate-slide-up" />
             </PaginationItem>
           </>
         )}
@@ -98,6 +101,7 @@ const HomePagination = ({
             }${question ? `&question=${question}` : ""}${
               sortBy ? `&sortBy=${sortBy}` : ""
             }`}
+            className="animate-slide-up"
           />
         </PaginationItem>
       </PaginationContent>

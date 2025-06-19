@@ -10,6 +10,7 @@ import parse from "html-react-parser";
 import { ArrowDown, ArrowUp, MessageCircle, MessageSquare } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useRef, useState } from "react";
 
 // Function to truncate HTML string by first removing tags
 const truncateHtml = (html: string | null | undefined, maxLength: number) => {
@@ -23,49 +24,51 @@ const truncateHtml = (html: string | null | undefined, maxLength: number) => {
   return plainText.substring(0, maxLength) + "...";
 };
 
-const truncateHtml2 = (html: string | null | undefined, maxLength: number) => {
-  if (!html) return null;
-  // Remove HTML tags for accurate character count
-  const plainText = html.replace(/<[^>]*>/g, "");
-  if (plainText.length <= maxLength) {
-    return html; // Return original HTML if within limit
-  }
-  // Find the index to truncate in the original HTML
-  let currentIndex = 0;
-  let truncatedHtml = "";
-  let plainTextCount = 0;
+// const truncateHtml2 = (html: string | null | undefined, maxLength: number) => {
+//   if (!html) return null;
+//   // Remove HTML tags for accurate character count
+//   const plainText = html.replace(/<[^>]*>/g, "");
+//   if (plainText.length <= maxLength) {
+//     return html; // Return original HTML if within limit
+//   }
+//   // Find the index to truncate in the original HTML
+//   let currentIndex = 0;
+//   let truncatedHtml = "";
+//   let plainTextCount = 0;
 
-  const tags = html.match(/<[^>]*>/g) || [];
-  const parts = html.split(/<[^>]*>/);
+//   const tags = html.match(/<[^>]*>/g) || [];
+//   const parts = html.split(/<[^>]*>/);
 
-  for (let i = 0; i < parts.length; i++) {
-    const part = parts[i];
-    const remainingLength = maxLength - plainTextCount;
+//   for (let i = 0; i < parts.length; i++) {
+//     const part = parts[i];
+//     const remainingLength = maxLength - plainTextCount;
 
-    if (part.length >= remainingLength) {
-      truncatedHtml += part.substring(0, remainingLength);
-      plainTextCount += remainingLength;
-      // Stop once the plain text limit is reached
-      break;
-    } else {
-      truncatedHtml += part;
-      plainTextCount += part.length;
-    }
+//     if (part.length >= remainingLength) {
+//       truncatedHtml += part.substring(0, remainingLength);
+//       plainTextCount += remainingLength;
+//       // Stop once the plain text limit is reached
+//       break;
+//     } else {
+//       truncatedHtml += part;
+//       plainTextCount += part.length;
+//     }
 
-    if (tags[i]) {
-      truncatedHtml += tags[i];
-    }
-  }
+//     if (tags[i]) {
+//       truncatedHtml += tags[i];
+//     }
+//   }
 
-  return truncatedHtml + "..."; // Add ellipsis
-};
+//   return truncatedHtml + "..."; // Add ellipsis
+// };
 
 const QuestionCard = ({ question }: { question: QuestionCardProps }) => {
   const router = useRouter();
   const createdAt = question.createdAt
     ? format(new Date(question.createdAt), "MMM dd, yyyy 'at' hh:mm a")
     : "N/A";
-
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const askerName =
     `${question.user?.firstName || ""} ${
       question.user?.lastName || ""
@@ -90,6 +93,40 @@ const QuestionCard = ({ question }: { question: QuestionCardProps }) => {
       ? "text-green-600 dark:text-green-600"
       : "text-red-600 dark:text-red-600";
 
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+
+    const rect = cardRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    // Calculate mouse position relative to card center
+    const mouseX = e.clientX - centerX;
+    const mouseY = e.clientY - centerY;
+
+    // Convert to percentage of card dimensions for smoother effect
+    const rotateX = (mouseY / rect.height) * -10; // Vertical tilt (inverted)
+    const rotateY = (mouseX / rect.width) * 10; // Horizontal tilt
+
+    setMousePosition({ x: rotateY, y: rotateX });
+  };
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    setMousePosition({ x: 0, y: 0 }); // Reset to center
+  };
+
+  const cardStyle = {
+    transform: isHovered 
+      ? `perspective(1000px) rotateX(${mousePosition.y}deg) rotateY(${mousePosition.x}deg) translateZ(10px)`
+      : 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)',
+    transition: isHovered ? 'none' : 'transform 0.3s ease-out',
+  };
+
   return (
     <div
       // Card Filter on hover using translate
@@ -97,6 +134,15 @@ const QuestionCard = ({ question }: { question: QuestionCardProps }) => {
 
       // Card Filter on hover using animation
       className="bg-background rounded-lg card-shadow transition-all duration-300 p-6 border-mode w-full h-full flex flex-col cursor-pointer group relative before:absolute before:bg-accent before:rounded-lg overflow-hidden animate-slide-up before:shadow-mode-hover before:transition-[right] before:duration-300 before:ease-in-out before:inset-0 before:right-full hover:before:right-0"
+      
+      // Card Filter on hover using width
+      // className="bg-background rounded-lg card-shadow transition-all duration-300 p-6 border-mode w-full h-full flex flex-col cursor-pointer group relative before:absolute before:bg-accent before:rounded-lg overflow-hidden animate-slide-up before:shadow-mode-hover before:transition-[width] before:duration-300 before:ease-in-out before:inset-0 before:w-0 before:h-full hover:before:w-full"
+
+      ref={cardRef}
+      style={cardStyle}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       onClick={() => router.push(`/question/${question._id}`)}
     >
       {/* Card Title and Subject */}

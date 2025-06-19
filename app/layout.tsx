@@ -4,7 +4,7 @@ import {
   SignUpButton,
   SignedIn,
   SignedOut,
-  UserButton
+  UserButton,
 } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { JetBrains_Mono, Open_Sans } from "next/font/google";
@@ -53,21 +53,20 @@ export default async function RootLayout({
                 <SimpleSidebar />
                 <main className="flex-1 flex flex-col items-center justify-center">
                   <header className="fixed top-0 right-0 flex justify-end items-center p-4 gap-4 z-10 rounded-full">
+                    {/* Theme Switcher */}
                     <div className="rounded-full p-1">
                       <SwitchDemo />
                     </div>
+                    {/* When user is not signed in */}
                     <SignedOut>
                       <SignInButton>
-                        <Button className="cursor-pointer">
-                          Sign In
-                        </Button>
+                        <Button className="cursor-pointer">Sign In</Button>
                       </SignInButton>
                       <SignUpButton>
-                        <Button className="cursor-pointer">
-                          Sign Up
-                        </Button>
+                        <Button className="cursor-pointer">Sign Up</Button>
                       </SignUpButton>
                     </SignedOut>
+                    {/* When user is signed in */}
                     <SignedIn>
                       <UserButton />
                     </SignedIn>
@@ -89,4 +88,3 @@ export default async function RootLayout({
     </ClerkProvider>
   );
 }
-

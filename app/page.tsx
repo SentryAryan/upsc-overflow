@@ -88,14 +88,14 @@ export default function HomePage() {
   const fetchQuestions = async () => {
     try {
       setIsLoading(true);
+      if (availableSubjects.length === 0) {
+        await fetchSubjects();
+      }
       const response = await axios.get(
         `/api/questions/get-all?page=${currentPage}&limit=10${
           sortBy ? `&sortBy=${encodeURIComponent(sortBy)}` : ""
         }${subject ? `&subject=${encodeURIComponent(subject)}` : ""}`
       );
-      if (availableSubjects.length === 0) {
-        await fetchSubjects();
-      }
       console.log(response.data.data);
       console.log(typeof response.data.data[0]?.createdAt);
       console.log(response.data.data[0]);
@@ -232,11 +232,11 @@ export default function HomePage() {
           <LoaderDemo />
         </div>
       ) : questions.length === 0 && selectedSubject !== null ? (
-        <p className="text-center mt-4 text-muted-foreground">
+        <p className="text-center mt-4 text-muted-foreground animate-slide-up">
           No questions found for the selected subject.
         </p>
       ) : currentPage > totalPages ? (
-        <p className="text-center mt-4 text-muted-foreground">No more pages currently</p>
+        <p className="text-center mt-4 text-muted-foreground animate-slide-up">No more pages currently</p>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
           {questions.map((question: QuestionCardProps) => (

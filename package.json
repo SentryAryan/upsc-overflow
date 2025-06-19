@@ -57,7 +57,7 @@
     "clsx": "^2.1.1",
     "cookie": "^1.0.2",
     "date-fns": "^4.1.0",
-    "framer-motion": "^12.11.3",
+    "framer-motion": "^12.18.1",
     "html-react-parser": "^5.2.5",
     "hugerte": "^1.0.9",
     "jsonwebtoken": "^9.0.2",
