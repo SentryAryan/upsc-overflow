@@ -10,10 +10,55 @@ import getClerkUserById from "../../../../lib/helpers/getClerkUserById";
 import Like from "../../../../db/models/like.model";
 import { auth } from "@clerk/nextjs/server";
 const commentSchema = z.object({
-  content: z.string().min(1, { message: "Content is required" }),
-  answer: z.string().optional(),
-  question: z.string().optional(),
-  commenter: z.string().min(1, { message: "Commenter is required" }),
+  content: z
+    .string({ message: "Content must be a string" })
+    .trim()
+    .nonempty({ message: "Content is required" })
+    .refine(
+      (html: string) => {
+        // Check if there are any images in the HTML
+        const hasImages = /<img[^>]*>/i.test(html);
+
+        // Remove all HTML tags to get plain text
+        const plainText = html.replace(/<[^>]*>/g, "");
+
+        // Check for other media elements
+        const hasMedia = /<(video|audio|iframe)[^>]*>/i.test(html);
+
+        // Replace HTML entities like &nbsp; with spaces and trim
+        const cleanText = plainText
+          .replace(/&nbsp;/g, " ")
+          .replace(/&amp;/g, "&")
+          .replace(/&lt;/g, "<")
+          .replace(/&gt;/g, ">")
+          .replace(/&quot;/g, '"')
+          .replace(/&apos;/g, "'")
+          .replace(/&copy;/g, "©")
+          .replace(/&reg;/g, "®")
+          .replace(/&trade;/g, "™")
+          .replace(/&euro;/g, "€")
+          .replace(/&pound;/g, "£")
+          .replace(/&yen;/g, "¥")
+          .trim();
+
+        // Valid if either has meaningful text OR has images
+        return cleanText.length > 0 || hasImages || hasMedia;
+      },
+      {
+        message:
+          "Content must contain either text content(atleast 1 character) or atleast 1 media(image, video, audio) or a non-empty table or non-empty code block",
+      }
+    ),
+  answer: z.string({ message: "Answer must be a string" }).trim().optional(),
+  question: z
+    .string({ message: "Question must be a string" })
+    .trim()
+    .optional(),
+  commenter: z
+    .string({ message: "Commenter must be a string" })
+    .trim()
+    .nonempty({ message: "Commenter is required" })
+    .min(1, { message: "Commenter must be at least 1 character" }),
 });
 
 export const POST = errorHandler(async (req: NextRequest) => {

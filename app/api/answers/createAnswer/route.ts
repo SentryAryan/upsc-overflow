@@ -8,9 +8,9 @@ import dbConnect from "@/db/dbConnect";
 import mongoose from "mongoose";
 
 const answerSchema = z.object({
-  content: z.string().min(1, { message: "Content is required" }),
-  question: z.string().min(1, { message: "Question is required" }),
-  answerer: z.string().min(1, { message: "Answerer is required" }),
+  content: z.string({message: "Content is required"}).min(1, { message: "Content is required" }).trim(),
+  question: z.string({message: "Question is required"}).min(1, { message: "Question is required" }).trim(),
+  answerer: z.string({message: "Answerer is required"}).min(1, { message: "Answerer is required" }).trim(),
 });
 
 export const POST = errorHandler(async (req: NextRequest) => {

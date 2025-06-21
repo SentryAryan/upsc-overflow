@@ -22,23 +22,58 @@ import { RootState } from "../../lib/redux/store";
 
 const formSchema = z.object({
   title: z
-    .string({ message: "Title is required" })
+    .string({ message: "Title must be a string" })
+    .trim()
+    .nonempty({ message: "Title is required" })
     .min(2, {
       message: "Title must be at least 2 characters.",
-    })
-    .trim(),
+    }),
   description: z
-    .string({ message: "Description is required" })
-    .min(2, {
-      message: "Description must be at least 2 characters.",
-    })
-    .trim(),
+    .string({ message: "Description must be a string" })
+    .trim()
+    .nonempty({ message: "Description is required" })
+    .refine(
+      (html: string) => {
+        // Check if there are any images in the HTML
+        const hasImages = /<img[^>]*>/i.test(html);
+
+        // Remove all HTML tags to get plain text
+        const plainText = html.replace(/<[^>]*>/g, "");
+
+        // Check for other media elements
+        const hasMedia = /<(video|audio|iframe)[^>]*>/i.test(html);
+
+        // Replace HTML entities like &nbsp; with spaces and trim
+        const cleanText = plainText
+          .replace(/&nbsp;/g, " ")
+          .replace(/&amp;/g, "&")
+          .replace(/&lt;/g, "<")
+          .replace(/&gt;/g, ">")
+          .replace(/&quot;/g, '"')
+          .replace(/&apos;/g, "'")
+          .replace(/&copy;/g, "©")
+          .replace(/&reg;/g, "®")
+          .replace(/&trade;/g, "™")
+          .replace(/&euro;/g, "€")
+          .replace(/&pound;/g, "£")
+          .replace(/&yen;/g, "¥")
+          .trim();
+
+        // Valid if either has meaningful text OR has images
+        return cleanText.length > 0 || hasImages || hasMedia;
+      },
+      {
+        message:
+          "Description must contain either text content(atleast 1 character) or atleast 1 media(image, video, audio) or a non-empty table or non-empty code block",
+      }
+    ),
   subject: z
-    .string({ message: "Subject is required" })
+    .string({ message: "Subject must be a string" })
+    .trim()
+    .nonempty({ message: "Subject is required" })
     .min(2, {
       message: "Subject must be at least 2 characters.",
-    })
-    .trim(),
+    }),
 });
 
 export function AskQuestionFormTA({
@@ -89,6 +124,11 @@ export function AskQuestionFormTA({
       setTag("");
     }
   }
+
+  // OnSubmit test function
+  // async function onSubmit(values: z.infer<typeof formSchema>) {
+  //   console.log("Form values:", values);
+  // }
 
   const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
 

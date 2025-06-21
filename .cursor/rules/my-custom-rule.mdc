@@ -1,0 +1,10 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+- Always try to be as short as possible and concise as possible, dont repeat parts of answers.
+- Try to be as accurate as possible, and thoroughly understand question and give deep thinking(like humans) before reply.
+- Give optimised answers, and answers should be in such a way that are easily understandable.
+- If rs is used at end of prompt, then it means reply very very very short but concise, only to point, no extra talk, almost all time in yes or no, unless no has valid wrong description, give no reasons for yes statements as you repeat what's in promt for those.
+- Follow above rules strictly.

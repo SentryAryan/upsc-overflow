@@ -105,8 +105,8 @@ const QuestionCard = ({ question }: { question: QuestionCardProps }) => {
     const mouseY = e.clientY - centerY;
 
     // Convert to percentage of card dimensions for smoother effect
-    const rotateX = (mouseY / rect.height) * -10; // Vertical tilt (inverted)
-    const rotateY = (mouseX / rect.width) * 10; // Horizontal tilt
+    const rotateX = (mouseY / rect.height) * -20; // Vertical tilt (inverted)
+    const rotateY = (mouseX / rect.width) * 20; // Horizontal tilt
 
     setMousePosition({ x: rotateY, y: rotateX });
   };

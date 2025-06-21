@@ -21,18 +21,74 @@ const SUBJECT_ENUM = [
 ] as const;
 
 const questionUpdateSchema = z.object({
-  title: z.string().min(1, { message: "Title is required" }).trim(),
-  description: z.string().min(1, { message: "Description is required" }).trim(),
+  title: z
+    .string({ message: "Title must be a string" })
+    .trim()
+    .nonempty({ message: "Title is required" })
+    .min(2, { message: "Title must be at least 2 characters." }),
+  description: z
+    .string({ message: "Description must be a string" })
+    .trim()
+    .nonempty({ message: "Description is required" })
+    .refine(
+      (html: string) => {
+        // Check if there are any images in the HTML
+        const hasImages = /<img[^>]*>/i.test(html);
+
+        // Remove all HTML tags to get plain text
+        const plainText = html.replace(/<[^>]*>/g, "");
+
+        // Check for other media elements
+        const hasMedia = /<(video|audio|iframe)[^>]*>/i.test(html);
+
+        // Replace HTML entities like &nbsp; with spaces and trim
+        const cleanText = plainText
+          .replace(/&nbsp;/g, " ")
+          .replace(/&amp;/g, "&")
+          .replace(/&lt;/g, "<")
+          .replace(/&gt;/g, ">")
+          .replace(/&quot;/g, '"')
+          .replace(/&apos;/g, "'")
+          .replace(/&copy;/g, "©")
+          .replace(/&reg;/g, "®")
+          .replace(/&trade;/g, "™")
+          .replace(/&euro;/g, "€")
+          .replace(/&pound;/g, "£")
+          .replace(/&yen;/g, "¥")
+          .trim();
+
+        // Valid if either has meaningful text OR has images
+        return cleanText.length > 0 || hasImages || hasMedia;
+      },
+      {
+        message:
+          "Description must contain either text content(atleast 1 character) or atleast 1 media(image, video, audio) or a non-empty table or non-empty code block",
+      }
+    ),
   subject: z.enum(SUBJECT_ENUM, {
     message: "Subject must be a valid subject",
   }),
   tags: z.optional(
-    z.array(z.string({ message: "Tag must be a string" }), {
-      message: "Tags must be an array of strings",
-    })
+    z.array(
+      z
+        .string({ message: "Tag must be a string" })
+        .trim()
+        .nonempty({ message: "Tag is required" }),
+      {
+        message: "Tags must be an array of strings",
+      }
+    )
   ),
-  asker: z.string().min(1, { message: "Asker is required" }),
-  id: z.string().min(1, { message: "ID is required" }),
+  asker: z
+    .string({ message: "Asker must be a string" })
+    .trim()
+    .nonempty({ message: "Asker is required" })
+    .min(1, { message: "Asker must be at least 1 character" }),
+  id: z
+    .string({ message: "ID must be a string" })
+    .trim()
+    .nonempty({ message: "ID is required" })
+    .min(1, { message: "ID must be at least 1 character" }),
 });
 
 export const PATCH = errorHandler(async (req: NextRequest) => {
@@ -53,30 +109,47 @@ export const PATCH = errorHandler(async (req: NextRequest) => {
     throw generateApiError(400, "Invalid question ID", ["Invalid question ID"]);
   }
 
-  if (asker !== userId) {
+  await dbConnect();
+
+  const question = await Question.findById(id);
+
+  if (question.asker.toString() !== asker) {
     throw generateApiError(403, "Forbidden", ["Forbidden"]);
   }
 
-  await dbConnect();
-
-  const updatedQuestion = await Question.findByIdAndUpdate(
-    id,
-    {
-      title,
-      description,
-      subject,
-      tags,
-      asker,
-    },
-    { new: true, runValidators: true }
-  );
-
-  if (!updatedQuestion) {
+  if (!question) {
     throw generateApiError(404, "Question not found", ["Question not found"]);
   }
 
+  if (question.asker.toString() !== userId) {
+    throw generateApiError(403, "Forbidden", ["Forbidden"]);
+  }
+
+  question.title = title;
+  question.description = description;
+  question.subject = subject;
+  question.tags = tags;
+
+  await question.save();
+
+  // const updatedQuestion = await Question.findByIdAndUpdate(
+  //   id,
+  //   {
+  //     title,
+  //     description,
+  //     subject,
+  //     tags,
+  //     asker,
+  //   },
+  //   { new: true, runValidators: true }
+  // );
+
+  // if (!updatedQuestion) {
+  //   throw generateApiError(404, "Question not found", ["Question not found"]);
+  // }
+
   return res.json(
-    generateApiResponse(200, "Question updated successfully", updatedQuestion),
+    generateApiResponse(200, "Question updated successfully", question),
     {
       status: 200,
     }

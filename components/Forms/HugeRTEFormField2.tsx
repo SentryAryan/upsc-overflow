@@ -54,9 +54,20 @@ const HugeRTEFormField = <T extends FieldValues>({
   // Exact same toolbar as TinyMCEFormField in same order
   const toolbar =
     "undo redo | formatselect | " +
-    "bold italic backcolor | alignleft aligncenter " +
+    "bold italic backcolor forecolor blockquote hr emoticons | alignleft aligncenter" +
     "insertfile image link media table codesample | removeformat | help" +
-    "alignright alignjustify | bullist numlist outdent indent | ";
+    "alignright alignjustify | bullist numlist outdent indent";
+
+  const menu = {
+    file: { title: 'File', items: 'newdocument restoredraft | preview | importword exportpdf exportword | print | deleteallconversations' },
+    edit: { title: 'Edit', items: 'undo redo | cut copy paste pastetext | selectall | searchreplace' },
+    view: { title: 'View', items: 'code revisionhistory | visualaid visualchars visualblocks | spellchecker | preview fullscreen | showcomments' },
+    insert: { title: 'Insert', items: 'image link media addcomment pageembed codesample inserttable | math | charmap emoticons hr | pagebreak nonbreaking anchor tableofcontents | insertdatetime' },
+    format: { title: 'Format', items: 'bold italic underline strikethrough superscript subscript codeformat | styles blocks fontfamily fontsize align lineheight | forecolor backcolor | language | removeformat' },
+    tools: { title: 'Tools', items: 'spellchecker spellcheckerlanguage | a11ycheck code wordcount' },
+    table: { title: 'Table', items: 'inserttable | cell row column | advtablesort | tableprops deletetable' },
+    help: { title: 'Help', items: 'help' }
+  }
 
   const height = 400;
   return (
@@ -82,6 +93,7 @@ const HugeRTEFormField = <T extends FieldValues>({
                 content_css: isDarkMode ? "dark" : "light",
                 plugins: plugins,
                 toolbar: toolbar,
+                menu: menu,
                 height: height,
                 content_style:
                   "body { background-color: " +
@@ -90,12 +102,6 @@ const HugeRTEFormField = <T extends FieldValues>({
                 placeholder: placeholder,
                 tinydrive_token_provider: "/api/tinymce/tinydrive-token",
                 tinydrive_skin: "oxide-dark",
-                menu: {
-                  insert: {
-                    title: "Insert",
-                    items: "image link media insertfile codesample",
-                  },
-                },
               }}
             />
           </FormControl>
