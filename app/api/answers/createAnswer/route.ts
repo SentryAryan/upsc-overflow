@@ -8,9 +8,55 @@ import dbConnect from "@/db/dbConnect";
 import mongoose from "mongoose";
 
 const answerSchema = z.object({
-  content: z.string({message: "Content is required"}).min(1, { message: "Content is required" }).trim(),
-  question: z.string({message: "Question is required"}).min(1, { message: "Question is required" }).trim(),
-  answerer: z.string({message: "Answerer is required"}).min(1, { message: "Answerer is required" }).trim(),
+  content: z
+    .string({ message: "Content must be a string" })
+    .trim()
+    .nonempty({ message: "Content is required" })
+    .refine(
+      (html: string) => {
+        // Check if there are any images in the HTML
+        const hasImages = /<img[^>]*>/i.test(html);
+
+        // Remove all HTML tags to get plain text
+        const plainText = html.replace(/<[^>]*>/g, "");
+
+        // Check for other media elements
+        const hasMedia = /<(video|audio|iframe)[^>]*>/i.test(html);
+
+        // Replace HTML entities like &nbsp; with spaces and trim
+        const cleanText = plainText
+          .replace(/&nbsp;/g, " ")
+          .replace(/&amp;/g, "&")
+          .replace(/&lt;/g, "<")
+          .replace(/&gt;/g, ">")
+          .replace(/&quot;/g, '"')
+          .replace(/&apos;/g, "'")
+          .replace(/&copy;/g, "©")
+          .replace(/&reg;/g, "®")
+          .replace(/&trade;/g, "™")
+          .replace(/&euro;/g, "€")
+          .replace(/&pound;/g, "£")
+          .replace(/&yen;/g, "¥")
+          .trim();
+
+        // Valid if either has meaningful text OR has images
+        return cleanText.length > 0 || hasImages || hasMedia;
+      },
+      {
+        message:
+          "Content must contain either text content(atleast 1 character) or atleast 1 media(image, video, audio) or a non-empty table or non-empty code block",
+      }
+    ),
+  question: z
+    .string({ message: "Question must be a string" })
+    .trim()
+    .nonempty({ message: "Question is required" })
+    .min(1, { message: "Question must be at least 1 character" }),
+  answerer: z
+    .string({ message: "Answerer must be a string" })
+    .trim()
+    .nonempty({ message: "Answerer is required" })
+    .min(1, { message: "Answerer must be at least 1 character" }),
 });
 
 export const POST = errorHandler(async (req: NextRequest) => {

@@ -31,6 +31,13 @@ const answerSchema = z.object({
           .replace(/&lt;/g, "<")
           .replace(/&gt;/g, ">")
           .replace(/&quot;/g, '"')
+          .replace(/&apos;/g, "'")
+          .replace(/&copy;/g, "©")
+          .replace(/&reg;/g, "®")
+          .replace(/&trade;/g, "™")
+          .replace(/&euro;/g, "€")
+          .replace(/&pound;/g, "£")
+          .replace(/&yen;/g, "¥")
           .trim();
 
         // Valid if either has meaningful text OR has images
@@ -38,24 +45,24 @@ const answerSchema = z.object({
       },
       {
         message:
-          "Description must contain either text content(atleast 1 character) or atleast 1 media(image, video, audio) or a non-empty table or non-empty code block",
+          "Content must contain either text content(atleast 1 character) or atleast 1 media(image, video, audio) or a non-empty table or non-empty code block",
       }
     ),
   question: z
     .string({ message: "Question must be a string" })
     .trim()
     .nonempty({ message: "Question is required" })
-    .min(1, { message: "Question is required" }),
+    .min(1, { message: "Question must be at least 1 character" }),
   answerer: z
     .string({ message: "Answerer must be a string" })
     .trim()
     .nonempty({ message: "Answerer is required" })
-    .min(1, { message: "Answerer is required" }),
+    .min(1, { message: "Answerer must be at least 1 character" }),
   answerId: z
     .string({ message: "Answer ID must be a string" })
     .trim()
     .nonempty({ message: "Answer ID is required" })
-    .min(1, { message: "Answer ID is required" }),
+    .min(1, { message: "Answer ID must be at least 1 character" }),
 });
 
 export const PATCH = errorHandler(async (req: NextRequest) => {
