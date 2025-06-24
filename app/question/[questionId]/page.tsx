@@ -61,6 +61,7 @@ const QuestionPage = () => {
   const [answers, setAnswers] = useState<AnswerWithUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isAnswerDeleting, setIsAnswerDeleting] = useState("");
+  const [isAnswerUpdating, setIsAnswerUpdating] = useState("");
   const [isCommentDeleting, setIsCommentDeleting] = useState("");
   const [isLoadingAnswers, setIsLoadingAnswers] = useState(false);
   const [expandedCommentAnswer, setExpandedCommentAnswer] = useState<
@@ -88,7 +89,9 @@ const QuestionPage = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   // Add state for answer editing
-  const [expandedAnswerEdit, setExpandedAnswerEdit] = useState<string | null>(null);
+  const [expandedAnswerEdit, setExpandedAnswerEdit] = useState<string | null>(
+    null
+  );
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
@@ -1007,12 +1010,15 @@ const QuestionPage = () => {
                     } transition-all duration-300 ease-in-out relative`}
                   >
                     {/* Loader overlay for the entire answer */}
-                    {isAnswerDeleting === answer._id && (
+                    {(isAnswerDeleting === answer._id ||
+                      isAnswerUpdating === answer._id) && (
                       <div className="absolute inset-0 bg-background/90 backdrop-blur-sm flex items-center justify-center z-20 rounded-lg transition-all duration-300 ease-in-out">
                         <div className="flex flex-col items-center gap-3">
                           <LoaderDemo />
                           <span className="text-sm text-muted-foreground font-medium">
-                            Deleting answer...
+                            {isAnswerDeleting === answer._id
+                              ? "Deleting answer..."
+                              : "Updating answer..."}
                           </span>
                         </div>
                       </div>
@@ -1063,6 +1069,10 @@ const QuestionPage = () => {
                               className="text-sm text-primary hover:text-primary/80 flex items-center bg-primary/10 hover:bg-primary/20 border border-primary/20 px-3 py-1 rounded-full transition-all duration-300 ease-in-out cursor-pointer animate-in"
                               onClick={() => toggleAnswerEditForm(answer._id)}
                               title="Cancel Edit"
+                              disabled={
+                                isAnswerUpdating === answer._id ||
+                                isAnswerDeleting === answer._id
+                              }
                             >
                               Cancel Edit
                             </button>
@@ -1071,13 +1081,20 @@ const QuestionPage = () => {
                               onClick={() => toggleAnswerEditForm(answer._id)}
                               className="p-2 text-primary hover:text-primary/80 hover:bg-primary/10 rounded-full group cursor-pointer animate-in transition-all duration-300 ease-in-out"
                               title="Edit answer"
+                              disabled={
+                                isAnswerUpdating === answer._id ||
+                                isAnswerDeleting === answer._id
+                              }
                             >
                               <Edit className="h-5 w-5" />
                             </button>
                           )}
                           <button
                             onClick={() => handleAnswerDelete(answer._id)}
-                            disabled={isAnswerDeleting === answer._id}
+                            disabled={
+                              isAnswerDeleting === answer._id ||
+                              isAnswerUpdating === answer._id
+                            }
                             className="p-2 text-destructive hover:text-destructive/80 hover:bg-destructive/10 rounded-full transition-all duration-300 ease-in-out group cursor-pointer"
                             title="Delete answer"
                           >
@@ -1088,26 +1105,27 @@ const QuestionPage = () => {
                     </div>
 
                     {/* Answer Edit Form - Always rendered with smooth transitions */}
-                    {answer.answerer === userId && expandedAnswerEdit === answer._id && (
-                      <div
-                        className={`mt-6 bg-background rounded-lg transition-all duration-300 ease-in-out overflow-hidden flex justify-start items-center animate-slide-up ${
-                          expandedAnswerEdit === answer._id
-                            ? "h-max opacity-100 p-4 border border-border"
-                            : "max-h-0 opacity-0 p-0 mt-0"
-                        }`}
-                      >
-                        <UpdateAnswerForm
-                          userId={userId || ""}
-                          setIsLoadingAnswers={setIsLoadingAnswers}
-                          isLoadingAnswers={isLoadingAnswers}
-                          questionId={questionId as string}
-                          setAnswers={setAnswers}
-                          answers={answers}
-                          answerId={answer._id}
-                          currentContent={answer.content}
-                        />
-                      </div>
-                    )}
+                    {answer.answerer === userId &&
+                      expandedAnswerEdit === answer._id && (
+                        <div
+                          className={`my-6 border-3 border-mode bg-background rounded-lg transition-all duration-300 ease-in-out overflow-hidden flex justify-start items-center animate-slide-up ${
+                            expandedAnswerEdit === answer._id
+                              ? "h-max opacity-100 p-4"
+                              : "max-h-0 opacity-0 p-0 mt-0"
+                          }`}
+                        >
+                          <UpdateAnswerForm
+                            userId={userId || ""}
+                            setIsAnswerUpdating={setIsAnswerUpdating}
+                            isAnswerUpdating={isAnswerUpdating}
+                            questionId={questionId as string}
+                            setAnswers={setAnswers}
+                            answers={answers}
+                            answerId={answer._id}
+                            currentContent={answer.content}
+                          />
+                        </div>
+                      )}
 
                     {/* Answer content with better styling */}
                     <div className="flex">

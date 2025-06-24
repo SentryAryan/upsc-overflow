@@ -58,8 +58,8 @@ const formSchema = z.object({
 
 export function UpdateAnswerForm({
   userId,
-  setIsLoadingAnswers,
-  isLoadingAnswers,
+  setIsAnswerUpdating,
+  isAnswerUpdating,
   questionId,
   setAnswers,
   answers,
@@ -67,8 +67,8 @@ export function UpdateAnswerForm({
   currentContent,
 }: {
   userId: string;
-  setIsLoadingAnswers: (isLoading: boolean) => void;
-  isLoadingAnswers: boolean;
+  setIsAnswerUpdating: Dispatch<SetStateAction<string>>;
+  isAnswerUpdating: string;
   questionId: string;
   setAnswers: Dispatch<SetStateAction<AnswerWithUser[]>>;
   answers: AnswerWithUser[];
@@ -87,7 +87,7 @@ export function UpdateAnswerForm({
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      setIsLoadingAnswers(true);
+      setIsAnswerUpdating(answerId);
       const answerUpdateResponse = await axios.patch(
         "/api/answers/updateAnswer",
         {
@@ -118,8 +118,8 @@ export function UpdateAnswerForm({
         description: errors.join(", "),
       });
     } finally {
-      setIsLoadingAnswers(false);
-      form.reset();
+      setIsAnswerUpdating("");
+      // form.reset();
       dispatch(setQuestionUpdate(true));
     }
   }
@@ -148,7 +148,7 @@ export function UpdateAnswerForm({
 
         <Button
           type="submit"
-          disabled={isLoadingAnswers}
+          disabled={isAnswerUpdating === answerId}
           title="Submit answer"
           className="cursor-pointer"
         >

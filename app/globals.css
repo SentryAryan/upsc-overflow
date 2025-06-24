@@ -27,6 +27,7 @@
   --color-destructive: var(--destructive);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
+  --color-dark-card-accent: var(--dark-card-accent);
   --color-muted-foreground: var(--muted-foreground);
   --color-muted: var(--muted);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -165,6 +166,7 @@
   --muted: oklch(0.209 0 0);
   --muted-foreground: oklch(0.5637 0.0078 247.9662);
   --accent: oklch(0.1928 0.0331 242.5459);
+  --dark-card-accent: oklch(0.9392 0.0166 250.8453);
   --accent-foreground: oklch(0.6692 0.1607 245.011);
   --destructive: oklch(0.6188 0.2376 25.7658);
   --border: oklch(0.2674 0.0047 248.0045);
@@ -573,7 +575,7 @@
 
 .dark .ProseMirror table td,
 .dark .ProseMirror table th {
-  border-color: #4b5563;
+  @apply border-secondary! dark:border-border!;
 }
 
 /* Global table styling for rendered content (outside editor) */
@@ -585,8 +587,8 @@ table {
   min-width: 100%;
   margin: 1rem 0;
   overflow-x: auto;
-  border: 1px solid var(--border) !important;
-  @apply rounded-md!;
+  border: 1px solid var(--secondary) !important;
+  @apply rounded-md! dark:border-border!;
 }
 
 /* Specific handling for tables with many columns */
@@ -602,13 +604,13 @@ table[style*="150"] {
 table td,
 table th {
   min-width: 1em;
-  border: 1px solid var(--border);
+  border: 1px solid var(--secondary);
   padding: 0.5rem 0.75rem;
   vertical-align: top;
   box-sizing: border-box;
   position: relative;
   white-space: nowrap;
-  @apply rounded-md!;
+  @apply rounded-md! dark:border-border!;
 }
 
 .prose table th,
@@ -628,14 +630,14 @@ table td {
 .dark .prose table th,
 .dark table th {
   background-color: var(--muted);
-  border-color: var(--border);
+  border-color: var(--secondary);
 }
 
 .dark .prose table td,
 .dark .prose table th,
 .dark table td,
 .dark table th {
-  border-color: var(--border);
+  border-color: var(--secondary);
 }
 
 /* Table responsive styling */
@@ -664,6 +666,10 @@ colgroup col {
 table p {
   margin: 0;
   padding: 0;
+}
+
+hr {
+  @apply border! border-secondary! dark:border-border!;
 }
 
 @keyframes slideInRight {
