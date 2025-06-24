@@ -54,7 +54,7 @@ const HugeRTEFormField = <T extends FieldValues>({
   // Exact same toolbar as TinyMCEFormField in same order
   const toolbar =
     "undo redo | formatselect | " +
-    "bold italic backcolor forecolor blockquote hr emoticons | alignleft aligncenter" +
+    "bold italic backcolor forecolor blockquote hr emoticons charmap | alignleft aligncenter" +
     "insertfile image link media table codesample | removeformat | help" +
     "alignright alignjustify | bullist numlist outdent indent";
 

@@ -105,8 +105,8 @@ const QuestionCard = ({ question }: { question: QuestionCardProps }) => {
     const mouseY = e.clientY - centerY;
 
     // Convert to percentage of card dimensions for smoother effect
-    const rotateX = (mouseY / rect.height) * -20; // Vertical tilt (inverted)
-    const rotateY = (mouseX / rect.width) * 20; // Horizontal tilt
+    const rotateX = (mouseY / rect.height) * -10; // Vertical tilt (inverted)
+    const rotateY = (mouseX / rect.width) * 10; // Horizontal tilt
 
     setMousePosition({ x: rotateY, y: rotateX });
   };
@@ -121,21 +121,20 @@ const QuestionCard = ({ question }: { question: QuestionCardProps }) => {
   };
 
   const cardStyle = {
-    transform: isHovered 
+    transform: isHovered
       ? `perspective(1000px) rotateX(${mousePosition.y}deg) rotateY(${mousePosition.x}deg) translateZ(10px)`
-      : 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)',
-    transition: isHovered ? 'none' : 'transform 0.3s ease-out',
+      : "perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)",
+    transition: isHovered ? "none" : "transform 0.3s ease-out",
   };
 
   return (
     <div
-      // Card Filter on hover using translate
-      // className="bg-background rounded-lg card-shadow transition-all duration-300 p-6 border-mode w-full h-full flex flex-col cursor-pointer group relative before:absolute before:bg-accent before:inset-0 before:translate-x-[-100%] before:transition-transform overflow-hidden before:duration-300 before:ease-in-out before:rounded-lg hover:before:translate-x-0 before:z-[-1] z-1 animate-slide-up before:shadow-mode-hover"
+      // Card Filter on hover using translate-x(faster due to no re-painting)
+      className="bg-background rounded-lg card-shadow transition-all duration-300 p-6 border-mode w-full h-full flex flex-col cursor-pointer group relative before:absolute before:bg-accent before:inset-0 before:translate-x-[-100%] before:transition-transform overflow-hidden before:duration-300 before:ease-in-out before:rounded-lg hover:before:translate-x-0 animate-slide-up before:shadow-mode-hover"
+      // Card Filter on hover using position(slower due to re-painting)
+      // className="bg-background rounded-lg card-shadow transition-all duration-300 p-6 border-mode border-3 w-full h-full flex flex-col cursor-pointer group relative before:absolute before:bg-accent before:rounded-lg overflow-hidden animate-slide-up before:shadow-mode-hover before:transition-[right] before:duration-300 before:ease-in-out before:inset-0 before:right-full hover:before:right-0"
 
-      // Card Filter on hover using animation
-      className="bg-background rounded-lg card-shadow transition-all duration-300 p-6 border-mode w-full h-full flex flex-col cursor-pointer group relative before:absolute before:bg-accent before:rounded-lg overflow-hidden animate-slide-up before:shadow-mode-hover before:transition-[right] before:duration-300 before:ease-in-out before:inset-0 before:right-full hover:before:right-0"
-      
-      // Card Filter on hover using width
+      // Card Filter on hover using width(slower due to re-painting)
       // className="bg-background rounded-lg card-shadow transition-all duration-300 p-6 border-mode w-full h-full flex flex-col cursor-pointer group relative before:absolute before:bg-accent before:rounded-lg overflow-hidden animate-slide-up before:shadow-mode-hover before:transition-[width] before:duration-300 before:ease-in-out before:inset-0 before:w-0 before:h-full hover:before:w-full"
 
       ref={cardRef}

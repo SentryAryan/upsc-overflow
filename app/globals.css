@@ -238,7 +238,7 @@
 
   pre[class*="language-"],
   code[class*="language-"] {
-    @apply bg-gray-100 dark:bg-gray-400 p-4 rounded-md font-mono text-sm dark:text-gray-900 w-max;
+    @apply bg-gray-100 dark:bg-gray-400 p-4 rounded-md font-mono text-sm dark:text-gray-900 w-max border-mode;
   }
 
   /* pre[class*="language-"] {
@@ -266,7 +266,7 @@
 
 /* HugeRTE Editor Styling */
 .tox-hugerte {
-  @apply border-3! border-secondary! dark:border-border! rounded-lg! bg-background! shadow-lg! hover:shadow-xl! transition-all! duration-300! ease-in-out! focus-visible:border-ring! focus-visible:ring-ring/50! focus-visible:ring-[3px]! aria-invalid:ring-destructive/20! dark:aria-invalid:ring-destructive/40! aria-invalid:border-destructive! aria-invalid:shadow-none! dark:aria-invalid:border-destructive!;
+  @apply border-3! border-secondary! dark:border-border! rounded-lg! bg-background! shadow-lg! transition-all! duration-300! ease-in-out! focus-visible:border-ring! focus-visible:ring-ring/50! focus-visible:ring-[3px]! aria-invalid:ring-destructive/20! dark:aria-invalid:ring-destructive/40! aria-invalid:border-destructive! aria-invalid:shadow-none! dark:aria-invalid:border-destructive!;
 }
 
 /* .tox-edit-area__iframe {

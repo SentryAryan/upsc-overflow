@@ -39,7 +39,7 @@ const SelectFormField = <T extends FieldValues>({
       render={({ field }) => (
         <FormItem>
           <FormLabel className="font-[900] group-hover:text-primary transition-all duration-300 ease-in-out">{label}</FormLabel>
-          <Select onValueChange={field.onChange} defaultValue={field.value}>
+          <Select onValueChange={field.onChange} value={field.value}>
             <FormControl>
               <SelectTrigger className={`input bg-background! border-3! dark:border-border border-secondary aria-invalid:shadow-none! cursor-pointer shadow-lg hover:shadow-xl dark:focus:border-ring focus;ring-ring/50 dark:focus:ring-ring/50 dark:focus:ring-[3px] dark:aria-invalid:border-destructive dark:aria-invalid:shadow-none ${isDarkMode ? "dark" : ""} focus:border-ring`}>
                 <SelectValue placeholder={placeholder} />

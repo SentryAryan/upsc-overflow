@@ -6,6 +6,7 @@ import { UpdateQuestionForm } from "@/components/Forms/UpdateQuestionForm";
 import { LoaderDemo } from "@/components/Loaders/LoaderDemo";
 import { AnswerTypeSchema } from "@/db/models/answer.model";
 import { QuestionType } from "@/db/models/question.model";
+import { setQuestionUpdate } from "@/lib/redux/slices/questionUpdate.slice";
 import { User } from "@clerk/backend";
 import { useAuth } from "@clerk/nextjs";
 import axios from "axios";
@@ -21,10 +22,10 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
-import { setQuestionUpdate } from "@/lib/redux/slices/questionUpdate.slice";
+import { toast } from "sonner";
+import { UpdateAnswerForm } from "@/components/Forms/UpdateAnswerForm";
 
 export interface AnswerWithUser extends AnswerTypeSchema {
   user: User;
@@ -80,7 +81,48 @@ const QuestionPage = () => {
     useState(false);
   const [isQuestionCommentLoading, setIsQuestionCommentLoading] =
     useState(false);
-  const [isQuestionEditFormExpanded, setIsQuestionEditFormExpanded] = useState(false);
+  const [isQuestionEditFormExpanded, setIsQuestionEditFormExpanded] =
+    useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  // Add state for answer editing
+  const [expandedAnswerEdit, setExpandedAnswerEdit] = useState<string | null>(null);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+
+    const rect = cardRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    // Calculate mouse position relative to card center
+    const mouseX = e.clientX - centerX;
+    const mouseY = e.clientY - centerY;
+
+    // Convert to percentage of card dimensions for smoother effect
+    const rotateX = (mouseY / rect.height) * -10; // Vertical tilt (inverted)
+    const rotateY = (mouseX / rect.width) * 10; // Horizontal tilt
+
+    setMousePosition({ x: rotateY, y: rotateX });
+  };
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    setMousePosition({ x: 0, y: 0 }); // Reset to center
+  };
+
+  const cardStyle = {
+    transform: isHovered
+      ? `perspective(1000px) rotateX(${mousePosition.y}deg) rotateY(${mousePosition.x}deg) translateZ(10px)`
+      : "perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)",
+    transition: isHovered ? "none" : "transform 0.3s ease-out",
+  };
 
   const getQuestionById = async (questionId: string) => {
     try {
@@ -375,7 +417,10 @@ const QuestionPage = () => {
     }
   };
 
-  const handleCommentDelete = async (commentId: string, isQuestionComment: boolean = false) => {
+  const handleCommentDelete = async (
+    commentId: string,
+    isQuestionComment: boolean = false
+  ) => {
     try {
       setIsCommentDeleting(commentId);
       const response = await axios.delete(
@@ -383,18 +428,25 @@ const QuestionPage = () => {
       );
       if (response.data.success) {
         toast.success("Comment deleted successfully");
-        
+
         if (isQuestionComment) {
           // Remove from question comments
-          setQuestionComments(questionComments.filter((comment) => comment._id !== commentId));
+          setQuestionComments(
+            questionComments.filter((comment) => comment._id !== commentId)
+          );
           dispatch(setQuestionUpdate(true));
         } else {
           // Remove from answer comments
           const updatedAnswers = answers.map((answer) => {
-            if (answer.comments && answer.comments.some((comment) => comment._id === commentId)) {
+            if (
+              answer.comments &&
+              answer.comments.some((comment) => comment._id === commentId)
+            ) {
               return {
                 ...answer,
-                comments: answer.comments.filter((comment) => comment._id !== commentId)
+                comments: answer.comments.filter(
+                  (comment) => comment._id !== commentId
+                ),
               };
             }
             return answer;
@@ -441,6 +493,15 @@ const QuestionPage = () => {
     setIsQuestionEditFormExpanded((prev) => !prev);
   };
 
+  // Add toggle function for answer editing
+  const toggleAnswerEditForm = (answerId: string) => {
+    if (expandedAnswerEdit === answerId) {
+      setExpandedAnswerEdit(null);
+    } else {
+      setExpandedAnswerEdit(answerId);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -469,13 +530,23 @@ const QuestionPage = () => {
           {/* Edit and Delete buttons - only visible to question author */}
           {question.asker === userId && (
             <div className="flex items-center gap-2 ml-4">
-              <button
-                onClick={toggleQuestionEditForm}
-                className="p-2 text-primary hover:text-primary/80 hover:bg-primary/10 rounded-full transition-all duration-300 ease-in-out group cursor-pointer"
-                title="Edit question"
-              >
-                <Edit className="h-5 w-5" />
-              </button>
+              {isQuestionEditFormExpanded ? (
+                <button
+                  className="text-sm text-primary hover:text-primary/80 flex items-center bg-primary/10 hover:bg-primary/20 border border-primary/20 px-3 py-1 rounded-full transition-all duration-300 ease-in-out cursor-pointer animate-in"
+                  onClick={toggleQuestionEditForm}
+                  title="Cancel Edit"
+                >
+                  Cancel Edit
+                </button>
+              ) : (
+                <button
+                  onClick={toggleQuestionEditForm}
+                  className="p-2 text-primary hover:text-primary/80 hover:bg-primary/10 rounded-full group cursor-pointer animate-in"
+                  title="Edit question transition-all duration-300 ease-in-out"
+                >
+                  <Edit className="h-5 w-5" />
+                </button>
+              )}
               <button
                 onClick={handleQuestionDelete}
                 className="p-2 text-destructive hover:text-destructive/80 hover:bg-destructive/10 rounded-full transition-all duration-300 ease-in-out group cursor-pointer"
@@ -529,9 +600,9 @@ const QuestionPage = () => {
         </div>
 
         {/* Question Edit Form - Always rendered with smooth transitions */}
-        {question.asker === userId && (
+        {question.asker === userId && isQuestionEditFormExpanded && (
           <div
-            className={`mt-6 bg-background rounded-lg  transition-all duration-300 ease-in-out overflow-hidden flex justify-start items-center ${
+            className={`mt-6 bg-background rounded-lg transition-all duration-300 ease-in-out overflow-hidden flex justify-start items-center animate-slide-up ${
               isQuestionEditFormExpanded
                 ? "h-max opacity-100 p-4"
                 : "max-h-0 opacity-0 p-0 mt-0"
@@ -547,6 +618,7 @@ const QuestionPage = () => {
               setIsLoading={setIsLoading}
               question={question}
               setQuestion={setQuestion}
+              isQuestionEditFormExpanded={isQuestionEditFormExpanded}
             />
           </div>
         )}
@@ -659,7 +731,7 @@ const QuestionPage = () => {
                 onClick={() =>
                   setIsQuestionCommentFormExpanded((prev) => !prev)
                 }
-                className="text-sm text-primary hover:text-primary/80 flex items-center bg-primary/10 hover:bg-primary/20 border border-primary/20 px-3 py-1 rounded-full transition-all duration-300 ease-in-out"
+                className="text-sm text-primary hover:text-primary/80 flex items-center bg-primary/10 hover:bg-primary/20 border border-primary/20 px-3 py-1 rounded-full transition-all duration-300 ease-in-out cursor-pointer animate-in"
               >
                 {isQuestionCommentFormExpanded ? "Cancel" : "Add Comment"}
               </button>
@@ -667,24 +739,26 @@ const QuestionPage = () => {
           </div>
 
           {/* Question Comment Form - Always rendered with smooth transitions */}
-          <div
-            className={`mt-3 mb-6 bg-background rounded-lg border border-border transition-all duration-300 ease-in-out overflow-hidden ${
-              isQuestionCommentFormExpanded
-                ? "h-max opacity-100 p-4"
-                : "max-h-0 opacity-0 p-0 mb-0 mt-0"
-            }`}
-          >
-            <CommentFormTA
-              questionId={questionId as string}
-              userId={userId || ""}
-              setIsCommentLoading={setIsCommentLoading}
-              isCommentLoading={isCommentLoading}
-              questionComments={questionComments}
-              setQuestionComments={setQuestionComments}
-              isQuestionCommentLoading={isQuestionCommentLoading}
-              setIsQuestionCommentLoading={setIsQuestionCommentLoading}
-            />
-          </div>
+          {isQuestionCommentFormExpanded && (
+            <div
+              className={`mt-3 mb-6 bg-background rounded-lg border border-border transition-all duration-300 ease-in-out overflow-hidden animate-slide-up ${
+                isQuestionCommentFormExpanded
+                  ? "h-max opacity-100 p-4"
+                  : "max-h-0 opacity-0 p-0 mb-0 mt-0"
+              }`}
+            >
+              <CommentFormTA
+                questionId={questionId as string}
+                userId={userId || ""}
+                setIsCommentLoading={setIsCommentLoading}
+                isCommentLoading={isCommentLoading}
+                questionComments={questionComments}
+                setQuestionComments={setQuestionComments}
+                isQuestionCommentLoading={isQuestionCommentLoading}
+                setIsQuestionCommentLoading={setIsQuestionCommentLoading}
+              />
+            </div>
+          )}
 
           {/* Display Question Comments */}
           {isQuestionCommentLoading ? (
@@ -800,9 +874,7 @@ const QuestionPage = () => {
                                 {comment.user?.imageUrl ? (
                                   <Image
                                     src={comment.user.imageUrl}
-                                    alt={
-                                      comment.user.firstName || "User"
-                                    }
+                                    alt={comment.user.firstName || "User"}
                                     width={24}
                                     height={24}
                                     className="rounded-full mr-2 border border-border transition-all duration-300 ease-in-out"
@@ -810,9 +882,8 @@ const QuestionPage = () => {
                                 ) : (
                                   <div className="w-6 h-6 bg-muted rounded-full flex items-center justify-center mr-2 transition-all duration-300 ease-in-out">
                                     <span className="text-muted-foreground text-xs">
-                                      {comment.user?.firstName?.charAt(
-                                        0
-                                      ) || "?"}
+                                      {comment.user?.firstName?.charAt(0) ||
+                                        "?"}
                                     </span>
                                   </div>
                                 )}
@@ -833,7 +904,9 @@ const QuestionPage = () => {
                               {/* Delete button - only visible to comment author */}
                               {comment.commenter === userId && (
                                 <button
-                                  onClick={() => handleCommentDelete(comment._id, true)}
+                                  onClick={() =>
+                                    handleCommentDelete(comment._id, true)
+                                  }
                                   disabled={isCommentDeleting === comment._id}
                                   className="p-1 text-destructive hover:text-destructive/80 hover:bg-destructive/10 rounded-full transition-all duration-300 ease-in-out"
                                   title="Delete comment"
@@ -864,37 +937,48 @@ const QuestionPage = () => {
         </div>
       ) : (
         <>
-          {/* Add Answer Button */}
-          <div className="bg-background rounded-lg shadow-md hover:shadow-lg p-6 md:p-8 border-2 border-border transition-all">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl md:text-2xl font-bold text-card-foreground transition-all duration-300 ease-in-out">
+          {/* Add Answer Section */}
+          <div
+            className="bg-background rounded-lg card-shadow p-6 md:p-8 border-3 border-mode dark:border-primary relative before:absolute before:bg-accent before:inset-0 before:translate-x-[-100%] before:transition-transform overflow-hidden before:duration-300 before:ease-in-out before:rounded-lg hover:before:translate-x-0 animate-slide-up before:shadow-mode-hover group"
+            // These are the lines for the card hover effect(Title in the direction of the mouse)
+            // ref={cardRef}
+            // style={cardStyle}
+            // onMouseMove={handleMouseMove}
+            // onMouseEnter={handleMouseEnter}
+            // onMouseLeave={handleMouseLeave}
+          >
+            {/* Answer Form Header */}
+            <div className="flex items-center justify-between relative">
+              <h2 className="text-xl md:text-2xl font-bold text-card-foreground transition-all duration-300 ease-in-out group-hover:text-primary">
                 Your Answer
               </h2>
               <button
                 onClick={toggleAnswerForm}
-                className="text-sm text-primary hover:text-primary/80 flex items-center bg-primary/10 hover:bg-primary/20 border border-primary/20 px-4 py-2 rounded-full transition-all duration-300 ease-in-out cursor-pointer"
+                className="text-sm text-primary hover:text-primary/80 flex items-center bg-primary/10 hover:bg-primary/20 border border-primary/20 px-4 py-2 rounded-full transition-all duration-300 ease-in-out cursor-pointer animate-in group-hover:filter-shadow font-[900]"
               >
                 {isAnswerFormExpanded ? "Cancel" : "Give Answer"}
               </button>
             </div>
 
-            {/* Answer form - Always rendered with smooth transitions */}
-            <div
-              className={`mt-6 transition-all duration-300 ease-in-out overflow-hidden ${
-                isAnswerFormExpanded
-                  ? "max-h-[600px] opacity-100"
-                  : "max-h-0 opacity-0 mt-0"
-              }`}
-            >
-              <AnswerFormTA
-                questionId={questionId as string}
-                userId={userId || ""}
-                setIsLoadingAnswers={setIsLoadingAnswers}
-                setAnswers={setAnswers}
-                answers={answers}
-                isLoadingAnswers={isLoadingAnswers}
-              />
-            </div>
+            {/* Answer form - Conditionally rendered with smooth transitions */}
+            {isAnswerFormExpanded && (
+              <div
+                className={`mt-6 transition-all duration-300 ease-in-out border-3 border-mode dark:border-primary overflow-hidden animate-slide-up relative rounded-md card-shadow group-hover:shadow-mode-hover ${
+                  isAnswerFormExpanded
+                    ? "max-h-[600px] opacity-100"
+                    : "max-h-0 opacity-0 mt-0"
+                }`}
+              >
+                <AnswerFormTA
+                  questionId={questionId as string}
+                  userId={userId || ""}
+                  setIsLoadingAnswers={setIsLoadingAnswers}
+                  setAnswers={setAnswers}
+                  answers={answers}
+                  isLoadingAnswers={isLoadingAnswers}
+                />
+              </div>
+            )}
           </div>
 
           {/* Answers Section - Enhanced */}
@@ -919,9 +1003,7 @@ const QuestionPage = () => {
                   <div
                     key={index}
                     className={`${
-                      index > 0
-                        ? "border-t-3 border-border pt-8"
-                        : ""
+                      index > 0 ? "border-t-3 border-border pt-8" : ""
                     } transition-all duration-300 ease-in-out relative`}
                   >
                     {/* Loader overlay for the entire answer */}
@@ -973,18 +1055,59 @@ const QuestionPage = () => {
                         </div>
                       </div>
 
-                      {/* Delete button - only visible to answer author */}
+                      {/* Edit and Delete buttons - only visible to answer author */}
                       {answer.answerer === userId && (
-                        <button
-                          onClick={() => handleAnswerDelete(answer._id)}
-                          disabled={isAnswerDeleting === answer._id}
-                          className="p-2 text-destructive hover:text-destructive/80 hover:bg-destructive/10 rounded-full transition-all duration-300 ease-in-out group cursor-pointer"
-                          title="Delete answer"
-                        >
-                          <Trash2 className="h-5 w-5" />
-                        </button>
+                        <div className="flex items-center gap-2 ml-4">
+                          {expandedAnswerEdit === answer._id ? (
+                            <button
+                              className="text-sm text-primary hover:text-primary/80 flex items-center bg-primary/10 hover:bg-primary/20 border border-primary/20 px-3 py-1 rounded-full transition-all duration-300 ease-in-out cursor-pointer animate-in"
+                              onClick={() => toggleAnswerEditForm(answer._id)}
+                              title="Cancel Edit"
+                            >
+                              Cancel Edit
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => toggleAnswerEditForm(answer._id)}
+                              className="p-2 text-primary hover:text-primary/80 hover:bg-primary/10 rounded-full group cursor-pointer animate-in transition-all duration-300 ease-in-out"
+                              title="Edit answer"
+                            >
+                              <Edit className="h-5 w-5" />
+                            </button>
+                          )}
+                          <button
+                            onClick={() => handleAnswerDelete(answer._id)}
+                            disabled={isAnswerDeleting === answer._id}
+                            className="p-2 text-destructive hover:text-destructive/80 hover:bg-destructive/10 rounded-full transition-all duration-300 ease-in-out group cursor-pointer"
+                            title="Delete answer"
+                          >
+                            <Trash2 className="h-5 w-5" />
+                          </button>
+                        </div>
                       )}
                     </div>
+
+                    {/* Answer Edit Form - Always rendered with smooth transitions */}
+                    {answer.answerer === userId && expandedAnswerEdit === answer._id && (
+                      <div
+                        className={`mt-6 bg-background rounded-lg transition-all duration-300 ease-in-out overflow-hidden flex justify-start items-center animate-slide-up ${
+                          expandedAnswerEdit === answer._id
+                            ? "h-max opacity-100 p-4 border border-border"
+                            : "max-h-0 opacity-0 p-0 mt-0"
+                        }`}
+                      >
+                        <UpdateAnswerForm
+                          userId={userId || ""}
+                          setIsLoadingAnswers={setIsLoadingAnswers}
+                          isLoadingAnswers={isLoadingAnswers}
+                          questionId={questionId as string}
+                          setAnswers={setAnswers}
+                          answers={answers}
+                          answerId={answer._id}
+                          currentContent={answer.content}
+                        />
+                      </div>
+                    )}
 
                     {/* Answer content with better styling */}
                     <div className="flex">
@@ -1082,7 +1205,7 @@ const QuestionPage = () => {
                             onClick={() =>
                               answer._id && toggleCommentForm(answer._id)
                             }
-                            className="text-sm text-primary hover:text-primary/80 flex items-center bg-primary/10 hover:bg-primary/20 border border-primary/20 px-3 py-1 rounded-full transition-all duration-300 ease-in-out"
+                            className="text-sm text-primary hover:text-primary/80 flex items-center bg-primary/10 hover:bg-primary/20 border border-primary/20 px-3 py-1 rounded-full transition-all duration-300 ease-in-out cursor-pointer animate-in"
                           >
                             {expandedCommentAnswer === answer._id
                               ? "Cancel"
@@ -1092,27 +1215,29 @@ const QuestionPage = () => {
                       </div>
 
                       {/* Comment form - Always rendered with smooth transitions */}
-                      <div
-                        className={`mt-3 mb-6 bg-background rounded-lg border border-border transition-all duration-300 ease-in-out overflow-hidden ${
-                          answer._id && expandedCommentAnswer === answer._id
-                            ? "h-max opacity-100 p-4"
-                            : "max-h-0 opacity-0 p-0 mb-0 mt-0"
-                        }`}
-                      >
-                        <CommentFormTA
-                          questionId={questionId as string}
-                          userId={userId || ""}
-                          setIsCommentLoading={setIsCommentLoading}
-                          isCommentLoading={isCommentLoading}
-                          setAnswers={setAnswers}
-                          answers={answers}
-                          answerId={answer._id}
-                          isQuestionCommentLoading={isQuestionCommentLoading}
-                          setIsQuestionCommentLoading={
-                            setIsQuestionCommentLoading
-                          }
-                        />
-                      </div>
+                      {answer._id && expandedCommentAnswer === answer._id && (
+                        <div
+                          className={`mt-3 mb-6 bg-background rounded-lg border border-border transition-all duration-300 ease-in-out overflow-hidden animate-slide-up ${
+                            answer._id && expandedCommentAnswer === answer._id
+                              ? "h-max opacity-100 p-4"
+                              : "max-h-0 opacity-0 p-0 mb-0 mt-0"
+                          }`}
+                        >
+                          <CommentFormTA
+                            questionId={questionId as string}
+                            userId={userId || ""}
+                            setIsCommentLoading={setIsCommentLoading}
+                            isCommentLoading={isCommentLoading}
+                            setAnswers={setAnswers}
+                            answers={answers}
+                            answerId={answer._id}
+                            isQuestionCommentLoading={isQuestionCommentLoading}
+                            setIsQuestionCommentLoading={
+                              setIsQuestionCommentLoading
+                            }
+                          />
+                        </div>
+                      )}
 
                       {/* Display comments with enhanced styling */}
                       {isCommentLoading === answer._id ? (
@@ -1174,7 +1299,9 @@ const QuestionPage = () => {
                                               ? "text-primary"
                                               : "text-muted-foreground"
                                           }`}
-                                          disabled={isCommentDeleting === comment._id}
+                                          disabled={
+                                            isCommentDeleting === comment._id
+                                          }
                                         >
                                           <ArrowUp
                                             className={`w-4 h-4 ${
@@ -1230,7 +1357,9 @@ const QuestionPage = () => {
                                               ? "text-destructive"
                                               : "text-muted-foreground"
                                           }`}
-                                          disabled={isCommentDeleting === comment._id}
+                                          disabled={
+                                            isCommentDeleting === comment._id
+                                          }
                                         >
                                           <ArrowDown
                                             className={`w-4 h-4 ${
@@ -1250,7 +1379,8 @@ const QuestionPage = () => {
                                               <Image
                                                 src={comment.user.imageUrl}
                                                 alt={
-                                                  comment.user.firstName || "User"
+                                                  comment.user.firstName ||
+                                                  "User"
                                                 }
                                                 width={24}
                                                 height={24}
@@ -1282,8 +1412,16 @@ const QuestionPage = () => {
                                           {/* Delete button - only visible to comment author */}
                                           {comment.commenter === userId && (
                                             <button
-                                              onClick={() => handleCommentDelete(comment._id, false)}
-                                              disabled={isCommentDeleting === comment._id}
+                                              onClick={() =>
+                                                handleCommentDelete(
+                                                  comment._id,
+                                                  false
+                                                )
+                                              }
+                                              disabled={
+                                                isCommentDeleting ===
+                                                comment._id
+                                              }
                                               className="p-1 text-destructive hover:text-destructive/80 hover:bg-destructive/10 rounded-full transition-all duration-300 ease-in-out"
                                               title="Delete comment"
                                             >

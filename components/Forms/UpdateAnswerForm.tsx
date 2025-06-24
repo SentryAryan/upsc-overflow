@@ -5,14 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
+import { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { z } from "zod";
-import TextAreaFormField from "./TextAreaFormField";
-import HugeRTEFormField from "./HugeRTEFormField2";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../lib/redux/store";
 import { setQuestionUpdate } from "../../lib/redux/slices/questionUpdate.slice";
+import { RootState } from "../../lib/redux/store";
+import HugeRTEFormField from "./HugeRTEFormField2";
 
 const formSchema = z.object({
   content: z
@@ -56,27 +56,31 @@ const formSchema = z.object({
     ),
 });
 
-export function AnswerFormTA({
+export function UpdateAnswerForm({
   userId,
   setIsLoadingAnswers,
   isLoadingAnswers,
   questionId,
   setAnswers,
   answers,
+  answerId,
+  currentContent,
 }: {
   userId: string;
   setIsLoadingAnswers: (isLoading: boolean) => void;
   isLoadingAnswers: boolean;
   questionId: string;
-  setAnswers: (answers: AnswerWithUser[]) => void;
+  setAnswers: Dispatch<SetStateAction<AnswerWithUser[]>>;
   answers: AnswerWithUser[];
+  answerId: string;
+  currentContent: string;
 }) {
   const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
   const dispatch = useDispatch();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      content: "",
+      content: currentContent,
     },
     mode: "all",
   });
@@ -84,26 +88,33 @@ export function AnswerFormTA({
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       setIsLoadingAnswers(true);
-      const answer = await axios.post("/api/answers/createAnswer", {
-        ...values,
-        question: questionId,
-        answerer: userId,
-      });
-      console.log("This is the answer", answer);
-      const answerResponse = await axios.get(
-        `/api/answers/getAnswerById?answerId=${answer.data.data.answer._id}`
+      const answerUpdateResponse = await axios.patch(
+        "/api/answers/updateAnswer",
+        {
+          ...values,
+          question: questionId,
+          answerer: userId,
+          answerId: answerId,
+        }
       );
-      setAnswers([
-        ...answers,
-        answerResponse.data.data.answerWithCommentsAndUsers,
-      ]);
-      toast.success("Answer created successfully");
+      console.log("This is the updated answer", answerUpdateResponse);
+      const answerResponse = await axios.get(
+        `/api/answers/getAnswerById?answerId=${answerUpdateResponse.data.data._id}`
+      );
+      setAnswers((currentAnswers: AnswerWithUser[]) =>
+        currentAnswers.map((answer: AnswerWithUser) =>
+          answer._id === answerId
+            ? answerResponse.data.data.answerWithCommentsAndUsers
+            : answer
+        )
+      );
+      toast.success("Answer updated successfully");
     } catch (error: any) {
       console.log(error);
       const errors = error.response.data.errors.map(
         (error: any) => error.message
       );
-      toast.error("Failed to create answer", {
+      toast.error("Failed to update answer", {
         description: errors.join(", "),
       });
     } finally {

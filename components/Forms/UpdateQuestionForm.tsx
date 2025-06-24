@@ -9,7 +9,7 @@ import { Form } from "@/components/ui/form";
 import { QuestionType } from "@/db/models/question.model";
 import { setQuestions } from "@/lib/redux/slices/questions.slice";
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { RootState } from "../../lib/redux/store";
@@ -82,6 +82,7 @@ export function UpdateQuestionForm({
   subject,
   currentTags,
   question,
+  isQuestionEditFormExpanded,
   setIsLoading,
   setQuestion,
 }: {
@@ -92,6 +93,7 @@ export function UpdateQuestionForm({
   subject: string;
   currentTags: string[];
   question: QuestionType;
+  isQuestionEditFormExpanded: boolean;
   setIsLoading: (isLoading: boolean) => void;
   setQuestion: (question: QuestionType) => void;
 }) {
@@ -145,11 +147,22 @@ export function UpdateQuestionForm({
     }
   }
 
+  // Use this effect when using transition to show/not show based on isQuestionEditFormExpanded, no need of this effect if conditionally rendering as form will be mounted fresh when isQuestionEditFormExpanded is true hence reseting to original values
+  // useEffect(() => {
+  //   if (!isQuestionEditFormExpanded) {
+  //     // Reset form to original values
+  //     form.reset();
+  //     // Reset tags to original values
+  //     setTags(currentTags);
+  //     setTag("");
+  //   }
+  // }, [isQuestionEditFormExpanded]);
+
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full p-6 border-4 border-border rounded-md space-y-6"
+        className="w-full p-6 border-3 border-mode rounded-md space-y-6"
       >
         <InputFormField
           control={form.control}
