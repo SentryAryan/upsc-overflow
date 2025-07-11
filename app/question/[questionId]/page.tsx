@@ -545,7 +545,7 @@ const QuestionPage = () => {
                 <button
                   onClick={toggleQuestionEditForm}
                   className="p-2 text-primary hover:text-primary/80 hover:bg-primary/10 rounded-full group cursor-pointer animate-in"
-                  title="Edit question transition-all duration-300 ease-in-out"
+                  title="Edit question"
                 >
                   <Edit className="h-5 w-5" />
                 </button>
@@ -1104,7 +1104,7 @@ const QuestionPage = () => {
                       )}
                     </div>
 
-                    {/* Answer Edit Form - Always rendered with smooth transitions */}
+                    {/* Answer Edit Form - Conditionally rendered with smooth transitions */}
                     {answer.answerer === userId &&
                       expandedAnswerEdit === answer._id && (
                         <div
@@ -1142,6 +1142,10 @@ const QuestionPage = () => {
                               ? "text-primary"
                               : "text-muted-foreground"
                           }`}
+                          disabled={
+                            isAnswerDeleting === answer._id ||
+                            isAnswerUpdating === answer._id
+                          }
                         >
                           <ArrowUp
                             className={`w-6 h-6 ${
@@ -1185,6 +1189,10 @@ const QuestionPage = () => {
                               ? "text-destructive"
                               : "text-muted-foreground"
                           }`}
+                          disabled={
+                            isAnswerDeleting === answer._id ||
+                            isAnswerUpdating === answer._id
+                          }
                         >
                           <ArrowDown
                             className={`w-6 h-6 ${
@@ -1208,6 +1216,10 @@ const QuestionPage = () => {
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-3">
                           <button
+                            disabled={
+                              isAnswerDeleting === answer._id ||
+                              isAnswerUpdating === answer._id
+                            }
                             onClick={() => toggleCommentsVisibility(answer._id)}
                             className="text-sm text-muted-foreground flex items-center hover:text-foreground transition-all duration-300 ease-in-out"
                           >
@@ -1224,6 +1236,10 @@ const QuestionPage = () => {
                               answer._id && toggleCommentForm(answer._id)
                             }
                             className="text-sm text-primary hover:text-primary/80 flex items-center bg-primary/10 hover:bg-primary/20 border border-primary/20 px-3 py-1 rounded-full transition-all duration-300 ease-in-out cursor-pointer animate-in"
+                            disabled={
+                              isAnswerDeleting === answer._id ||
+                              isAnswerUpdating === answer._id
+                            }
                           >
                             {expandedCommentAnswer === answer._id
                               ? "Cancel"

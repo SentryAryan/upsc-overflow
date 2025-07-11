@@ -18,14 +18,17 @@ const likeSchema: Schema<LikeTypeSchema> = new mongoose.Schema(
     question: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Question",
+      index: true,
     },
     answer: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Answer",
+      index: true,
     },
     comment: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Comment",
+      index: true,
     },
     isLiked: {
       type: Boolean,

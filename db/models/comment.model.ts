@@ -16,10 +16,12 @@ const commentSchema: Schema<CommentTypeSchema> = new mongoose.Schema(
     answer: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Answer",
+      index: true,
     },
     question: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Question",
+      index: true,
     },
     content: {
       type: String,

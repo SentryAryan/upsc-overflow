@@ -15,6 +15,7 @@ const answerSchema: Schema<AnswerTypeSchema> = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Question",
       required: true,
+      index: true,
     },
     content: {
       type: String,
