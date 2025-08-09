@@ -8,6 +8,8 @@ import { z } from "zod";
 import dbConnect from "@/db/dbConnect";
 import mongoose from "mongoose";
 import { auth } from "@clerk/nextjs/server";
+import Like from "../../../../db/models/like.model";
+import getClerkUserById from "../../../../lib/helpers/getClerkUserById";
 
 const commentSchema = z.object({
   content: z
@@ -107,6 +109,29 @@ export const PATCH = errorHandler(async (req: NextRequest) => {
 
   comment.content = content;
   await comment.save();
+  const user = await getClerkUserById(comment.commenter);
+  const commentLikes = await Like.countDocuments({
+    comment: comment._id,
+    isLiked: true,
+  });
+  const commentDislikes = await Like.countDocuments({
+    comment: comment._id,
+    isLiked: false,
+  });
+  const isLikedByLoggedInUser = (await Like.findOne({
+    comment: comment._id,
+    liker: userId,
+    isLiked: true,
+  }))
+    ? true
+    : false;
+  const isDislikedByLoggedInUser = (await Like.findOne({
+    comment: comment._id,
+    liker: userId,
+    isLiked: false,
+  }))
+    ? true
+    : false;
 
   // const updatedComment = await Comment.findByIdAndUpdate(commentId, {
   //   content,
@@ -116,7 +141,16 @@ export const PATCH = errorHandler(async (req: NextRequest) => {
   // });
 
   return res.json(
-    generateApiResponse(201, "Comment updated successfully", comment),
+    generateApiResponse(201, "Comment updated successfully", {
+      comment: {
+        ...comment._doc,
+        user,
+        commentLikes,
+        commentDislikes,
+        isLikedByLoggedInUser,
+        isDislikedByLoggedInUser,
+      },
+    }),
     {
       status: 201,
     }

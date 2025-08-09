@@ -73,6 +73,7 @@ export function UpdateCommentForm({
   isQuestionCommentLoading,
   setIsQuestionCommentLoading,
   commentId,
+  currentContent,
 }: {
   userId: string;
   isCommentLoading: string;
@@ -86,13 +87,14 @@ export function UpdateCommentForm({
   isQuestionCommentLoading: boolean;
   setIsQuestionCommentLoading: (isLoading: boolean) => void;
   commentId: string;
+  currentContent: string;
 }) {
   const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
   const dispatch = useDispatch();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      content: "",
+      content: currentContent,
     },
     mode: "all",
   });
@@ -121,13 +123,13 @@ export function UpdateCommentForm({
               : answer
           )
         );
-        toast.success("Comment created successfully");
+        toast.success("Comment updated successfully");
       } catch (error: any) {
         console.log(error);
         const errors = error.response.data.errors.map(
           (error: any) => error.message
         );
-        toast.error("Failed to create comment", {
+        toast.error("Failed to update comment", {
           description: errors.join(", "),
         });
       } finally {
@@ -152,16 +154,16 @@ export function UpdateCommentForm({
 
         setQuestionComments((currentComments: CommentWithUser[]) =>
           currentComments.map((comment: CommentWithUser) =>
-            comment._id === commentId ? response.data.comment : comment
+            comment._id === commentId ? response.data.data.comment : comment
           )
         );
-        toast.success("Comment created successfully");
+        toast.success("Comment updated successfully");
       } catch (error: any) {
         console.log(error);
         const errors = error.response.data.errors.map(
           (error: any) => error.message
         );
-        toast.error("Failed to create comment", {
+        toast.error("Failed to update comment", {
           description: errors.join(", "),
         });
       } finally {

@@ -2,6 +2,8 @@
 
 import { AnswerFormTA } from "@/components/Forms/AnswerFormTA";
 import { CommentFormTA } from "@/components/Forms/CommentFormTA";
+import { UpdateAnswerForm } from "@/components/Forms/UpdateAnswerForm";
+import { UpdateCommentForm } from "@/components/Forms/UpdateCommentForm";
 import { UpdateQuestionForm } from "@/components/Forms/UpdateQuestionForm";
 import { LoaderDemo } from "@/components/Loaders/LoaderDemo";
 import { AnswerTypeSchema } from "@/db/models/answer.model";
@@ -25,7 +27,6 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
-import { UpdateAnswerForm } from "@/components/Forms/UpdateAnswerForm";
 
 export interface AnswerWithUser extends AnswerTypeSchema {
   user: User;
@@ -92,6 +93,10 @@ const QuestionPage = () => {
   const [expandedAnswerEdit, setExpandedAnswerEdit] = useState<string | null>(
     null
   );
+
+  // Add state for editing comments
+  const [expandedQuestionCommentEdit, setExpandedQuestionCommentEdit] = useState<string | null>(null);
+  const [expandedAnswerCommentEdit, setExpandedAnswerCommentEdit] = useState<string | null>(null);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
@@ -906,21 +911,57 @@ const QuestionPage = () => {
 
                               {/* Delete button - only visible to comment author */}
                               {comment.commenter === userId && (
-                                <button
-                                  onClick={() =>
-                                    handleCommentDelete(comment._id, true)
-                                  }
-                                  disabled={isCommentDeleting === comment._id}
-                                  className="p-1 text-destructive hover:text-destructive/80 hover:bg-destructive/10 rounded-full transition-all duration-300 ease-in-out"
-                                  title="Delete comment"
-                                >
-                                  <Trash2 className="h-3 w-3" />
-                                </button>
+                                <div className="flex gap-1">
+                                  {expandedQuestionCommentEdit === comment._id ? (
+                                    <button
+                                      className="text-xs text-primary hover:text-primary/80 flex items-center bg-primary/10 hover:bg-primary/20 border border-primary/20 px-3 py-1 rounded-full transition-all duration-300 ease-in-out cursor-pointer animate-in"
+                                      onClick={() => setExpandedQuestionCommentEdit(null)}
+                                      title="Cancel Edit"
+                                      disabled={isCommentDeleting === comment._id}
+                                    >
+                                      Cancel Edit
+                                    </button>
+                                  ) : (
+                                    <button
+                                      className="p-1 text-primary hover:text-primary/80 hover:bg-primary/10 rounded-full group cursor-pointer animate-in transition-all duration-300 ease-in-out"
+                                      title="Edit comment"
+                                      disabled={isCommentDeleting === comment._id}
+                                      onClick={() => setExpandedQuestionCommentEdit(comment._id)}
+                                    >
+                                      <Edit className="h-3 w-3" />
+                                    </button>
+                                  )}
+                                  <button
+                                    onClick={() => handleCommentDelete(comment._id, true)}
+                                    disabled={isCommentDeleting === comment._id}
+                                    className="p-1 text-destructive hover:text-destructive/80 hover:bg-destructive/10 rounded-full transition-all duration-300 ease-in-out"
+                                    title="Delete comment"
+                                  >
+                                    <Trash2 className="h-3 w-3" />
+                                  </button>
+                                </div>
                               )}
                             </div>
                             <div className="text-foreground text-sm break-words whitespace-pre-wrap max-w-[125ch] overflow-x-auto transition-all duration-300 ease-in-out">
                               {parse(comment.content)}
                             </div>
+                            {/* UpdateCommentForm for question comment */}
+                            {expandedQuestionCommentEdit === comment._id && (
+                              <div className="mt-3 mb-2 bg-background rounded-lg border border-border transition-all duration-300 ease-in-out overflow-hidden animate-slide-up p-2">
+                                <UpdateCommentForm
+                                  userId={userId || ""}
+                                  questionId={questionId as string}
+                                  commentId={comment._id}
+                                  setQuestionComments={setQuestionComments}
+                                  questionComments={questionComments}
+                                  isQuestionCommentLoading={isQuestionCommentLoading}
+                                  setIsQuestionCommentLoading={setIsQuestionCommentLoading}
+                                  isCommentLoading={isCommentLoading}
+                                  setIsCommentLoading={setIsCommentLoading}
+                                  currentContent={comment.content}
+                                />
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -1079,7 +1120,7 @@ const QuestionPage = () => {
                           ) : (
                             <button
                               onClick={() => toggleAnswerEditForm(answer._id)}
-                              className="p-2 text-primary hover:text-primary/80 hover:bg-primary/10 rounded-full group cursor-pointer animate-in transition-all duration-300 ease-in-out"
+                              className="p-2 text-primary hover:text-primary/80 hover:bg-primary/10 rounded-full group animate-in transition-all duration-300 ease-in-out cursor-pointer"
                               title="Edit answer"
                               disabled={
                                 isAnswerUpdating === answer._id ||
@@ -1445,27 +1486,58 @@ const QuestionPage = () => {
 
                                           {/* Delete button - only visible to comment author */}
                                           {comment.commenter === userId && (
-                                            <button
-                                              onClick={() =>
-                                                handleCommentDelete(
-                                                  comment._id,
-                                                  false
-                                                )
-                                              }
-                                              disabled={
-                                                isCommentDeleting ===
-                                                comment._id
-                                              }
-                                              className="p-1 text-destructive hover:text-destructive/80 hover:bg-destructive/10 rounded-full transition-all duration-300 ease-in-out"
-                                              title="Delete comment"
-                                            >
-                                              <Trash2 className="h-3 w-3" />
-                                            </button>
+                                            <div className="flex gap-1">
+                                              {expandedAnswerCommentEdit === comment._id ? (
+                                                <button
+                                                  className="text-xs text-primary hover:text-primary/80 flex items-center bg-primary/10 hover:bg-primary/20 border border-primary/20 px-3 py-1 rounded-full transition-all duration-300 ease-in-out cursor-pointer animate-in"
+                                                  onClick={() => setExpandedAnswerCommentEdit(null)}
+                                                  title="Cancel Edit"
+                                                  disabled={isCommentDeleting === comment._id}
+                                                >
+                                                  Cancel Edit
+                                                </button>
+                                              ) : (
+                                                <button
+                                                  className="p-1 text-primary hover:text-primary/80 hover:bg-primary/10 rounded-full group cursor-pointer animate-in transition-all duration-300 ease-in-out"
+                                                  title="Edit comment"
+                                                  disabled={isCommentDeleting === comment._id}
+                                                  onClick={() => setExpandedAnswerCommentEdit(comment._id)}
+                                                >
+                                                  <Edit className="h-3 w-3" />
+                                                </button>
+                                              )}
+                                              <button
+                                                onClick={() => handleCommentDelete(comment._id, false)}
+                                                disabled={isCommentDeleting === comment._id}
+                                                className="p-1 text-destructive hover:text-destructive/80 hover:bg-destructive/10 rounded-full transition-all duration-300 ease-in-out"
+                                                title="Delete comment"
+                                              >
+                                                <Trash2 className="h-3 w-3" />
+                                              </button>
+                                            </div>
                                           )}
                                         </div>
                                         <div className="text-foreground text-sm break-words whitespace-pre-wrap max-w-[125ch] overflow-x-auto transition-all duration-300 ease-in-out">
                                           {parse(comment.content)}
                                         </div>
+                                        {/* UpdateCommentForm for answer comment */}
+                                        {expandedAnswerCommentEdit === comment._id && (
+                                          <div className="mt-3 mb-2 bg-background rounded-lg border border-border transition-all duration-300 ease-in-out overflow-hidden animate-slide-up p-2">
+                                            <UpdateCommentForm
+                                              userId={userId || ""}
+                                              questionId={questionId as string}
+                                              commentId={comment._id}
+                                              setAnswers={setAnswers}
+                                              answers={answers}
+                                              answerId={answer._id}
+                                              isCommentLoading={isCommentLoading}
+                                              setIsCommentLoading={setIsCommentLoading}
+                                              isQuestionCommentLoading={isQuestionCommentLoading}
+                                              setIsQuestionCommentLoading={setIsQuestionCommentLoading}
+                                              currentContent={comment.content}
+                                            />
+                                          </div>
+                                        )}
                                       </div>
                                     </div>
                                   </div>
