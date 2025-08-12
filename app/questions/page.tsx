@@ -1,6 +1,7 @@
 "use client";
 
 import HomePagination from "@/components/Filters/HomePagination";
+import SortFilter from "@/components/Filters/SortFilter";
 import { LoaderDemo } from "@/components/Loaders/LoaderDemo";
 import { setQuestions } from "@/lib/redux/slices/questions.slice";
 import { RootState } from "@/lib/redux/store";
@@ -9,9 +10,8 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
-import QuestionCard from "../../components/Questions/QuestionCard";
+import QuestionCard from "../../components/Cards/QuestionCard";
 import SearchBar from "../../components/Forms/SearchBar";
-import SortFilter from "@/components/Filters/SortFilter";
 
 export default function QuestionsPage() {
   const searchParams = useSearchParams();

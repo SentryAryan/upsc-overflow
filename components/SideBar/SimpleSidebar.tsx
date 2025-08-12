@@ -26,6 +26,7 @@ import {
   LucideIcon,
   MessageSquare,
   Settings,
+  Tag,
   Users,
 } from "lucide-react";
 import Link from "next/link";
@@ -62,6 +63,11 @@ export function SimpleSidebar({ ...props }: SimpleSidebarProps) {
       name: "Ask Question",
       path: "/ask-question",
       icon: FileQuestion,
+    },
+    {
+      name: "Popular Tags",
+      path: "/popular-tags",
+      icon: Tag,
     },
     {
       name: "Discussions",
