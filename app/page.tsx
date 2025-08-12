@@ -1,36 +1,36 @@
 "use client";
 
 import HomePagination from "@/components/Filters/HomePagination";
+import SortFilter from "@/components/Filters/SortFilter";
 import SubjectFilter from "@/components/Filters/SubjectFilter2";
+import SearchBar from "@/components/Forms/SearchBar";
 import { LoaderDemo } from "@/components/Loaders/LoaderDemo";
 import { QuestionType } from "@/db/models/question.model";
 import {
-  setQuestions,
-  setTotalPages,
+    setPreviousPage,
+    setPreviousPath,
+    setPreviousQuestion,
+    setPreviousSortBy,
+    setPreviousSubject,
+    setPreviousTag,
+} from "@/lib/redux/slices/previousPath.slice";
+import {
+    setQuestions,
+    setTotalPages,
 } from "@/lib/redux/slices/questions.slice";
+import { setQuestionUpdate } from "@/lib/redux/slices/questionUpdate.slice";
 import { RootState } from "@/lib/redux/store";
+import { useUser } from "@clerk/nextjs";
 import axios from "axios";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
-import QuestionCard from "../components/Questions/QuestionCard";
+import QuestionCard from "../components/Cards/QuestionCard";
 import {
-  setAvailableSubjects,
-  setSelectedSubject,
+    setAvailableSubjects,
+    setSelectedSubject,
 } from "../lib/redux/slices/filterSubjects.slice";
-import SearchBar from "@/components/Forms/SearchBar";
-import SortFilter from "@/components/Filters/SortFilter";
-import { useUser } from "@clerk/nextjs";
-import {
-  setPreviousPath,
-  setPreviousSubject,
-  setPreviousTag,
-  setPreviousQuestion,
-  setPreviousSortBy,
-  setPreviousPage,
-} from "@/lib/redux/slices/previousPath.slice";
-import { setQuestionUpdate } from "@/lib/redux/slices/questionUpdate.slice";
 
 export interface QuestionCardProps extends QuestionType {
   likesAnswersComments: {
