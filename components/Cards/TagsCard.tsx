@@ -1,9 +1,9 @@
 "use client";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
+ Tooltip,
+ TooltipContent,
+ TooltipProvider,
+ TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { HelpCircle, MessageCircle, MessageSquare } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -60,7 +60,7 @@ const TagsCard = ({ tagWithMetrics }: { tagWithMetrics: TagWithMetrics }) => {
 
   return (
     <div
-      className="bg-background rounded-lg card-shadow transition-all duration-300 p-6 border-mode w-full h-full flex flex-col cursor-pointer group relative before:absolute before:bg-accent before:inset-0 before:translate-x-[-100%] before:transition-transform overflow-hidden before:duration-300 before:ease-in-out before:rounded-lg hover:before:translate-x-0 animate-slide-up before:shadow-mode-hover"
+      className="bg-background rounded-lg card-shadow transition-all duration-300 p-3 sm:p-4 md:p-6 border-mode w-full h-full flex flex-col cursor-pointer group relative before:absolute before:bg-accent before:inset-0 before:translate-x-[-100%] before:transition-transform overflow-hidden before:duration-300 before:ease-in-out before:rounded-lg hover:before:translate-x-0 animate-slide-up before:shadow-mode-hover"
       ref={cardRef}
       style={cardStyle}
       onMouseMove={handleMouseMove}
@@ -71,15 +71,15 @@ const TagsCard = ({ tagWithMetrics }: { tagWithMetrics: TagWithMetrics }) => {
       }
     >
       {/* Card Title and Tag */}
-      <div className="flex items-start justify-between mb-3 relative">
-        <h1 className="text-xl font-semibold text-card-foreground mb-2 flex-1 group-hover:text-primary">
+      <div className="flex items-start justify-between mb-2 sm:mb-3 relative">
+        <h1 className="text-base sm:text-lg md:text-xl font-semibold text-card-foreground mb-1 sm:mb-2 flex-1 group-hover:text-primary line-clamp-2">
           #{tagWithMetrics.tag}
         </h1>
 
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger
-              className="ml-2 text-sm px-2.5 py-1 rounded-full bg-primary/10 text-primary whitespace-nowrap cursor-pointer hover:bg-primary/20 transition-all duration-300 group-hover:filter-shadow font-[900] border border-primary dark:border-border"
+              className="ml-1 sm:ml-2 text-xs sm:text-sm px-2 sm:px-2.5 py-1 rounded-full bg-primary/10 text-primary whitespace-nowrap cursor-pointer hover:bg-primary/20 transition-all duration-300 group-hover:filter-shadow font-[900] border border-primary dark:border-border flex-shrink-0"
               onClick={(e) => {
                 e.stopPropagation();
                 router.push(
@@ -105,16 +105,16 @@ const TagsCard = ({ tagWithMetrics }: { tagWithMetrics: TagWithMetrics }) => {
       </div>
 
       {/* Card Description - Show first question title */}
-      <div className="text-muted-foreground mb-4 line-clamp-3 flex-grow relative">
+      <div className="text-muted-foreground mb-3 sm:mb-4 line-clamp-2 sm:line-clamp-3 flex-grow relative text-sm sm:text-base">
         {tagWithMetrics.firstQuestion || "No questions available for this tag"}
       </div>
 
       {/* Tag Stats section with fixed height */}
-      <div className="min-h-[40px] mb-4 relative">
-        <div className="flex flex-wrap gap-2">
+      <div className="min-h-[32px] sm:min-h-[40px] mb-3 sm:mb-4 relative">
+        <div className="flex flex-wrap gap-1 sm:gap-2">
           <TooltipProvider>
             <Tooltip>
-              <TooltipTrigger className="text-xs bg-secondary text-secondary-foreground px-3 py-1.5 rounded-full font-[900]">
+              <TooltipTrigger className="text-xs bg-secondary text-secondary-foreground px-2 sm:px-3 py-1 sm:py-1.5 rounded-full font-[900]">
                 {tagWithMetrics.numberOfQuestions} Questions
               </TooltipTrigger>
               <TooltipContent>
@@ -126,33 +126,36 @@ const TagsCard = ({ tagWithMetrics }: { tagWithMetrics: TagWithMetrics }) => {
       </div>
 
       {/* Card Footer */}
-      <div className="flex flex-wrap items-center justify-between pt-4 border-t border-secondary dark:border-border mt-auto gap-3 relative">
-        <div className="flex items-center text-sm text-muted-foreground">
-          <div className="w-7 h-7 bg-primary/20 rounded-full flex items-center justify-center mr-2">
-            <HelpCircle className="h-4 w-4 text-primary" />
+      <div className="flex flex-wrap items-center justify-between pt-3 sm:pt-4 border-t border-secondary dark:border-border mt-auto gap-2 sm:gap-3 relative">
+        <div className="flex items-center text-xs sm:text-sm text-muted-foreground min-w-0 flex-1">
+          <div className="w-6 h-6 sm:w-7 sm:h-7 bg-primary/20 rounded-full flex items-center justify-center mr-1 sm:mr-2 flex-shrink-0">
+            <HelpCircle className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
           </div>
           <span className="truncate">
             {tagWithMetrics.tag} • {tagWithMetrics.numberOfQuestions} questions
           </span>
         </div>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-3 flex-shrink-0">
           {/* Question count */}
-          <span className="font-[900] text-green-600 dark:text-green-600 flex items-center bg-secondary px-2 py-1 rounded-full border border-border text-sm min-w-[60px] justify-center group-hover:filter-shadow hover:shadow-none hover:scale-90 transition-all duration-300">
-            <HelpCircle className="h-4 w-4 mr-1.5 font-[900]" />
-            {tagWithMetrics.numberOfQuestions}
+          <span className="font-[900] text-green-600 dark:text-green-600 flex items-center bg-secondary px-1.5 sm:px-2 py-1 rounded-full border border-border text-xs sm:text-sm min-w-[50px] sm:min-w-[60px] justify-center group-hover:filter-shadow hover:shadow-none hover:scale-90 transition-all duration-300">
+            <HelpCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-1.5 font-[900]" />
+            <span className="hidden sm:inline">{tagWithMetrics.numberOfQuestions}</span>
+            <span className="sm:hidden">{tagWithMetrics.numberOfQuestions}</span>
           </span>
 
           {/* Answer count */}
-          <span className="flex items-center text-secondary-foreground bg-secondary px-2 py-1 rounded-full border border-border text-sm min-w-[50px] justify-center group-hover:filter-shadow hover:shadow-none font-[900] hover:scale-90 transition-all duration-300">
-            <MessageSquare className="h-4 w-4 mr-1.5 font-[900]" />
-            {tagWithMetrics.numberOfAnswers}
+          <span className="flex items-center text-secondary-foreground bg-secondary px-1.5 sm:px-2 py-1 rounded-full border border-border text-xs sm:text-sm min-w-[40px] sm:min-w-[50px] justify-center group-hover:filter-shadow hover:shadow-none font-[900] hover:scale-90 transition-all duration-300">
+            <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-1.5 font-[900]" />
+            <span className="hidden sm:inline">{tagWithMetrics.numberOfAnswers}</span>
+            <span className="sm:hidden">{tagWithMetrics.numberOfAnswers}</span>
           </span>
 
           {/* Comment count */}
-          <span className="flex items-center text-secondary-foreground bg-secondary px-2 py-1 rounded-full border border-border text-sm min-w-[50px] justify-center group-hover:filter-shadow hover:shadow-none font-[900] hover:scale-90 transition-all duration-300">
-            <MessageCircle className="h-4 w-4 mr-1.5" />
-            {tagWithMetrics.numberOfComments}
+          <span className="flex items-center text-secondary-foreground bg-secondary px-1.5 sm:px-2 py-1 rounded-full border border-border text-xs sm:text-sm min-w-[40px] sm:min-w-[50px] justify-center group-hover:filter-shadow hover:shadow-none font-[900] hover:scale-90 transition-all duration-300">
+            <MessageCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-1.5" />
+            <span className="hidden sm:inline">{tagWithMetrics.numberOfComments}</span>
+            <span className="sm:hidden">{tagWithMetrics.numberOfComments}</span>
           </span>
         </div>
       </div>
