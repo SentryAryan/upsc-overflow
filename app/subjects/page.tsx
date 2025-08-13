@@ -66,7 +66,7 @@ export default function SubjectPage() {
       ) : currentPage > totalPages ? (
         <p className="text-center mt-4 text-muted-foreground">No more pages</p>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full">
           {questions.map((question: any) => (
             <QuestionCard key={question._id} question={question} />
           ))}
