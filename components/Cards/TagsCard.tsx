@@ -107,6 +107,11 @@ const TagsCard = ({ tagWithMetrics }: { tagWithMetrics: TagWithMetrics }) => {
       {/* Card Description - Show first question title */}
       <div className="text-muted-foreground mb-3 sm:mb-4 line-clamp-2 sm:line-clamp-3 flex-grow relative text-sm sm:text-base">
         {tagWithMetrics.firstQuestion || "No questions available for this tag"}
+        {tagWithMetrics.numberOfQuestions > 1 && (
+          <div className="mt-2 text-xs opacity-75">
+            +{tagWithMetrics.numberOfQuestions - 1} more questions
+          </div>
+        )}
       </div>
 
       {/* Tag Stats section with fixed height */}
