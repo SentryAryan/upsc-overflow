@@ -18,7 +18,7 @@ export function SwitchDemo() {
         id="dark-mode"
         className="cursor-pointer dark"
       />
-      <Label htmlFor="dark-mode">
+      <Label htmlFor="dark-mode" className="cursor-pointer">
         {isDarkMode ? "Dark Mode" : "Light Mode"}
       </Label>
     </div>
