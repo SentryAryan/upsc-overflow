@@ -1,16 +1,10 @@
 import dbConnect from "@/db/dbConnect";
-import Answer, { AnswerTypeSchema } from "@/db/models/answer.model";
+import Answer from "@/db/models/answer.model";
 import Comment from "@/db/models/comment.model";
-import Like from "@/db/models/like.model";
-import Question, {
-  QuestionTypeSchema,
-  QuestionType,
-} from "@/db/models/question.model";
+import Question from "@/db/models/question.model";
 import { generateApiResponse } from "@/lib/helpers/api-response.helper";
 import { errorHandler } from "@/lib/helpers/error-handler.helper";
-import getClerkUserById from "@/lib/helpers/getClerkUserById";
 import { NextRequest, NextResponse as res } from "next/server";
-import { generateApiError } from "@/lib/helpers/api-error.helper";
 
 export const GET = errorHandler(async (req: NextRequest) => {
   await dbConnect();
@@ -24,16 +18,11 @@ export const GET = errorHandler(async (req: NextRequest) => {
       return { tag, questions };
     })
   );
-  console.log("questionsRelatedToTags =", questionsRelatedToTags);
+
   const totalPages = Math.ceil(questionsRelatedToTags.length / limit);
 
-  const slicedQuestionsRelatedToTags = questionsRelatedToTags.slice(
-    (page - 1) * limit,
-    page * limit
-  );
-
   const tagsWithQuestionsAndCommentsAndAnswers = await Promise.all(
-    slicedQuestionsRelatedToTags.map(async (tagData) => {
+    questionsRelatedToTags.map(async (tagData) => {
       const comments = await Promise.all(
         tagData.questions.map(async (question) => {
           const comments = await Comment.find({ question: question._id });
@@ -54,9 +43,13 @@ export const GET = errorHandler(async (req: NextRequest) => {
       };
     })
   );
+
   const tagsWithMetrics = await Promise.all(
     tagsWithQuestionsAndCommentsAndAnswers.map(async (tagData) => {
       const questions = tagData.questions;
+      const uniqueSubjects = [
+        ...new Set(questions.map((question) => question.subject)),
+      ];
       const commentsOnQuestions = tagData.commentsOnQuestions;
       const answersOnQuestions = tagData.answersOnQuestions;
       const commentsOnAnswers = await Promise.all(
@@ -73,6 +66,7 @@ export const GET = errorHandler(async (req: NextRequest) => {
       return {
         tag: tagData.tag,
         numberOfQuestions: questions.length,
+        uniqueSubjects,
         numberOfComments:
           commentsOnQuestions.reduce((acc, curr) => acc + curr.length, 0) +
           commentsOnAnswers.reduce(
@@ -90,11 +84,21 @@ export const GET = errorHandler(async (req: NextRequest) => {
     })
   );
 
-  const tagsWithMetricsSorted = tagsWithMetrics.sort(
-    (a, b) => b.numberOfQuestions - a.numberOfQuestions
+  const tagsWithMetricsSorted = tagsWithMetrics.sort((a, b) =>
+    b.numberOfQuestions !== a.numberOfQuestions
+      ? b.numberOfQuestions - a.numberOfQuestions
+      : b.numberOfAnswers !== a.numberOfAnswers
+      ? b.numberOfAnswers - a.numberOfAnswers
+      : b.numberOfComments !== a.numberOfComments
+      ? b.numberOfComments - a.numberOfComments
+      : 0
+  );
+  const slicedTagsWithMetrics = tagsWithMetricsSorted.slice(
+    (page - 1) * limit,
+    page * limit
   );
 
   return res.json(
-    generateApiResponse(200, "Tags fetched successfully", tagsWithMetricsSorted)
+    generateApiResponse(200, "Tags fetched successfully", slicedTagsWithMetrics)
   );
 });

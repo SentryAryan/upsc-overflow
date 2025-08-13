@@ -7,14 +7,15 @@ import {
 } from "@/components/ui/tooltip";
 import { HelpCircle, MessageCircle, MessageSquare } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 interface TagWithMetrics {
   tag: string;
   numberOfQuestions: number;
-  numberOfComments: number;
   numberOfAnswers: number;
+  numberOfComments: number;
   firstQuestion: string;
+  uniqueSubjects: string[];
   totalPages: number;
 }
 
@@ -114,20 +115,41 @@ const TagsCard = ({ tagWithMetrics }: { tagWithMetrics: TagWithMetrics }) => {
         )}
       </div>
 
-      {/* Tag Stats section with fixed height */}
-      <div className="min-h-[32px] sm:min-h-[40px] mb-3 sm:mb-4 relative">
-        <div className="flex flex-wrap gap-1 sm:gap-2">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger className="text-xs bg-secondary text-secondary-foreground px-2 sm:px-3 py-1 sm:py-1.5 rounded-full font-[900]">
-                {tagWithMetrics.numberOfQuestions} Questions
-              </TooltipTrigger>
-              <TooltipContent>
-                Total questions tagged with #{tagWithMetrics.tag}
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
+      {/* Tags section with fixed height */}
+      <div className="min-h-[40px] mb-4 relative">
+        {tagWithMetrics.uniqueSubjects &&
+          tagWithMetrics.uniqueSubjects.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {tagWithMetrics.uniqueSubjects.map((subject: string) => (
+                <TooltipProvider key={subject}>
+                  <Tooltip>
+                    <TooltipTrigger
+                      className="text-xs bg-secondary text-secondary-foreground px-3 py-1.5 rounded-full cursor-pointer hover:bg-secondary/80 transition-all duration-300 hover:scale-90 group-hover:filter-shadow hover:shadow-none font-[900] hover:font-[900]!"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(
+                          `/subjects?subject=${encodeURIComponent(subject)}`
+                        );
+                      }}
+                    >
+                      {subject}
+                    </TooltipTrigger>
+                    <TooltipContent
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(
+                          `/subjects?subject=${encodeURIComponent(subject)}`
+                        );
+                      }}
+                      className="cursor-pointer"
+                    >
+                      View all questions in {subject}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ))}
+            </div>
+          )}
       </div>
 
       {/* Card Footer */}
