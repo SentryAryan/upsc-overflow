@@ -132,9 +132,7 @@ const TagsCard = ({ tagWithMetrics }: { tagWithMetrics: TagWithMetrics }) => {
             <div className="w-6 h-6 sm:w-7 sm:h-7 bg-primary/20 rounded-full flex items-center justify-center mr-1 sm:mr-2 flex-shrink-0">
               <HelpCircle className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
             </div>
-            <span className="truncate">
-              {tagWithMetrics.tag}
-            </span>
+            <span className="truncate">{tagWithMetrics.tag}</span>
           </div>
           <span className="text-xs sm:text-sm opacity-75 ml-7 sm:ml-0 sm:before:content-['•'] sm:before:mx-2">
             {tagWithMetrics.numberOfQuestions} questions
