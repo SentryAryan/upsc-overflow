@@ -11,7 +11,7 @@ export function SwitchDemo() {
   const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
 
   return (
-    <div className="flex items-center space-x-2 border-3 border-border rounded-full p-1">
+    <div className="flex items-center space-x-2 rounded-full p-1 w-full justify-start">
       <Switch
         checked={isDarkMode}
         onCheckedChange={() => dispatch(toggleDarkMode())}

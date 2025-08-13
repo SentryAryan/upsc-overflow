@@ -1,11 +1,4 @@
-import {
-  ClerkProvider,
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from "@clerk/nextjs";
+import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { JetBrains_Mono, Open_Sans } from "next/font/google";
 
@@ -15,9 +8,9 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { currentUser } from "@clerk/nextjs/server";
 import { SimpleSidebar } from "../components/SideBar/SimpleSidebar";
-import { SwitchDemo } from "../components/Switch/SwitchDemo";
-import { Button } from "../components/ui/button";
 import "./globals.css";
+import NavBarMobile from "../components/NavBars/NavBarMobile";
+import MenuDemo2 from "../components/Menu/MenuDemo2";
 
 const openSans = Open_Sans({
   variable: "--font-sans",
@@ -51,29 +44,15 @@ export default async function RootLayout({
             <ThemeWrapper>
               <SidebarProvider>
                 <SimpleSidebar />
-                <main className="flex-1 flex flex-col items-center justify-center">
-                  <header className="fixed top-0 right-0 flex justify-end items-center p-4 gap-4 z-10 rounded-full">
-                    {/* Theme Switcher */}
-                    <div className="rounded-full p-1">
-                      <SwitchDemo />
-                    </div>
-                    {/* When user is not signed in */}
-                    <SignedOut>
-                      <SignInButton>
-                        <Button className="cursor-pointer">Sign In</Button>
-                      </SignInButton>
-                      <SignUpButton>
-                        <Button className="cursor-pointer">Sign Up</Button>
-                      </SignUpButton>
-                    </SignedOut>
-                    {/* When user is signed in */}
-                    <SignedIn>
-                      <UserButton />
-                    </SignedIn>
+                <main className="flex-1 flex flex-col items-center justify-center px-2 overflow-x-hidden py-14 md:py-0">
+                  <header className="fixed top-0 right-4 flex justify-end items-center p-4 gap-4 z-10 rounded-full">
+                    <MenuDemo2 />
                   </header>
 
+                  <NavBarMobile className="md:hidden flex" />
+
                   <div className="fixed left-2 top-3 z-50">
-                    <SidebarTrigger className="cursor-pointer bg-background/80 backdrop-blur-sm border shadow-sm hover:shadow-md transition-all size-10" />
+                    <SidebarTrigger className="hidden md:flex cursor-pointer bg-background/80 backdrop-blur-sm border shadow-sm hover:shadow-md transition-all size-10" />
                   </div>
 
                   {children}

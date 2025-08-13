@@ -75,6 +75,7 @@
   --animate-slide-up: var(--animate-slide-up);
   --color-shadow-color: var(--shadow-color);
   --color-destructive-foreground: var(--destructive-foreground);
+  --breakpoint-navbar: 640px;
 }
 
 :root {

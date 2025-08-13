@@ -102,6 +102,11 @@ export function SimpleSidebar({ ...props }: SimpleSidebarProps) {
       path: homePath,
       icon: Home,
     },
+    {
+      name: "Popular Tags",
+      path: "/popular-tags",
+      icon: Tag,
+    },
   ];
   
   const { user, isSignedIn } = useUser();

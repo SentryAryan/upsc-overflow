@@ -7,7 +7,7 @@ export function ThemeWrapper({ children }: { children: React.ReactNode }) {
   const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
 
   return (
-    <div className={`bg-background text-foreground transition-all duration-300 ease-in-out ${isDarkMode ? 'dark' : ''}`}>
+    <div className={`bg-background w-full text-foreground transition-all duration-300 ease-in-out ${isDarkMode ? 'dark' : ''} overflow-x-hidden`}>
       {children}
     </div>
   );
