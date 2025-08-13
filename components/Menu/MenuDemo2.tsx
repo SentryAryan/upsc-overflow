@@ -1,39 +1,33 @@
 "use client";
 
-import * as React from "react";
 import {
-  Plus,
-  Upload,
-  Palette,
-  Share2,
-  BookMarked,
-  AlignJustify,
-} from "lucide-react";
-import {
-  FloatingActionPanelRoot,
-  FloatingActionPanelTrigger,
-  FloatingActionPanelContent,
   FloatingActionPanelButton,
+  FloatingActionPanelContent,
   FloatingActionPanelForm,
+  FloatingActionPanelRoot,
   FloatingActionPanelTextarea,
+  FloatingActionPanelTrigger,
 } from "@/components/ui/floating-action-panel";
-import { SwitchDemo } from "../Switch/SwitchDemo";
 import {
   SignInButton,
+  SignOutButton,
   SignUpButton,
   SignedIn,
   SignedOut,
   UserButton,
-  useUser,
 } from "@clerk/nextjs";
+import { dark, shadcn } from "@clerk/themes";
+import { AlignJustify, LogIn, LogOut, UserPlus } from "lucide-react";
+import { SwitchDemo } from "../Switch/SwitchDemo";
 import { Button } from "../ui/button";
-import {} from "lucide-react";
+import { RootState } from "../../lib/redux/store";
+import { useSelector } from "react-redux";
 
 export default function MenuDemo2() {
   const handleNoteSubmit = (note: string) => {
     console.log("Submitted note:", note);
   };
-  const { user } = useUser();
+  const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
 
   return (
     <FloatingActionPanelRoot>
@@ -70,6 +64,7 @@ export default function MenuDemo2() {
                         className="cursor-pointer w-full h-full"
                         variant="outline"
                       >
+                        <LogIn className="h-4 w-4" />
                         Sign In
                       </Button>
                     </SignInButton>
@@ -84,6 +79,7 @@ export default function MenuDemo2() {
                         className="cursor-pointer w-full h-full"
                         variant="outline"
                       >
+                        <UserPlus className="h-4 w-4" />
                         Sign Up
                       </Button>
                     </SignUpButton>
@@ -95,10 +91,27 @@ export default function MenuDemo2() {
                   <FloatingActionPanelButton
                     onClick={() => console.log("Theme Settings")}
                   >
-                    <div className="flex items-center gap-2">
-                      <UserButton />
-                      <p className="text-sm text-white">{`${user?.firstName} ${user?.lastName}`}</p>
-                    </div>
+                    <UserButton
+                      showName={true}
+                      appearance={{
+                        elements: {
+                          userButtonBox: "text-foreground",
+                        },
+                      }}
+                    />
+                  </FloatingActionPanelButton>
+                  <FloatingActionPanelButton
+                    onClick={() => console.log("Theme Settings")}
+                  >
+                    <SignOutButton>
+                      <Button
+                        className="cursor-pointer w-full h-full"
+                        variant="outline"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        Logout
+                      </Button>
+                    </SignOutButton>
                   </FloatingActionPanelButton>
                 </SignedIn>
               </div>

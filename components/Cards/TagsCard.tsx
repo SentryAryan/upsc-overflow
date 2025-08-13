@@ -127,12 +127,17 @@ const TagsCard = ({ tagWithMetrics }: { tagWithMetrics: TagWithMetrics }) => {
 
       {/* Card Footer */}
       <div className="flex flex-wrap items-center justify-between pt-3 sm:pt-4 border-t border-secondary dark:border-border mt-auto gap-2 sm:gap-3 relative">
-        <div className="flex items-center text-xs sm:text-sm text-muted-foreground min-w-0 flex-1">
-          <div className="w-6 h-6 sm:w-7 sm:h-7 bg-primary/20 rounded-full flex items-center justify-center mr-1 sm:mr-2 flex-shrink-0">
-            <HelpCircle className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
+        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-0 text-xs sm:text-sm text-muted-foreground min-w-0 flex-1">
+          <div className="flex items-center">
+            <div className="w-6 h-6 sm:w-7 sm:h-7 bg-primary/20 rounded-full flex items-center justify-center mr-1 sm:mr-2 flex-shrink-0">
+              <HelpCircle className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
+            </div>
+            <span className="truncate">
+              {tagWithMetrics.tag}
+            </span>
           </div>
-          <span className="truncate">
-            {tagWithMetrics.tag} • {tagWithMetrics.numberOfQuestions} questions
+          <span className="text-xs sm:text-sm opacity-75 ml-7 sm:ml-0 sm:before:content-['•'] sm:before:mx-2">
+            {tagWithMetrics.numberOfQuestions} questions
           </span>
         </div>
 

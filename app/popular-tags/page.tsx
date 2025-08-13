@@ -34,7 +34,7 @@ const page = () => {
   }, [currentPage]);
 
   return (
-    <div className="flex flex-col items-center w-full px-6 py-0 min-[640px]:py-14 md:py-4 gap-8">
+    <div className="flex flex-col items-center w-full px-10 py-0 min-[640px]:py-14 md:py-4 gap-8">
       <h1 className="text-xl sm:text-2xl font-bold text-center">
         Popular Tags
       </h1>

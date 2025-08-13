@@ -215,24 +215,29 @@ const QuestionCard = ({ question }: { question: QuestionCardProps }) => {
 
       {/* Card Footer */}
       <div className="flex flex-wrap items-center justify-between pt-4 border-t border-secondary dark:border-border mt-auto gap-3 relative">
-        <div className="flex items-center text-sm text-muted-foreground">
-          {askerImageUrl ? (
-            <Image
-              src={askerImageUrl}
-              alt={askerName}
-              width={28}
-              height={28}
-              className="rounded-full mr-2 border border-border"
-            />
-          ) : (
-            <div className="w-7 h-7 bg-primary/20 rounded-full flex items-center justify-center mr-2">
-              <span className="text-primary text-xs font-medium">
-                {askerName.charAt(0)}
-              </span>
-            </div>
-          )}
-          <span className="truncate">
-            {askerName} • {createdAt}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-0 text-sm text-muted-foreground">
+          <div className="flex items-center">
+            {askerImageUrl ? (
+              <Image
+                src={askerImageUrl}
+                alt={askerName}
+                width={28}
+                height={28}
+                className="rounded-full mr-2 border border-border"
+              />
+            ) : (
+              <div className="w-7 h-7 bg-primary/20 rounded-full flex items-center justify-center mr-2">
+                <span className="text-primary text-xs font-medium">
+                  {askerName.charAt(0)}
+                </span>
+              </div>
+            )}
+            <span className="truncate">
+              {askerName}
+            </span>
+          </div>
+          <span className="text-xs sm:text-sm opacity-75 ml-9 sm:ml-0 sm:before:content-['•'] sm:before:mx-2">
+            {createdAt}
           </span>
         </div>
 
