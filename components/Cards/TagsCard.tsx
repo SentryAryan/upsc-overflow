@@ -1,9 +1,9 @@
 "use client";
 import {
- Tooltip,
- TooltipContent,
- TooltipProvider,
- TooltipTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { HelpCircle, MessageCircle, MessageSquare } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -140,21 +140,29 @@ const TagsCard = ({ tagWithMetrics }: { tagWithMetrics: TagWithMetrics }) => {
           {/* Question count */}
           <span className="font-[900] text-green-600 dark:text-green-600 flex items-center bg-secondary px-1.5 sm:px-2 py-1 rounded-full border border-border text-xs sm:text-sm min-w-[50px] sm:min-w-[60px] justify-center group-hover:filter-shadow hover:shadow-none hover:scale-90 transition-all duration-300">
             <HelpCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-1.5 font-[900]" />
-            <span className="hidden sm:inline">{tagWithMetrics.numberOfQuestions}</span>
-            <span className="sm:hidden">{tagWithMetrics.numberOfQuestions}</span>
+            <span className="hidden sm:inline">
+              {tagWithMetrics.numberOfQuestions}
+            </span>
+            <span className="sm:hidden">
+              {tagWithMetrics.numberOfQuestions}
+            </span>
           </span>
 
           {/* Answer count */}
           <span className="flex items-center text-secondary-foreground bg-secondary px-1.5 sm:px-2 py-1 rounded-full border border-border text-xs sm:text-sm min-w-[40px] sm:min-w-[50px] justify-center group-hover:filter-shadow hover:shadow-none font-[900] hover:scale-90 transition-all duration-300">
             <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-1.5 font-[900]" />
-            <span className="hidden sm:inline">{tagWithMetrics.numberOfAnswers}</span>
+            <span className="hidden sm:inline">
+              {tagWithMetrics.numberOfAnswers}
+            </span>
             <span className="sm:hidden">{tagWithMetrics.numberOfAnswers}</span>
           </span>
 
           {/* Comment count */}
           <span className="flex items-center text-secondary-foreground bg-secondary px-1.5 sm:px-2 py-1 rounded-full border border-border text-xs sm:text-sm min-w-[40px] sm:min-w-[50px] justify-center group-hover:filter-shadow hover:shadow-none font-[900] hover:scale-90 transition-all duration-300">
             <MessageCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-1.5" />
-            <span className="hidden sm:inline">{tagWithMetrics.numberOfComments}</span>
+            <span className="hidden sm:inline">
+              {tagWithMetrics.numberOfComments}
+            </span>
             <span className="sm:hidden">{tagWithMetrics.numberOfComments}</span>
           </span>
         </div>
