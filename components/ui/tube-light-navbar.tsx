@@ -42,9 +42,10 @@ export function NavBar({ items, className }: NavBarProps) {
       <div className="flex items-center gap-3 bg-background/5 border border-border backdrop-blur-lg py-1 px-1 rounded-full shadow-lg">
         {items.map((item) => {
           const Icon = item.icon;
+          const itemPathname = item.url.split('?')[0];
           const isActive =
-            pathname === item.url ||
-            (item.url !== "/" && pathname.startsWith(item.url));
+            pathname === itemPathname ||
+            (itemPathname !== "/" && pathname.startsWith(itemPathname));
 
           return (
             <Link
