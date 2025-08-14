@@ -44,7 +44,7 @@ const page = () => {
       <HomePagination totalPages={totalPages} />
       <SortFilter isUsedByPouplarTagsOrPopularSubjects={true} />
       {isLoading ? (
-        <div className="flex items-center justify-center h-[70vh]">
+        <div className="flex items-center justify-center h-[30vh] md:h-[70vh]">
           <LoaderDemo />
         </div>
       ) : (

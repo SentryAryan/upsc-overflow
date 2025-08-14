@@ -20,7 +20,7 @@ const AskQuestionPage = () => {
         </div>
         
         {isLoading ? (
-          <div className="flex items-center justify-center h-[70vh] bg-background rounded-lg shadow-md border-mode">
+          <div className="flex items-center justify-center h-[40vh] md:h-[70vh] bg-background rounded-lg shadow-md border-mode">
             <LoaderDemo />
           </div>
         ) : (

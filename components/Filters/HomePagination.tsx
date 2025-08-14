@@ -34,7 +34,7 @@ const HomePagination = ({
         {/* Previous Page */}
         <PaginationItem>
           <PaginationPrevious
-            href={`${pathname}?page=${
+            href={totalPages === 0 ? "" : `${pathname}?page=${
               currentPage === 1 ? totalPages : currentPage - 1
             }${subject ? `&subject=${subject}` : ""}${
               tag ? `&tag=${tag}` : ""
@@ -94,7 +94,7 @@ const HomePagination = ({
         {/* Next Page */}
         <PaginationItem>
           <PaginationNext
-            href={`${pathname}?page=${
+            href={totalPages === 0 ? "" : `${pathname}?page=${
               currentPage === totalPages ? 1 : currentPage + 1
             }${subject ? `&subject=${subject}` : ""}${
               tag ? `&tag=${tag}` : ""
