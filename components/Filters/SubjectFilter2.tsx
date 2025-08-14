@@ -1,6 +1,8 @@
 // components/Filters/SubjectFilter.tsx
 import React from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { setTotalPages } from "@/lib/redux/slices/questions.slice";
+import { useDispatch } from "react-redux";
 
 interface SubjectFilterProps {
   subjects: string[]; // Array of available subjects
@@ -15,13 +17,21 @@ const SubjectFilter: React.FC<SubjectFilterProps> = ({
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const dispatch = useDispatch();
 
   const handleSelectCurrentSubject = (subject: string | null) => {
+    dispatch(setTotalPages(0));
     const page = searchParams.get("page");
     const question = searchParams.get("question");
     const sortBy = searchParams.get("sortBy");
     const tag = searchParams.get("tag");
-    const pathToPush = `?page=1&sortBy=${encodeURIComponent(sortBy || "")}&question=${encodeURIComponent(question || "")}&subject=${encodeURIComponent(subject || "")}&tag=${encodeURIComponent(tag || "")}`;
+    const pathToPush = `?page=1&sortBy=${encodeURIComponent(
+      sortBy || ""
+    )}&question=${encodeURIComponent(
+      question || ""
+    )}&subject=${encodeURIComponent(subject || "")}&tag=${encodeURIComponent(
+      tag || ""
+    )}`;
     const pathToPush2 = `?${page ? `page=1` : ""}${
       sortBy ? `&sortBy=${encodeURIComponent(sortBy)}` : ""
     }${question ? `&question=${encodeURIComponent(question)}` : ""}${

@@ -228,7 +228,7 @@ export default function HomePage() {
       <SortFilter />
 
       {isLoading ? (
-        <div className="flex items-center justify-center h-[70vh]">
+        <div className="flex items-center justify-center h-[5vh] md:h-[70vh]">
           <LoaderDemo />
         </div>
       ) : questions.length === 0 && selectedSubject !== null ? (

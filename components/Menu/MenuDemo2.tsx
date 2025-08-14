@@ -35,7 +35,7 @@ export default function MenuDemo2() {
         <>
           <div className="flex items-center space-x-4">
             <FloatingActionPanelTrigger
-              title="Project Actions"
+              title="Settings"
               mode="actions"
               className="cursor-pointer rounded-full p-4 flex items-center justify-center "
             >
