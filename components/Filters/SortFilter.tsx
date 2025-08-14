@@ -15,7 +15,8 @@ const SortFilter: React.FC<SortFilterProps> = ({
     | "votes-desc"
     | "answers-desc"
     | "comments-desc"
-    | "questions-desc";
+    | "questions-desc"
+    | "subjects-desc";
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -28,6 +29,7 @@ const SortFilter: React.FC<SortFilterProps> = ({
           { label: "Most Questions", value: "questions-desc" },
           { label: "Most Answers", value: "answers-desc" },
           { label: "Most Comments", value: "comments-desc" },
+          { label: "Most Subjects", value: "subjects-desc" },
         ]
       : [
           { label: "Latest", value: "date-desc" },
