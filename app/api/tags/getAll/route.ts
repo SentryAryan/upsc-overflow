@@ -11,6 +11,7 @@ export const GET = errorHandler(async (req: NextRequest) => {
   const tags: string[] = await Question.distinct("tags");
   const page = Number(req.nextUrl.searchParams.get("page")) || 1;
   const limit = Number(req.nextUrl.searchParams.get("limit")) || 10;
+  const sortBy = req.nextUrl.searchParams.get("sortBy") || "questions-desc";
 
   const questionsRelatedToTags = await Promise.all(
     tags.map(async (tag) => {
@@ -84,15 +85,42 @@ export const GET = errorHandler(async (req: NextRequest) => {
     })
   );
 
-  const tagsWithMetricsSorted = tagsWithMetrics.sort((a, b) =>
-    b.numberOfQuestions !== a.numberOfQuestions
-      ? b.numberOfQuestions - a.numberOfQuestions
-      : b.numberOfAnswers !== a.numberOfAnswers
-      ? b.numberOfAnswers - a.numberOfAnswers
-      : b.numberOfComments !== a.numberOfComments
-      ? b.numberOfComments - a.numberOfComments
-      : 0
-  );
+  const tagsWithMetricsSorted = tagsWithMetrics.sort((a, b) => {
+    switch (sortBy) {
+      case "questions-desc":
+        return b.numberOfQuestions !== a.numberOfQuestions
+          ? b.numberOfQuestions - a.numberOfQuestions
+          : b.numberOfAnswers !== a.numberOfAnswers
+          ? b.numberOfAnswers - a.numberOfAnswers
+          : b.numberOfComments !== a.numberOfComments
+          ? b.numberOfComments - a.numberOfComments
+          : 0;
+      case "answers-desc":
+        return b.numberOfAnswers !== a.numberOfAnswers
+          ? b.numberOfAnswers - a.numberOfAnswers
+          : b.numberOfQuestions !== a.numberOfQuestions
+          ? b.numberOfQuestions - a.numberOfQuestions
+          : b.numberOfComments !== a.numberOfComments
+          ? b.numberOfComments - a.numberOfComments
+          : 0;
+      case "comments-desc":
+        return b.numberOfComments !== a.numberOfComments
+          ? b.numberOfComments - a.numberOfComments
+          : b.numberOfQuestions !== a.numberOfQuestions
+          ? b.numberOfQuestions - a.numberOfQuestions
+          : b.numberOfAnswers !== a.numberOfAnswers
+          ? b.numberOfAnswers - a.numberOfAnswers
+          : 0;
+      default:
+        return b.numberOfQuestions !== a.numberOfQuestions
+          ? b.numberOfQuestions - a.numberOfQuestions
+          : b.numberOfAnswers !== a.numberOfAnswers
+          ? b.numberOfAnswers - a.numberOfAnswers
+          : b.numberOfComments !== a.numberOfComments
+          ? b.numberOfComments - a.numberOfComments
+          : 0;
+    }
+  });
   const slicedTagsWithMetrics = tagsWithMetricsSorted.slice(
     (page - 1) * limit,
     page * limit

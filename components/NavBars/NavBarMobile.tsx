@@ -11,15 +11,17 @@ export default function NavBarMobile({ className }: { className?: string }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [homePath, setHomePath] = useState<string>("/");
+  const [popularTagsPath, setPopularTagsPath] =
+    useState<string>("/popular-tags");
   const navItems = isSignedIn
     ? [
         { name: "Home", url: homePath, icon: Home },
         { name: "Ask Question", url: "/ask-question", icon: FileQuestion },
-        { name: "Popular Tags", url: "/popular-tags", icon: Tag },
+        { name: "Popular Tags", url: popularTagsPath, icon: Tag },
       ]
     : [
         { name: "Home", url: homePath, icon: Home },
-        { name: "Popular Tags", url: "/popular-tags", icon: Tag },
+        { name: "Popular Tags", url: popularTagsPath, icon: Tag },
       ];
 
   useEffect(() => {
@@ -28,6 +30,13 @@ export default function NavBarMobile({ className }: { className?: string }) {
       const searchString = searchParams.toString();
       const fullPath = searchString ? `/?${searchString}` : "/";
       setHomePath(fullPath);
+    }
+    if (pathname === "/popular-tags") {
+      const searchString = searchParams.toString();
+      const fullPath = searchString
+        ? `/popular-tags?${searchString}`
+        : "/popular-tags";
+      setPopularTagsPath(fullPath);
     }
   }, [pathname, searchParams]);
 

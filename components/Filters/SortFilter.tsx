@@ -1,24 +1,41 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 
-export type SortByType = "date-desc" | "date-asc" | "votes-desc" | "answers-desc" | "comments-desc";
-
 interface SortFilterProps {
   // We might not need direct props if we handle routing internally
+  isUsedByPouplarTagsOrPopularSubjects?: boolean;
 }
 
-const sortOptions: { label: string; value: SortByType }[] = [
-  { label: "Latest", value: "date-desc" },
-  { label: "Earliest", value: "date-asc" },
-  { label: "Most Votes", value: "votes-desc" },
-  { label: "Most Answers", value: "answers-desc" },
-  { label: "Most Comments", value: "comments-desc" },
-];
+const SortFilter: React.FC<SortFilterProps> = ({
+  isUsedByPouplarTagsOrPopularSubjects,
+}: SortFilterProps) => {
+  type SortByType =
+    | "date-desc"
+    | "date-asc"
+    | "votes-desc"
+    | "answers-desc"
+    | "comments-desc"
+    | "questions-desc";
 
-const SortFilter: React.FC<SortFilterProps> = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const currentSortBy = (searchParams.get("sortBy") as SortByType) || "date-asc"; // Default to earliest
+  const currentSortBy =
+    (searchParams.get("sortBy") as SortByType) ||
+    (isUsedByPouplarTagsOrPopularSubjects ? "questions-desc" : "date-asc"); // Default to earliest
+  const sortOptions: { label: string; value: SortByType }[] =
+    isUsedByPouplarTagsOrPopularSubjects
+      ? [
+          { label: "Most Questions", value: "questions-desc" },
+          { label: "Most Answers", value: "answers-desc" },
+          { label: "Most Comments", value: "comments-desc" },
+        ]
+      : [
+          { label: "Latest", value: "date-desc" },
+          { label: "Earliest", value: "date-asc" },
+          { label: "Most Votes", value: "votes-desc" },
+          { label: "Most Answers", value: "answers-desc" },
+          { label: "Most Comments", value: "comments-desc" },
+        ];
 
   const handleSelectSort = (sortByValue: SortByType) => {
     const page = searchParams.get("page");
@@ -33,15 +50,19 @@ const SortFilter: React.FC<SortFilterProps> = () => {
     console.log("tag", tag);
 
     router.push(
-      `?${page ? `page=1` : ""}&sortBy=${encodeURIComponent(sortByValue || "")}${
-        question ? `&question=${encodeURIComponent(question)}` : ""
-      }${subject ? `&subject=${encodeURIComponent(subject)}` : ""}${tag ? `&tag=${encodeURIComponent(tag)}` : ""}`
+      `?${page ? `page=1` : ""}&sortBy=${encodeURIComponent(
+        sortByValue || ""
+      )}${question ? `&question=${encodeURIComponent(question)}` : ""}${
+        subject ? `&subject=${encodeURIComponent(subject)}` : ""
+      }${tag ? `&tag=${encodeURIComponent(tag)}` : ""}`
     );
   };
 
   return (
     <div className="mb-4 flex flex-wrap gap-3 items-center">
-      <span className="text-foreground font-semibold mr-2 animate-slide-up">Sort by:</span>
+      <span className="text-foreground font-semibold mr-2 animate-slide-up">
+        Sort by:
+      </span>
       {sortOptions.map((option) => (
         <button
           key={option.value}

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import TagsCard from "../../components/Cards/TagsCard";
 import HomePagination from "../../components/Filters/HomePagination";
 import { LoaderDemo } from "../../components/Loaders/LoaderDemo";
+import SortFilter from "@/components/Filters/SortFilter";
 
 const page = () => {
   const searchParams = useSearchParams();
@@ -13,12 +14,13 @@ const page = () => {
   const currentPage = Number(searchParams.get("page")) || 1;
   const [totalPages, setTotalPages] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const sortBy = searchParams.get("sortBy");
 
   const fetchTagsWithMetrics = async () => {
     try {
       setIsLoading(true);
       const response = await axios.get(
-        `/api/tags/getAll?page=${currentPage}&limit=10`
+        `/api/tags/getAll?page=${currentPage}&limit=10${sortBy ? `&sortBy=${sortBy}` : ""}`
       );
       setTagsWithMetrics(response.data.data);
       setTotalPages(response.data.data[0]?.totalPages || 0);
@@ -31,7 +33,7 @@ const page = () => {
 
   useEffect(() => {
     fetchTagsWithMetrics();
-  }, [currentPage]);
+  }, [currentPage, sortBy, searchParams]);
 
   return (
     <div className="flex flex-col items-center w-full px-10 py-0 min-[640px]:py-14 md:py-4 gap-8">
@@ -40,6 +42,7 @@ const page = () => {
       </h1>
       <SearchBar />
       <HomePagination totalPages={totalPages} />
+      <SortFilter isUsedByPouplarTagsOrPopularSubjects={true} />
       {isLoading ? (
         <div className="flex items-center justify-center h-[70vh]">
           <LoaderDemo />

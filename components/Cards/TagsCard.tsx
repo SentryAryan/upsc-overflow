@@ -5,7 +5,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { HelpCircle, MessageCircle, MessageSquare } from "lucide-react";
+import {
+  Hash,
+  MessageCircle,
+  MessageCircleQuestion,
+  MessageSquare,
+  LucideIcon,
+  Book,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 
@@ -18,12 +25,44 @@ interface TagWithMetrics {
   uniqueSubjects: string[];
   totalPages: number;
 }
+interface MetricsInfo {
+  icon: LucideIcon;
+  value: number;
+  label: string;
+  color: string;
+}
 
 const TagsCard = ({ tagWithMetrics }: { tagWithMetrics: TagWithMetrics }) => {
   const router = useRouter();
   const cardRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const metricsInfo: MetricsInfo[] = [
+    {
+      icon: MessageCircleQuestion,
+      value: tagWithMetrics.numberOfQuestions,
+      label: "questions",
+      color: "text-secondary-foreground",
+    },
+    {
+      icon: MessageSquare,
+      value: tagWithMetrics.numberOfAnswers,
+      label: "answers",
+      color: "text-secondary-foreground",
+    },
+    {
+      icon: MessageCircle,
+      value: tagWithMetrics.numberOfComments,
+      label: "comments",
+      color: "text-secondary-foreground",
+    },
+    {
+      icon: Book,
+      value: tagWithMetrics.uniqueSubjects.length,
+      label: "subjects",
+      color: "text-secondary-foreground",
+    }
+  ];
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
@@ -88,7 +127,7 @@ const TagsCard = ({ tagWithMetrics }: { tagWithMetrics: TagWithMetrics }) => {
                 );
               }}
             >
-              {tagWithMetrics.tag}
+              #{tagWithMetrics.tag}
             </TooltipTrigger>
             <TooltipContent
               onClick={(e) => {
@@ -153,11 +192,11 @@ const TagsCard = ({ tagWithMetrics }: { tagWithMetrics: TagWithMetrics }) => {
       </div>
 
       {/* Card Footer */}
-      <div className="flex flex-wrap items-center justify-between pt-3 sm:pt-4 border-t border-secondary dark:border-border mt-auto gap-2 sm:gap-3 relative">
+      <div className="flex flex-col flex-wrap items-start justify-between pt-3 sm:pt-4 border-t border-secondary dark:border-border mt-auto gap-2 sm:gap-3 relative">
         <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-0 text-xs sm:text-sm text-muted-foreground min-w-0 flex-1">
           <div className="flex items-center">
             <div className="w-6 h-6 sm:w-7 sm:h-7 bg-primary/20 rounded-full flex items-center justify-center mr-1 sm:mr-2 flex-shrink-0">
-              <HelpCircle className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
+              <Hash className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
             </div>
             <span className="truncate">{tagWithMetrics.tag}</span>
           </div>
@@ -166,35 +205,18 @@ const TagsCard = ({ tagWithMetrics }: { tagWithMetrics: TagWithMetrics }) => {
           </span>
         </div>
 
+        {/* Counts section */}
         <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-3 flex-shrink-0">
-          {/* Question count */}
-          <span className="font-[900] text-green-600 dark:text-green-600 flex items-center bg-secondary px-1.5 sm:px-2 py-1 rounded-full border border-border text-xs sm:text-sm min-w-[50px] sm:min-w-[60px] justify-center group-hover:filter-shadow hover:shadow-none hover:scale-90 transition-all duration-300">
-            <HelpCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-1.5 font-[900]" />
-            <span className="hidden sm:inline">
-              {tagWithMetrics.numberOfQuestions}
+          {metricsInfo.map((metric: MetricsInfo) => (
+            <span
+              key={metric.label}
+              className={`flex items-center ${metric.color} bg-secondary px-1.5 sm:px-2 py-1 rounded-full border border-border text-xs sm:text-sm min-w-[40px] sm:min-w-[50px] justify-center group-hover:filter-shadow hover:shadow-none hover:scale-90 transition-all duration-300 font-[900]`}
+            >
+              <metric.icon className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-1.5 font-[900]" />
+              <span className="hidden sm:inline">{metric.value}</span>
+              <span className="sm:hidden">{metric.value}</span>
             </span>
-            <span className="sm:hidden">
-              {tagWithMetrics.numberOfQuestions}
-            </span>
-          </span>
-
-          {/* Answer count */}
-          <span className="flex items-center text-secondary-foreground bg-secondary px-1.5 sm:px-2 py-1 rounded-full border border-border text-xs sm:text-sm min-w-[40px] sm:min-w-[50px] justify-center group-hover:filter-shadow hover:shadow-none font-[900] hover:scale-90 transition-all duration-300">
-            <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-1.5 font-[900]" />
-            <span className="hidden sm:inline">
-              {tagWithMetrics.numberOfAnswers}
-            </span>
-            <span className="sm:hidden">{tagWithMetrics.numberOfAnswers}</span>
-          </span>
-
-          {/* Comment count */}
-          <span className="flex items-center text-secondary-foreground bg-secondary px-1.5 sm:px-2 py-1 rounded-full border border-border text-xs sm:text-sm min-w-[40px] sm:min-w-[50px] justify-center group-hover:filter-shadow hover:shadow-none font-[900] hover:scale-90 transition-all duration-300">
-            <MessageCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-1.5" />
-            <span className="hidden sm:inline">
-              {tagWithMetrics.numberOfComments}
-            </span>
-            <span className="sm:hidden">{tagWithMetrics.numberOfComments}</span>
-          </span>
+          ))}
         </div>
       </div>
     </div>
