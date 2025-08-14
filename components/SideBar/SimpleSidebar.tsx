@@ -52,7 +52,9 @@ export function SimpleSidebar({ ...props }: SimpleSidebarProps) {
   console.log("pathname =", pathname);
   console.log("typeof pathname =", typeof pathname);
   const [homePath, setHomePath] = useState<string>("/");
-  
+  const [popularTagsPath, setPopularTagsPath] =
+    useState<string>("/popular-tags");
+
   const loggedInSidebarItems: SidebarItemType[] = [
     {
       name: "Home",
@@ -66,7 +68,7 @@ export function SimpleSidebar({ ...props }: SimpleSidebarProps) {
     },
     {
       name: "Popular Tags",
-      path: "/popular-tags",
+      path: popularTagsPath,
       icon: Tag,
     },
     {
@@ -95,7 +97,7 @@ export function SimpleSidebar({ ...props }: SimpleSidebarProps) {
       icon: Settings,
     },
   ];
-  
+
   const loggedOutSidebarItems: SidebarItemType[] = [
     {
       name: "Home",
@@ -104,11 +106,11 @@ export function SimpleSidebar({ ...props }: SimpleSidebarProps) {
     },
     {
       name: "Popular Tags",
-      path: "/popular-tags",
+      path: popularTagsPath,
       icon: Tag,
     },
   ];
-  
+
   const { user, isSignedIn } = useUser();
   const sidebarItems = isSignedIn
     ? loggedInSidebarItems
@@ -121,6 +123,13 @@ export function SimpleSidebar({ ...props }: SimpleSidebarProps) {
       const fullPath = searchString ? `/?${searchString}` : "/";
       setHomePath(fullPath);
     }
+    if (pathname === "/popular-tags") {
+      const searchString = searchParams.toString();
+      const fullPath = searchString
+        ? `/popular-tags?${searchString}`
+        : "/popular-tags";
+      setPopularTagsPath(fullPath);
+    }
   }, [pathname, searchParams]);
 
   return (
@@ -129,14 +138,16 @@ export function SimpleSidebar({ ...props }: SimpleSidebarProps) {
       {...props}
     >
       <SidebarHeader className="p-4 h-16 border-b-2 border-border flex items-center justify-center bg-background">
-        <span className="text-lg font-semibold text-card-foreground">UPSC Overflow</span>
+        <span className="text-lg font-semibold text-card-foreground">
+          UPSC Overflow
+        </span>
       </SidebarHeader>
 
       <SidebarContent className="flex-1 overflow-y-auto p-3 bg-background">
         <SidebarMenu className="space-y-2">
           {sidebarItems.map((item) => {
             // Extract just the pathname part for comparison (ignore search params for active state)
-            const itemPathname = item.path.split('?')[0];
+            const itemPathname = item.path.split("?")[0];
 
             const isActive =
               pathname === itemPathname ||
@@ -188,8 +199,8 @@ export function SimpleSidebar({ ...props }: SimpleSidebarProps) {
                 >
                   Community guidelines
                 </Link>
-                <Link 
-                  href="/help" 
+                <Link
+                  href="/help"
                   className="block hover:text-primary transition-colors duration-200 text-muted-foreground hover:bg-accent px-2 py-1 rounded"
                 >
                   Need help?
