@@ -94,6 +94,8 @@ export const GET = errorHandler(async (req: NextRequest) => {
           ? b.numberOfAnswers - a.numberOfAnswers
           : b.numberOfComments !== a.numberOfComments
           ? b.numberOfComments - a.numberOfComments
+          : b.uniqueSubjects.length !== a.uniqueSubjects.length
+          ? b.uniqueSubjects.length - a.uniqueSubjects.length
           : 0;
       case "answers-desc":
         return b.numberOfAnswers !== a.numberOfAnswers
@@ -102,6 +104,8 @@ export const GET = errorHandler(async (req: NextRequest) => {
           ? b.numberOfQuestions - a.numberOfQuestions
           : b.numberOfComments !== a.numberOfComments
           ? b.numberOfComments - a.numberOfComments
+          : b.uniqueSubjects.length !== a.uniqueSubjects.length
+          ? b.uniqueSubjects.length - a.uniqueSubjects.length
           : 0;
       case "comments-desc":
         return b.numberOfComments !== a.numberOfComments
@@ -110,6 +114,18 @@ export const GET = errorHandler(async (req: NextRequest) => {
           ? b.numberOfQuestions - a.numberOfQuestions
           : b.numberOfAnswers !== a.numberOfAnswers
           ? b.numberOfAnswers - a.numberOfAnswers
+          : b.uniqueSubjects.length !== a.uniqueSubjects.length
+          ? b.uniqueSubjects.length - a.uniqueSubjects.length
+          : 0;
+      case "subjects-desc":
+        return b.uniqueSubjects.length !== a.uniqueSubjects.length
+          ? b.uniqueSubjects.length - a.uniqueSubjects.length
+          : b.numberOfQuestions !== a.numberOfQuestions
+          ? b.numberOfQuestions - a.numberOfQuestions
+          : b.numberOfAnswers !== a.numberOfAnswers
+          ? b.numberOfAnswers - a.numberOfAnswers
+          : b.numberOfComments !== a.numberOfComments
+          ? b.numberOfComments - a.numberOfComments
           : 0;
       default:
         return b.numberOfQuestions !== a.numberOfQuestions
@@ -118,6 +134,8 @@ export const GET = errorHandler(async (req: NextRequest) => {
           ? b.numberOfAnswers - a.numberOfAnswers
           : b.numberOfComments !== a.numberOfComments
           ? b.numberOfComments - a.numberOfComments
+          : b.uniqueSubjects.length !== a.uniqueSubjects.length
+          ? b.uniqueSubjects.length - a.uniqueSubjects.length
           : 0;
     }
   });
