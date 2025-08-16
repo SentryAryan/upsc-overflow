@@ -1,6 +1,6 @@
 "use client";
 
-import { FileQuestion, Home, Tag } from "lucide-react";
+import { Book, FileQuestion, Home, Tag } from "lucide-react";
 import { NavBar } from "@/components/ui/tube-light-navbar";
 import { useUser } from "@clerk/nextjs";
 import { usePathname, useSearchParams } from "next/navigation";
@@ -13,15 +13,19 @@ export default function NavBarMobile({ className }: { className?: string }) {
   const [homePath, setHomePath] = useState<string>("/");
   const [popularTagsPath, setPopularTagsPath] =
     useState<string>("/popular-tags");
+  const [popularSubjectsPath, setPopularSubjectsPath] =
+    useState<string>("/popular-subjects");
   const navItems = isSignedIn
     ? [
         { name: "Home", url: homePath, icon: Home },
         { name: "Ask Question", url: "/ask-question", icon: FileQuestion },
         { name: "Popular Tags", url: popularTagsPath, icon: Tag },
+        { name: "Popular Subjects", url: popularSubjectsPath, icon: Book },
       ]
     : [
         { name: "Home", url: homePath, icon: Home },
         { name: "Popular Tags", url: popularTagsPath, icon: Tag },
+        { name: "Popular Subjects", url: popularSubjectsPath, icon: Book },
       ];
 
   useEffect(() => {
@@ -37,6 +41,13 @@ export default function NavBarMobile({ className }: { className?: string }) {
         ? `/popular-tags?${searchString}`
         : "/popular-tags";
       setPopularTagsPath(fullPath);
+    }
+    if (pathname === "/popular-subjects") {
+      const searchString = searchParams.toString();
+      const fullPath = searchString
+        ? `/popular-subjects?${searchString}`
+        : "/popular-subjects";
+      setPopularSubjectsPath(fullPath);
     }
   }, [pathname, searchParams]);
 

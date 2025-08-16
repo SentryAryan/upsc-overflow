@@ -8,9 +8,9 @@ import { LoaderDemo } from "../../components/Loaders/LoaderDemo";
 import SortFilter from "@/components/Filters/SortFilter";
 import PopularCard from "@/components/Cards/PopularCard";
 
-const PopularTagsPage = () => {
+const PopularSubjectsPage = () => {
   const searchParams = useSearchParams();
-  const [tagsWithMetrics, setTagsWithMetrics] = useState<any[]>([]);
+  const [subjectsWithMetrics, setSubjectsWithMetrics] = useState<any[]>([]);
   const currentPage = Number(searchParams.get("page")) || 1;
   const [totalPages, setTotalPages] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -20,11 +20,11 @@ const PopularTagsPage = () => {
     try {
       setIsLoading(true);
       const response = await axios.get(
-        `/api/tags/getAll?page=${currentPage}&limit=10${
+        `/api/subjects/getAll?page=${currentPage}&limit=10${
           sortBy ? `&sortBy=${sortBy}` : ""
         }`
       );
-      setTagsWithMetrics(response.data.data);
+      setSubjectsWithMetrics(response.data.data);
       setTotalPages(response.data.data[0]?.totalPages || 0);
     } catch (error) {
       console.log(error);
@@ -40,22 +40,22 @@ const PopularTagsPage = () => {
   return (
     <div className="flex flex-col items-center w-full px-10 py-0 min-[640px]:py-14 md:py-4 gap-8">
       <h1 className="text-xl sm:text-2xl font-bold text-center">
-        Popular Tags
+        Popular Subjects
       </h1>
       <SearchBar />
       <HomePagination totalPages={totalPages} />
-      <SortFilter sortFilterType="tags" />
+      <SortFilter sortFilterType="subjects" />
       {isLoading ? (
         <div className="flex items-center justify-center h-[30vh] md:h-[70vh]">
           <LoaderDemo />
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-8 w-full ">
-          {tagsWithMetrics.map((tagWithMetrics) => (
+          {subjectsWithMetrics.map((subjectWithMetrics) => (
             <PopularCard
-              key={tagWithMetrics.tag}
-              tagWithMetrics={tagWithMetrics}
-              popularCardType="tags"
+              key={subjectWithMetrics.subject}
+              subjectWithMetrics={subjectWithMetrics}
+              popularCardType="subjects"
             />
           ))}
         </div>
@@ -64,4 +64,4 @@ const PopularTagsPage = () => {
   );
 };
 
-export default PopularTagsPage;
+export default PopularSubjectsPage;

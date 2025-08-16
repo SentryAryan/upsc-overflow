@@ -27,6 +27,12 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export interface AnswerWithUser extends AnswerTypeSchema {
   user: User;
@@ -95,8 +101,11 @@ const QuestionPage = () => {
   );
 
   // Add state for editing comments
-  const [expandedQuestionCommentEdit, setExpandedQuestionCommentEdit] = useState<string | null>(null);
-  const [expandedAnswerCommentEdit, setExpandedAnswerCommentEdit] = useState<string | null>(null);
+  const [expandedQuestionCommentEdit, setExpandedQuestionCommentEdit] =
+    useState<string | null>(null);
+  const [expandedAnswerCommentEdit, setExpandedAnswerCommentEdit] = useState<
+    string | null
+  >(null);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
@@ -601,9 +610,28 @@ const QuestionPage = () => {
           </div>
 
           {question.subject && (
-            <span className="ml-auto text-sm px-2.5 py-1 rounded-full bg-primary/10 text-primary whitespace-nowrap hover:bg-primary/20 transition-all duration-300 group-hover:filter-shadow font-[900] border border-primary dark:border-border cursor">
-              {question.subject}
-            </span>
+            <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger
+                className="ml-auto text-sm px-2.5 py-1 rounded-full bg-primary/10 text-primary whitespace-nowrap cursor-pointer hover:bg-primary/20 transition-all duration-300 group-hover:filter-shadow font-[900] border border-primary dark:border-border"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push(`/subjects?subject=${question.subject}`);
+                }}
+              >
+                {question.subject}
+              </TooltipTrigger>
+              <TooltipContent
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push(`/subjects?subject=${question.subject}`);
+                }}
+                className="cursor-pointer"
+              >
+                View all questions in {question.subject}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           )}
         </div>
 
@@ -708,13 +736,28 @@ const QuestionPage = () => {
         {question.tags && question.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-6">
             {question.tags.map((tag, index) => (
-              <span
-                key={index}
-                className="text-sm bg-secondary text-secondary-foreground px-3 py-1.5 rounded-full hover:bg-secondary/80 transition-all duration-300 ease-in-out group-hover:filter-shadow font-[900] border border-border dark:border-border hover:scale-90 hover:shadow-none"
-                title={tag}
-              >
-                #{tag}
-              </span>
+              <TooltipProvider key={index}>
+                <Tooltip>
+                  <TooltipTrigger
+                    className="text-xs bg-secondary text-secondary-foreground px-3 py-1.5 rounded-full cursor-pointer hover:bg-secondary/80 transition-all duration-300 hover:scale-90 group-hover:filter-shadow hover:shadow-none font-[900] hover:font-[900]!"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      router.push(`/tags?tag=${encodeURIComponent(tag)}`);
+                    }}
+                  >
+                    #{tag}
+                  </TooltipTrigger>
+                  <TooltipContent
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      router.push(`/tags?tag=${encodeURIComponent(tag)}`);
+                    }}
+                    className="cursor-pointer"
+                  >
+                    View all questions in #{tag}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             ))}
           </div>
         )}
@@ -905,6 +948,7 @@ const QuestionPage = () => {
                                   ).toLocaleDateString("en-US", {
                                     month: "short",
                                     day: "numeric",
+                                    year: "numeric",
                                   })}
                                 </span>
                               </div>
@@ -912,12 +956,17 @@ const QuestionPage = () => {
                               {/* Delete button - only visible to comment author */}
                               {comment.commenter === userId && (
                                 <div className="flex gap-1">
-                                  {expandedQuestionCommentEdit === comment._id ? (
+                                  {expandedQuestionCommentEdit ===
+                                  comment._id ? (
                                     <button
                                       className="text-xs text-primary hover:text-primary/80 flex items-center bg-primary/10 hover:bg-primary/20 border border-primary/20 px-3 py-1 rounded-full transition-all duration-300 ease-in-out cursor-pointer animate-in"
-                                      onClick={() => setExpandedQuestionCommentEdit(null)}
+                                      onClick={() =>
+                                        setExpandedQuestionCommentEdit(null)
+                                      }
                                       title="Cancel Edit"
-                                      disabled={isCommentDeleting === comment._id}
+                                      disabled={
+                                        isCommentDeleting === comment._id
+                                      }
                                     >
                                       Cancel Edit
                                     </button>
@@ -925,14 +974,22 @@ const QuestionPage = () => {
                                     <button
                                       className="p-1 text-primary hover:text-primary/80 hover:bg-primary/10 rounded-full group cursor-pointer animate-in transition-all duration-300 ease-in-out"
                                       title="Edit comment"
-                                      disabled={isCommentDeleting === comment._id}
-                                      onClick={() => setExpandedQuestionCommentEdit(comment._id)}
+                                      disabled={
+                                        isCommentDeleting === comment._id
+                                      }
+                                      onClick={() =>
+                                        setExpandedQuestionCommentEdit(
+                                          comment._id
+                                        )
+                                      }
                                     >
                                       <Edit className="h-3 w-3" />
                                     </button>
                                   )}
                                   <button
-                                    onClick={() => handleCommentDelete(comment._id, true)}
+                                    onClick={() =>
+                                      handleCommentDelete(comment._id, true)
+                                    }
                                     disabled={isCommentDeleting === comment._id}
                                     className="p-1 text-destructive hover:text-destructive/80 hover:bg-destructive/10 rounded-full transition-all duration-300 ease-in-out"
                                     title="Delete comment"
@@ -954,8 +1011,12 @@ const QuestionPage = () => {
                                   commentId={comment._id}
                                   setQuestionComments={setQuestionComments}
                                   questionComments={questionComments}
-                                  isQuestionCommentLoading={isQuestionCommentLoading}
-                                  setIsQuestionCommentLoading={setIsQuestionCommentLoading}
+                                  isQuestionCommentLoading={
+                                    isQuestionCommentLoading
+                                  }
+                                  setIsQuestionCommentLoading={
+                                    setIsQuestionCommentLoading
+                                  }
                                   isCommentLoading={isCommentLoading}
                                   setIsCommentLoading={setIsCommentLoading}
                                   currentContent={comment.content}
@@ -1480,6 +1541,7 @@ const QuestionPage = () => {
                                               ).toLocaleDateString("en-US", {
                                                 month: "short",
                                                 day: "numeric",
+                                                year: "numeric",
                                               })}
                                             </span>
                                           </div>
@@ -1487,12 +1549,20 @@ const QuestionPage = () => {
                                           {/* Delete button - only visible to comment author */}
                                           {comment.commenter === userId && (
                                             <div className="flex gap-1">
-                                              {expandedAnswerCommentEdit === comment._id ? (
+                                              {expandedAnswerCommentEdit ===
+                                              comment._id ? (
                                                 <button
                                                   className="text-xs text-primary hover:text-primary/80 flex items-center bg-primary/10 hover:bg-primary/20 border border-primary/20 px-3 py-1 rounded-full transition-all duration-300 ease-in-out cursor-pointer animate-in"
-                                                  onClick={() => setExpandedAnswerCommentEdit(null)}
+                                                  onClick={() =>
+                                                    setExpandedAnswerCommentEdit(
+                                                      null
+                                                    )
+                                                  }
                                                   title="Cancel Edit"
-                                                  disabled={isCommentDeleting === comment._id}
+                                                  disabled={
+                                                    isCommentDeleting ===
+                                                    comment._id
+                                                  }
                                                 >
                                                   Cancel Edit
                                                 </button>
@@ -1500,15 +1570,30 @@ const QuestionPage = () => {
                                                 <button
                                                   className="p-1 text-primary hover:text-primary/80 hover:bg-primary/10 rounded-full group cursor-pointer animate-in transition-all duration-300 ease-in-out"
                                                   title="Edit comment"
-                                                  disabled={isCommentDeleting === comment._id}
-                                                  onClick={() => setExpandedAnswerCommentEdit(comment._id)}
+                                                  disabled={
+                                                    isCommentDeleting ===
+                                                    comment._id
+                                                  }
+                                                  onClick={() =>
+                                                    setExpandedAnswerCommentEdit(
+                                                      comment._id
+                                                    )
+                                                  }
                                                 >
                                                   <Edit className="h-3 w-3" />
                                                 </button>
                                               )}
                                               <button
-                                                onClick={() => handleCommentDelete(comment._id, false)}
-                                                disabled={isCommentDeleting === comment._id}
+                                                onClick={() =>
+                                                  handleCommentDelete(
+                                                    comment._id,
+                                                    false
+                                                  )
+                                                }
+                                                disabled={
+                                                  isCommentDeleting ===
+                                                  comment._id
+                                                }
                                                 className="p-1 text-destructive hover:text-destructive/80 hover:bg-destructive/10 rounded-full transition-all duration-300 ease-in-out"
                                                 title="Delete comment"
                                               >
@@ -1521,7 +1606,8 @@ const QuestionPage = () => {
                                           {parse(comment.content)}
                                         </div>
                                         {/* UpdateCommentForm for answer comment */}
-                                        {expandedAnswerCommentEdit === comment._id && (
+                                        {expandedAnswerCommentEdit ===
+                                          comment._id && (
                                           <div className="mt-3 mb-2 bg-background rounded-lg border border-border transition-all duration-300 ease-in-out overflow-hidden animate-slide-up p-2">
                                             <UpdateCommentForm
                                               userId={userId || ""}
@@ -1530,10 +1616,18 @@ const QuestionPage = () => {
                                               setAnswers={setAnswers}
                                               answers={answers}
                                               answerId={answer._id}
-                                              isCommentLoading={isCommentLoading}
-                                              setIsCommentLoading={setIsCommentLoading}
-                                              isQuestionCommentLoading={isQuestionCommentLoading}
-                                              setIsQuestionCommentLoading={setIsQuestionCommentLoading}
+                                              isCommentLoading={
+                                                isCommentLoading
+                                              }
+                                              setIsCommentLoading={
+                                                setIsCommentLoading
+                                              }
+                                              isQuestionCommentLoading={
+                                                isQuestionCommentLoading
+                                              }
+                                              setIsQuestionCommentLoading={
+                                                setIsQuestionCommentLoading
+                                              }
                                               currentContent={comment.content}
                                             />
                                           </div>

@@ -54,7 +54,8 @@ export function SimpleSidebar({ ...props }: SimpleSidebarProps) {
   const [homePath, setHomePath] = useState<string>("/");
   const [popularTagsPath, setPopularTagsPath] =
     useState<string>("/popular-tags");
-
+  const [popularSubjectsPath, setPopularSubjectsPath] =
+    useState<string>("/popular-subjects");
   const loggedInSidebarItems: SidebarItemType[] = [
     {
       name: "Home",
@@ -70,6 +71,11 @@ export function SimpleSidebar({ ...props }: SimpleSidebarProps) {
       name: "Popular Tags",
       path: popularTagsPath,
       icon: Tag,
+    },
+    {
+      name: "Popular Subjects",
+      path: popularSubjectsPath,
+      icon: Book,
     },
     {
       name: "Discussions",
@@ -109,6 +115,11 @@ export function SimpleSidebar({ ...props }: SimpleSidebarProps) {
       path: popularTagsPath,
       icon: Tag,
     },
+    {
+      name: "Popular Subjects",
+      path: popularSubjectsPath,
+      icon: Book,
+    },
   ];
 
   const { user, isSignedIn } = useUser();
@@ -129,6 +140,13 @@ export function SimpleSidebar({ ...props }: SimpleSidebarProps) {
         ? `/popular-tags?${searchString}`
         : "/popular-tags";
       setPopularTagsPath(fullPath);
+    }
+    if (pathname === "/popular-subjects") {
+      const searchString = searchParams.toString();
+      const fullPath = searchString
+        ? `/popular-subjects?${searchString}`
+        : "/popular-subjects";
+      setPopularSubjectsPath(fullPath);
     }
   }, [pathname, searchParams]);
 

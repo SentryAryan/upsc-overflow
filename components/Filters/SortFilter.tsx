@@ -3,11 +3,11 @@ import React from "react";
 
 interface SortFilterProps {
   // We might not need direct props if we handle routing internally
-  isUsedByPouplarTagsOrPopularSubjects?: boolean;
+  sortFilterType?: "tags" | "subjects" | "others";
 }
 
 const SortFilter: React.FC<SortFilterProps> = ({
-  isUsedByPouplarTagsOrPopularSubjects,
+  sortFilterType,
 }: SortFilterProps) => {
   type SortByType =
     | "date-desc"
@@ -16,20 +16,28 @@ const SortFilter: React.FC<SortFilterProps> = ({
     | "answers-desc"
     | "comments-desc"
     | "questions-desc"
-    | "subjects-desc";
+    | "subjects-desc"
+    | "tags-desc";
 
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentSortBy =
     (searchParams.get("sortBy") as SortByType) ||
-    (isUsedByPouplarTagsOrPopularSubjects ? "questions-desc" : "date-asc"); // Default to earliest
+    (sortFilterType === "tags" || sortFilterType === "subjects" ? "questions-desc" : "date-desc"); // Default to sorting based on questions for popular tags and subjects else default to date-asc
   const sortOptions: { label: string; value: SortByType }[] =
-    isUsedByPouplarTagsOrPopularSubjects
+    sortFilterType === "tags"
       ? [
           { label: "Most Questions", value: "questions-desc" },
           { label: "Most Answers", value: "answers-desc" },
           { label: "Most Comments", value: "comments-desc" },
           { label: "Most Subjects", value: "subjects-desc" },
+        ]
+      : sortFilterType === "subjects"
+      ? [
+          { label: "Most Questions", value: "questions-desc" },
+          { label: "Most Answers", value: "answers-desc" },
+          { label: "Most Comments", value: "comments-desc" },
+          { label: "Most Tags", value: "tags-desc" },
         ]
       : [
           { label: "Latest", value: "date-desc" },
@@ -37,6 +45,7 @@ const SortFilter: React.FC<SortFilterProps> = ({
           { label: "Most Votes", value: "votes-desc" },
           { label: "Most Answers", value: "answers-desc" },
           { label: "Most Comments", value: "comments-desc" },
+          { label: "Most Tags", value: "tags-desc" },
         ];
 
   const handleSelectSort = (sortByValue: SortByType) => {
