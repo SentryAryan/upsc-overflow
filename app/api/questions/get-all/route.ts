@@ -24,7 +24,7 @@ export const GET = errorHandler(async (req: NextRequest) => {
   const subject = req.nextUrl.searchParams.get("subject");
   const tag = req.nextUrl.searchParams.get("tag");
   const question = req.nextUrl.searchParams.get("question");
-  const sortBy = req.nextUrl.searchParams.get("sortBy");
+  const sortBy = req.nextUrl.searchParams.get("sortBy") || "date-desc";
 
   let searchQuery;
   if (question) {
@@ -265,6 +265,10 @@ export const GET = errorHandler(async (req: NextRequest) => {
         case "comments-desc":
           return b._commentCount !== a._commentCount
             ? b._commentCount - a._commentCount
+            : b.createdAt - a.createdAt;
+        case "tags-desc":
+          return b.tags.length !== a.tags.length
+            ? b.tags.length - a.tags.length
             : b.createdAt - a.createdAt;
         default:
           return a.createdAt - b.createdAt;
