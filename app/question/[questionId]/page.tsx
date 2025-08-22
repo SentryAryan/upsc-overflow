@@ -536,7 +536,7 @@ const QuestionPage = () => {
   }
 
   return (
-    <div className="container mx-auto py-8 px-4 md:px-6 flex flex-col gap-6 max-w-[1200px] min-h-screen bg-background transition-all duration-300 ease-in-out pt-16">
+    <div className="container mx-auto py-8 px-4 md:px-6 flex flex-col gap-6 max-w-[1200px] min-h-screen transition-all duration-300 ease-in-out pt-16">
       {/* Question Section - Enhanced */}
       <div className="bg-background rounded-lg shadow-md hover:shadow-lg p-6 md:p-8 border-2 border-border transition-all group">
         <div className="flex justify-between items-start mb-4">
@@ -1044,7 +1044,7 @@ const QuestionPage = () => {
         <>
           {/* Add Answer Section */}
           <div
-            className="bg-background rounded-lg card-shadow p-6 md:p-8 border-3 border-mode dark:border-primary relative before:absolute before:bg-accent before:inset-0 before:translate-x-[-100%] before:transition-transform overflow-hidden before:duration-300 before:ease-in-out before:rounded-lg hover:before:translate-x-0 animate-slide-up before:shadow-mode-hover group"
+            className="bg-background rounded-lg shadow-md hover:shadow-lg p-6 md:p-8 border-2 border-border transition-all group"
             // These are the lines for the card hover effect(Title in the direction of the mouse)
             // ref={cardRef}
             // style={cardStyle}
@@ -1068,7 +1068,7 @@ const QuestionPage = () => {
             {/* Answer form - Conditionally rendered with smooth transitions */}
             {isAnswerFormExpanded && (
               <div
-                className={`mt-6 transition-all duration-300 ease-in-out border-3 border-mode dark:border-primary overflow-hidden animate-slide-up relative rounded-md card-shadow group-hover:shadow-mode-hover ${
+                className={`mt-6 transition-all duration-300 ease-in-out  overflow-hidden animate-slide-up relative rounded-md border-2 border-border ${
                   isAnswerFormExpanded
                     ? "max-h-[600px] opacity-100"
                     : "max-h-0 opacity-0 mt-0"

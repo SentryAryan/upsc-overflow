@@ -10,7 +10,7 @@ const AskQuestionPage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   return (
-    <div className="flex flex-col items-center justify-center py-8 px-4 bg-background min-h-screen w-full max-w-6xl mx-auto">
+    <div className="flex flex-col items-center justify-center py-8 px-4 rounded-lg min-h-screen w-full max-w-6xl mx-auto">
       <div className="w-full px-4">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-card-foreground mb-3">Ask Question</h1>

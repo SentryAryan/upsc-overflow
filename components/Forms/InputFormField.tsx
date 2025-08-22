@@ -34,7 +34,7 @@ const InputFormField = <T extends FieldValues>({
           <FormLabel className="label font-[900] group-hover:text-primary transition-all duration-300 ease-in-out">{label}</FormLabel>
           <FormControl>
             <Input
-              className="input bg-background! border-3 border-secondary dark:border-border shadow-lg cursor-pointer dark:focus-visible:border-ring dark:focus-visible:ring-ring/50 dark:focus-visible:ring-[3px]"
+              className="input bg-background! border-3 border-secondary dark:border-border shadow-lg dark:focus-visible:border-ring dark:focus-visible:ring-ring/50 dark:focus-visible:ring-[3px]"
               placeholder={placeholder}
               type={type}
               {...field}
