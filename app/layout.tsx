@@ -43,7 +43,7 @@ export default async function RootLayout({
             <SidebarProvider>
               <SimpleSidebar />
               <main className="flex-1 flex flex-col items-center justify-center overflow-x-hidden py-8 min-[640px]:py-14 md:py-4">
-                <header className="fixed top-0 right-4 flex justify-end items-center p-4 gap-4 z-10 rounded-full">
+                <header className="fixed top-0 right-4 flex justify-end items-center p-4 gap-4 z-100 rounded-full">
                   <MenuDemo2 />
                 </header>
 
