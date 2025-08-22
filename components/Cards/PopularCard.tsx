@@ -239,34 +239,36 @@ const PopularCard = ({
           {tagWithMetrics?.uniqueSubjects &&
             tagWithMetrics?.uniqueSubjects.length > 0 && (
               <div className="flex flex-wrap gap-2">
-                {tagWithMetrics.uniqueSubjects.slice(0, 3).map((subject: string) => (
-                  <TooltipProvider key={subject}>
-                    <Tooltip>
-                      <TooltipTrigger
-                        className="text-xs bg-secondary text-secondary-foreground px-3 py-1.5 rounded-full cursor-pointer hover:bg-secondary/80 transition-all duration-300 hover:scale-90 group-hover:filter-shadow hover:shadow-none font-[900] hover:font-[900]!"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          router.push(
-                            `/subjects?subject=${encodeURIComponent(subject)}`
-                          );
-                        }}
-                      >
-                        {subject}
-                      </TooltipTrigger>
-                      <TooltipContent
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          router.push(
-                            `/subjects?subject=${encodeURIComponent(subject)}`
-                          );
-                        }}
-                        className="cursor-pointer"
-                      >
-                        View all questions in {subject}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                ))}
+                {tagWithMetrics.uniqueSubjects
+                  .slice(0, 3)
+                  .map((subject: string) => (
+                    <TooltipProvider key={subject}>
+                      <Tooltip>
+                        <TooltipTrigger
+                          className="text-xs bg-secondary text-secondary-foreground px-3 py-1.5 rounded-full cursor-pointer hover:bg-secondary/80 transition-all duration-300 hover:scale-90 group-hover:filter-shadow hover:shadow-none font-[900] hover:font-[900]!"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            router.push(
+                              `/subjects?subject=${encodeURIComponent(subject)}`
+                            );
+                          }}
+                        >
+                          {subject}
+                        </TooltipTrigger>
+                        <TooltipContent
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            router.push(
+                              `/subjects?subject=${encodeURIComponent(subject)}`
+                            );
+                          }}
+                          className="cursor-pointer"
+                        >
+                          View all questions in {subject}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  ))}
                 {tagWithMetrics.uniqueSubjects.length > 3 && (
                   <span className="text-xs text-muted-foreground px-2 py-1">
                     +{tagWithMetrics.uniqueSubjects.length - 3} more
@@ -283,30 +285,32 @@ const PopularCard = ({
           {subjectWithMetrics?.uniqueTags &&
             subjectWithMetrics?.uniqueTags.length > 0 && (
               <div className="flex flex-wrap gap-2">
-                {subjectWithMetrics?.uniqueTags.slice(0, 3).map((tag: string) => (
-                  <TooltipProvider key={tag}>
-                    <Tooltip>
-                      <TooltipTrigger
-                        className="text-xs bg-secondary text-secondary-foreground px-3 py-1.5 rounded-full cursor-pointer hover:bg-secondary/80 transition-all duration-300 hover:scale-90 group-hover:filter-shadow hover:shadow-none font-[900] hover:font-[900]!"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          router.push(`/tags?tag=${encodeURIComponent(tag)}`);
-                        }}
-                      >
-                        #{tag}
-                      </TooltipTrigger>
-                      <TooltipContent
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          router.push(`/tags?tag=${encodeURIComponent(tag)}`);
-                        }}
-                        className="cursor-pointer"
-                      >
-                        View all questions in #{tag}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                ))}
+                {subjectWithMetrics?.uniqueTags
+                  .slice(0, 3)
+                  .map((tag: string) => (
+                    <TooltipProvider key={tag}>
+                      <Tooltip>
+                        <TooltipTrigger
+                          className="text-xs bg-secondary text-secondary-foreground px-3 py-1.5 rounded-full cursor-pointer hover:bg-secondary/80 transition-all duration-300 hover:scale-90 group-hover:filter-shadow hover:shadow-none font-[900] hover:font-[900]!"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            router.push(`/tags?tag=${encodeURIComponent(tag)}`);
+                          }}
+                        >
+                          #{tag}
+                        </TooltipTrigger>
+                        <TooltipContent
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            router.push(`/tags?tag=${encodeURIComponent(tag)}`);
+                          }}
+                          className="cursor-pointer"
+                        >
+                          View all questions in #{tag}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  ))}
                 {subjectWithMetrics?.uniqueTags.length > 3 && (
                   <span className="text-xs text-muted-foreground px-2 py-1">
                     +{subjectWithMetrics.uniqueTags.length - 3} more
@@ -322,7 +326,11 @@ const PopularCard = ({
         <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-0 text-xs sm:text-sm text-muted-foreground min-w-0 flex-1">
           <div className="flex items-center">
             <div className="w-6 h-6 sm:w-7 sm:h-7 bg-primary/20 rounded-full flex items-center justify-center mr-1 sm:mr-2 flex-shrink-0">
-              {popularCardType === "tags" ? <Hash className="h-3 w-3 sm:h-4 sm:w-4 text-primary" /> : <Book className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />}
+              {popularCardType === "tags" ? (
+                <Hash className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
+              ) : (
+                <Book className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
+              )}
             </div>
             <span className="truncate">
               {popularCardType === "tags"

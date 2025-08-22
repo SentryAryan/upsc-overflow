@@ -73,6 +73,9 @@
   --aryan-hover: var(--shadow-mode-hover);
   --animate-slide-in-right: var(--animate-slide-in-right);
   --animate-slide-up: var(--animate-slide-up);
+  --animate-cell-ripple: cell-ripple var(--duration, 200ms) ease-out none 1
+    var(--delay, 0ms);
+  --animate-spotlight: spotlight 2s ease 0.75s 1 forwards;
   --color-shadow-color: var(--shadow-color);
   --color-destructive-foreground: var(--destructive-foreground);
   --breakpoint-navbar: 640px;
@@ -673,6 +676,17 @@ hr {
   @apply border! border-secondary! dark:border-border!;
 }
 
+@keyframes spotlight {
+  0% {
+    opacity: 0;
+    transform: translate(-72%, -62%) scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -40%) scale(1);
+  }
+}
+
 @keyframes slideInRight {
   from {
     transform: translateX(-100%);
@@ -708,6 +722,18 @@ hr {
   }
   100% {
     background-position: 200% 0;
+  }
+}
+
+@keyframes cell-ripple {
+  0% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0.4;
   }
 }
 
