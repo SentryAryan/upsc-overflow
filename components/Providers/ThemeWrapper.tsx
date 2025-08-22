@@ -22,7 +22,7 @@ export function ThemeWrapper({ children }: { children: React.ReactNode }) {
           isDarkMode ? "dark" : ""
         } overflow-x-hidden`}
       >
-        <SpotlightNew />
+        {/* <SpotlightNew /> */}
         {/* <Spotlight
           className="-top-40 left-0 md:-top-20 md:left-60"
           fill="white"
