@@ -179,19 +179,19 @@ const UserCard = ({
       </div>
 
       {/* First Question */}
-      <div className="text-muted-foreground flex-grow relative text-sm sm:text-base">
+      <div className="text-muted-foreground flex-grow relative text-sm sm:text-base font-[900]">
         {userWithMetrics.firstQuestion ? (
           <>
             {userWithMetrics.firstQuestion}
             {userWithMetrics.numberOfQuestions &&
               userWithMetrics.numberOfQuestions > 1 && (
-                <div className="mt-2 text-xs opacity-75">
+                <div className="mt-2 text-xs opacity-75 font-[900]">
                   +{userWithMetrics.numberOfQuestions - 1} more questions
                 </div>
               )}
           </>
         ) : (
-          <span className="inline-flex w-full justify-center items-center gap-2 bg-secondary text-destructive px-3 py-1.5 rounded-md border border-border font-[900]">
+          <span className="inline-flex text-sm w-full justify-center items-center gap-2 bg-secondary text-destructive px-3 py-1.5 rounded-md border border-border font-[900]">
             <MessageCircleQuestion className="h-3 w-3 sm:h-4 sm:w-4" />
             No questions found
           </span>
@@ -234,7 +234,7 @@ const UserCard = ({
                   </TooltipProvider>
                 ))}
               {userWithMetrics.uniqueSubjects.length > 3 && (
-                <span className="text-xs text-muted-foreground px-2 py-1">
+                <span className="text-xs text-muted-foreground px-2 py-1 font-[900]">
                   +{userWithMetrics.uniqueSubjects.length - 3} more
                 </span>
               )}
@@ -272,7 +272,7 @@ const UserCard = ({
                 </TooltipProvider>
               ))}
               {userWithMetrics.uniqueTags.length > 3 && (
-                <span className="text-xs text-muted-foreground px-2 py-1">
+                <span className="text-xs text-muted-foreground px-2 py-1 font-[900]">
                   +{userWithMetrics.uniqueTags.length - 3} more
                 </span>
               )}
@@ -282,7 +282,7 @@ const UserCard = ({
 
       {/* No subjects */}
       {userWithMetrics.uniqueSubjects.length === 0 && (
-        <span className="inline-flex w-full justify-center items-center gap-2 bg-secondary text-destructive px-3 py-1.5 rounded-md border border-border z-10 font-[900]">
+        <span className="inline-flex text-sm w-full justify-center items-center gap-2 bg-secondary text-destructive px-3 py-1.5 rounded-md border border-border z-10 font-[900]">
           <Book className="h-3 w-3 sm:h-4 sm:w-4" />
           No subjects found
         </span>
@@ -290,7 +290,7 @@ const UserCard = ({
 
       {/* No tags */}
       {userWithMetrics.uniqueTags.length === 0 && (
-        <span className="inline-flex w-full justify-center items-center gap-2 bg-secondary text-destructive px-3 py-1.5 rounded-md border border-border z-10 font-[900]">
+        <span className="inline-flex text-sm w-full justify-center items-center gap-2 bg-secondary text-destructive px-3 py-1.5 rounded-md border border-border z-10 font-[900]">
           <Hash className="h-3 w-3 sm:h-4 sm:w-4" />
           No tags found
         </span>

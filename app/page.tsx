@@ -7,16 +7,16 @@ import SearchBar from "@/components/Forms/SearchBar";
 import { LoaderDemo } from "@/components/Loaders/LoaderDemo";
 import { QuestionType } from "@/db/models/question.model";
 import {
-    setPreviousPage,
-    setPreviousPath,
-    setPreviousQuestion,
-    setPreviousSortBy,
-    setPreviousSubject,
-    setPreviousTag,
+  setPreviousPage,
+  setPreviousPath,
+  setPreviousQuestion,
+  setPreviousSortBy,
+  setPreviousSubject,
+  setPreviousTag,
 } from "@/lib/redux/slices/previousPath.slice";
 import {
-    setQuestions,
-    setTotalPages,
+  setQuestions,
+  setTotalPages,
 } from "@/lib/redux/slices/questions.slice";
 import { setQuestionUpdate } from "@/lib/redux/slices/questionUpdate.slice";
 import { RootState } from "@/lib/redux/store";
@@ -29,9 +29,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import QuestionCard from "../components/Cards/QuestionCard";
 import {
-    setAvailableSubjects,
-    setSelectedSubject,
+  setAvailableSubjects,
+  setSelectedSubject,
 } from "../lib/redux/slices/filterSubjects.slice";
+import { Spotlight } from "../components/ui/spotlight";
 
 export interface QuestionCardProps extends QuestionType {
   likesAnswersComments: {
@@ -217,11 +218,15 @@ export default function HomePage() {
         isSignedIn ? "" : "pt-20"
       }`}
     >
-      <div className="flex items-center justify-center gap-3 text-card-foreground">
+      {/* Title */}
+      <div className="flex items-center justify-center gap-4 text-card-foreground">
         <span className="inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary/10 text-primary border border-primary dark:border-border card-shadow">
           <HomeIcon className="w-4 h-4 sm:w-5 sm:h-5" />
         </span>
-        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Home</h1>
+        <h1 className="text-4xl md:text-5xl font-bold bg-clip-text 
+        text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400">
+          Home
+        </h1>
       </div>
       <SearchBar />
       <HomePagination totalPages={totalPages} subject={subject || undefined} />
@@ -243,9 +248,15 @@ export default function HomePage() {
           No questions found for the selected subject.
         </p>
       ) : currentPage > totalPages ? (
-        <p className="text-center mt-4 text-muted-foreground animate-slide-up">No more pages currently</p>
+        <p className="text-center mt-4 text-muted-foreground animate-slide-up">
+          No more pages currently
+        </p>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full">
+          <Spotlight
+            className="-top-40 left-0 md:-top-20 md:left-60"
+            fill="white"
+          />
           {questions.map((question: QuestionCardProps) => (
             <QuestionCard key={question._id} question={question} />
           ))}

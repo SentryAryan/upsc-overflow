@@ -75,7 +75,7 @@
   --animate-slide-up: var(--animate-slide-up);
   --animate-cell-ripple: cell-ripple var(--duration, 200ms) ease-out none 1
     var(--delay, 0ms);
-  --animate-spotlight: spotlight 2s ease 0.75s 1 forwards;
+  --animate-spotlight: spotlight 0.5s ease 0.75s 1 forwards;
   --color-shadow-color: var(--shadow-color);
   --color-destructive-foreground: var(--destructive-foreground);
   --breakpoint-navbar: 640px;

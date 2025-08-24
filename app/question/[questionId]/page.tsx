@@ -33,6 +33,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Spotlight } from "../../../components/ui/spotlight";
 
 export interface AnswerWithUser extends AnswerTypeSchema {
   user: User;
@@ -537,6 +538,10 @@ const QuestionPage = () => {
 
   return (
     <div className="container mx-auto py-8 px-4 md:px-6 flex flex-col gap-6 max-w-[1200px] min-h-screen transition-all duration-300 ease-in-out pt-16">
+      <Spotlight
+        className="-top-40 left-0 md:-top-20 md:left-60"
+        fill="white"
+      />
       {/* Question Section - Enhanced */}
       <div className="bg-background rounded-lg shadow-md hover:shadow-lg p-6 md:p-8 border-2 border-border transition-all group">
         <div className="flex justify-between items-start mb-4">
