@@ -42,7 +42,7 @@ const AskQuestionPage = () => {
             /> */}
             <Spotlight
               className="-top-40 left-0 md:-top-20 md:left-60"
-              fill="white"
+              fill="#1c9cf0"
             />
             <AskQuestionFormTA
               userId={userId || null}
