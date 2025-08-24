@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import QuestionCard from "../../components/Cards/QuestionCard";
 import SearchBar from "../../components/Forms/SearchBar";
+import { Spotlight } from "../../components/ui/spotlight";
 
 export default function TagPage() {
   const searchParams = useSearchParams();
@@ -59,11 +60,14 @@ export default function TagPage() {
 
   return (
     <div className="flex flex-col items-center w-full p-10 min-h-screen gap-4">
-      <div className="flex items-center justify-center gap-3 text-card-foreground">
+      <div className="flex flex-wrap items-center justify-center gap-4 text-card-foreground mt-10 md:mt-0">
         <span className="inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary/10 text-primary border border-primary dark:border-border card-shadow">
           <Tag className="w-4 h-4 sm:w-5 sm:h-5" />
         </span>
-        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Questions tagged with "#{decodedTag}"</h1>
+        <h1 className="text-3xl md:text-4xl font-bold bg-clip-text 
+        text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400">
+          Questions tagged with "#{decodedTag}"
+        </h1>
       </div>
       <SearchBar />
 
@@ -86,6 +90,10 @@ export default function TagPage() {
         <p className="text-center mt-4 text-muted-foreground">No more pages</p>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full">
+          <Spotlight
+            className="-top-40 left-0 md:-top-20 md:left-60"
+            fill="#1c9cf0"
+          />
           {questions.map((question: any) => (
             <QuestionCard key={question._id} question={question} />
           ))}

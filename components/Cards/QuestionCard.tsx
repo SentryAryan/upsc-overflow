@@ -251,14 +251,14 @@ const QuestionCard = ({ question }: { question: QuestionCardProps }) => {
               </TooltipProvider>
             ))}
             {question.tags.length > 3 && (
-              <span className="text-xs text-muted-foreground px-2 py-1">
+              <span className="text-xs text-muted-foreground px-2 py-1 font-[900]">
                 +{question.tags.length - 3} more
               </span>
             )}
           </div>
         )}
         {question.tags.length === 0 && (
-          <span className="inline-flex w-full justify-center items-center gap-2 bg-secondary text-destructive px-3 py-1.5 rounded-md border border-border z-10 font-[900]">
+          <span className="inline-flex text-sm w-full justify-start items-center gap-2 bg-secondary text-destructive px-3 py-1.5 rounded-md border border-border z-10 font-[900]">
             <Hash className="h-3 w-3 sm:h-4 sm:w-4" />
             No tags found
           </span>

@@ -8,6 +8,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import HomePagination from "../../components/Filters/HomePagination";
 import { LoaderDemo } from "../../components/Loaders/LoaderDemo";
+import { Spotlight } from "../../components/ui/spotlight";
 
 const PopularSubjectsPage = () => {
   const searchParams = useSearchParams();
@@ -40,12 +41,17 @@ const PopularSubjectsPage = () => {
 
   return (
     <div className="flex flex-col items-center w-full px-10 py-0 min-[640px]:py-14 md:py-4 gap-8">
-      <div className="flex items-center justify-center gap-3 text-card-foreground">
+      {/* Title */}
+      <div className="flex flex-wrap items-center justify-center gap-4 text-card-foreground mt-10 md:mt-0">
         <span className="inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary/10 text-primary border border-primary dark:border-border card-shadow">
           <Book className="w-4 h-4 sm:w-5 sm:h-5" />
         </span>
-        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Popular Subjects</h1>
+        <h1 className="text-3xl md:text-4xl font-bold bg-clip-text 
+        text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400">
+          Popular Subjects
+        </h1>
       </div>
+
       <SearchBar />
       <HomePagination totalPages={totalPages} />
       <SortFilter sortFilterType="subjects" />
@@ -55,6 +61,10 @@ const PopularSubjectsPage = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-8 w-full ">
+          <Spotlight
+            className="-top-40 left-0 md:-top-20 md:left-60"
+            fill="#1c9cf0"
+          />
           {subjectsWithMetrics.map((subjectWithMetrics) => (
             <PopularCard
               key={subjectWithMetrics.subject}

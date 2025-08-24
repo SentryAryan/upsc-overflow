@@ -21,6 +21,7 @@ import {
   Edit,
   MessageCircle,
   Trash2,
+  MessageCircleQuestion, 
 } from "lucide-react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
@@ -33,6 +34,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Spotlight } from "../../../components/ui/spotlight";
 
 export interface AnswerWithUser extends AnswerTypeSchema {
   user: User;
@@ -537,6 +539,19 @@ const QuestionPage = () => {
 
   return (
     <div className="container mx-auto py-8 px-4 md:px-6 flex flex-col gap-6 max-w-[1200px] min-h-screen transition-all duration-300 ease-in-out pt-16">
+      <Spotlight className="top-0 left-0" fill="#1c9cf0" />
+      {/* Title */}
+      <div className="flex flex-wrap items-center justify-center gap-4 text-card-foreground mt-10 md:mt-0">
+        <span className="inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary/10 text-primary border border-primary dark:border-border card-shadow">
+          <MessageCircleQuestion className="w-4 h-4 sm:w-5 sm:h-5" />
+        </span>
+        <h1
+          className="text-3xl md:text-4xl font-bold bg-clip-text 
+        text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400"
+        >
+          Question Details
+        </h1>
+      </div>
       {/* Question Section - Enhanced */}
       <div className="bg-background rounded-lg shadow-md hover:shadow-lg p-6 md:p-8 border-2 border-border transition-all group">
         <div className="flex justify-between items-start mb-4">
@@ -611,27 +626,27 @@ const QuestionPage = () => {
 
           {question.subject && (
             <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger
-                className="ml-auto text-sm px-2.5 py-1 rounded-full bg-primary/10 text-primary whitespace-nowrap cursor-pointer hover:bg-primary/20 transition-all duration-300 group-hover:filter-shadow font-[900] border border-primary dark:border-border"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  router.push(`/subjects?subject=${question.subject}`);
-                }}
-              >
-                {question.subject}
-              </TooltipTrigger>
-              <TooltipContent
-                onClick={(e) => {
-                  e.stopPropagation();
-                  router.push(`/subjects?subject=${question.subject}`);
-                }}
-                className="cursor-pointer"
-              >
-                View all questions in {question.subject}
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger
+                  className="ml-auto text-sm px-2.5 py-1 rounded-full bg-primary/10 text-primary whitespace-nowrap cursor-pointer hover:bg-primary/20 transition-all duration-300 group-hover:filter-shadow font-[900] border border-primary dark:border-border"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    router.push(`/subjects?subject=${question.subject}`);
+                  }}
+                >
+                  {question.subject}
+                </TooltipTrigger>
+                <TooltipContent
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    router.push(`/subjects?subject=${question.subject}`);
+                  }}
+                  className="cursor-pointer"
+                >
+                  View all questions in {question.subject}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           )}
         </div>
 
@@ -768,7 +783,7 @@ const QuestionPage = () => {
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setIsQuestionCommentsVisible((prev) => !prev)}
-                className="text-sm text-muted-foreground flex items-center hover:text-foreground transition-all duration-300 ease-in-out"
+                className="text-sm text-muted-foreground flex items-center hover:text-foreground transition-all duration-300 ease-in-out cursor-pointer"
               >
                 <MessageCircle className="h-4 w-4 mr-1" />
                 <span>{questionComments?.length || 0} Comments</span>
@@ -921,36 +936,40 @@ const QuestionPage = () => {
                           {/* Comment content */}
                           <div className="flex-1">
                             <div className="flex items-center justify-between mb-2">
-                              <div className="flex items-center">
-                                {comment.user?.imageUrl ? (
-                                  <Image
-                                    src={comment.user.imageUrl}
-                                    alt={comment.user.firstName || "User"}
-                                    width={24}
-                                    height={24}
-                                    className="rounded-full mr-2 border border-border transition-all duration-300 ease-in-out"
-                                  />
-                                ) : (
-                                  <div className="w-6 h-6 bg-muted rounded-full flex items-center justify-center mr-2 transition-all duration-300 ease-in-out">
-                                    <span className="text-muted-foreground text-xs">
-                                      {comment.user?.firstName?.charAt(0) ||
-                                        "?"}
+                              <div className="flex flex-col items-start">
+                                <div className="flex items-center">
+                                  {comment.user?.imageUrl ? (
+                                    <Image
+                                      src={comment.user.imageUrl}
+                                      alt={comment.user.firstName || "User"}
+                                      width={36}
+                                      height={36}
+                                      className="rounded-full mr-2 border border-border transition-all duration-300 ease-in-out"
+                                    />
+                                  ) : (
+                                    <div className="w-6 h-6 bg-muted rounded-full flex items-center justify-center mr-2 transition-all duration-300 ease-in-out">
+                                      <span className="text-muted-foreground text-xs">
+                                        {comment.user?.firstName?.charAt(0) ||
+                                          "?"}
+                                      </span>
+                                    </div>
+                                  )}
+                                  <div className="flex flex-col items-start">
+                                    <span className="font-medium text-xs mr-2 text-foreground transition-all duration-300 ease-in-out">
+                                      {comment.user?.firstName}{" "}
+                                      {comment.user?.lastName}
+                                    </span>
+                                    <span className="text-xs text-muted-foreground transition-all duration-300 ease-in-out">
+                                      {new Date(
+                                        comment.createdAt
+                                      ).toLocaleDateString("en-US", {
+                                        month: "short",
+                                        day: "numeric",
+                                        year: "numeric",
+                                      })}
                                     </span>
                                   </div>
-                                )}
-                                <span className="font-medium text-xs mr-2 text-foreground transition-all duration-300 ease-in-out">
-                                  {comment.user?.firstName}{" "}
-                                  {comment.user?.lastName}
-                                </span>
-                                <span className="text-xs text-muted-foreground transition-all duration-300 ease-in-out">
-                                  {new Date(
-                                    comment.createdAt
-                                  ).toLocaleDateString("en-US", {
-                                    month: "short",
-                                    day: "numeric",
-                                    year: "numeric",
-                                  })}
-                                </span>
+                                </div>
                               </div>
 
                               {/* Delete button - only visible to comment author */}
@@ -1323,7 +1342,7 @@ const QuestionPage = () => {
                               isAnswerUpdating === answer._id
                             }
                             onClick={() => toggleCommentsVisibility(answer._id)}
-                            className="text-sm text-muted-foreground flex items-center hover:text-foreground transition-all duration-300 ease-in-out"
+                            className="text-sm text-muted-foreground flex items-center hover:text-foreground transition-all duration-300 ease-in-out cursor-pointer"
                           >
                             <MessageCircle className="h-4 w-4 mr-1" />
                             <span>{answer.comments?.length || 0} Comments</span>
@@ -1518,8 +1537,8 @@ const QuestionPage = () => {
                                                   comment.user.firstName ||
                                                   "User"
                                                 }
-                                                width={24}
-                                                height={24}
+                                                width={36}
+                                                height={36}
                                                 className="rounded-full mr-2 border border-border transition-all duration-300 ease-in-out"
                                               />
                                             ) : (
@@ -1531,19 +1550,21 @@ const QuestionPage = () => {
                                                 </span>
                                               </div>
                                             )}
-                                            <span className="font-medium text-xs mr-2 text-foreground transition-all duration-300 ease-in-out">
-                                              {comment.user?.firstName}{" "}
-                                              {comment.user?.lastName}
-                                            </span>
-                                            <span className="text-xs text-muted-foreground transition-all duration-300 ease-in-out">
-                                              {new Date(
-                                                comment.createdAt
-                                              ).toLocaleDateString("en-US", {
-                                                month: "short",
-                                                day: "numeric",
-                                                year: "numeric",
-                                              })}
-                                            </span>
+                                            <div className="flex flex-col items-start">
+                                              <span className="font-medium text-xs mr-2 text-foreground transition-all duration-300 ease-in-out">
+                                                {comment.user?.firstName}{" "}
+                                                {comment.user?.lastName}
+                                              </span>
+                                              <span className="text-xs text-muted-foreground transition-all duration-300 ease-in-out">
+                                                {new Date(
+                                                  comment.createdAt
+                                                ).toLocaleDateString("en-US", {
+                                                  month: "short",
+                                                  day: "numeric",
+                                                  year: "numeric",
+                                                })}
+                                              </span>
+                                            </div>
                                           </div>
 
                                           {/* Delete button - only visible to comment author */}

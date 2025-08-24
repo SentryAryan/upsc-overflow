@@ -207,12 +207,12 @@ const PopularCard = ({
       {/* Card Description - Show first question title */}
       {/* First Question of Tags */}
       {popularCardType === "tags" && (
-        <div className="text-muted-foreground mb-3 sm:mb-4 line-clamp-2 sm:line-clamp-3 flex-grow relative text-sm sm:text-base">
+        <div className="text-muted-foreground mb-3 sm:mb-4 line-clamp-2 sm:line-clamp-3 flex-grow relative text-sm sm:text-base font-[900]">
           {tagWithMetrics?.firstQuestion ||
             "No questions available for this tag"}
           {tagWithMetrics?.numberOfQuestions &&
             tagWithMetrics?.numberOfQuestions > 1 && (
-              <div className="mt-2 text-xs opacity-75">
+              <div className="mt-2 text-xs opacity-75 font-[900]">
                 +{tagWithMetrics?.numberOfQuestions - 1} more questions
               </div>
             )}
@@ -226,7 +226,7 @@ const PopularCard = ({
             "No questions available for this subject"}
           {subjectWithMetrics?.numberOfQuestions &&
             subjectWithMetrics?.numberOfQuestions > 1 && (
-              <div className="mt-2 text-xs opacity-75">
+              <div className="mt-2 text-xs opacity-75 font-[900]">
                 +{subjectWithMetrics?.numberOfQuestions - 1} more questions
               </div>
             )}
@@ -270,7 +270,7 @@ const PopularCard = ({
                     </TooltipProvider>
                   ))}
                 {tagWithMetrics.uniqueSubjects.length > 3 && (
-                  <span className="text-xs text-muted-foreground px-2 py-1">
+                  <span className="text-xs text-muted-foreground px-2 py-1 font-[900]">
                     +{tagWithMetrics.uniqueSubjects.length - 3} more
                   </span>
                 )}
@@ -312,7 +312,7 @@ const PopularCard = ({
                     </TooltipProvider>
                   ))}
                 {subjectWithMetrics?.uniqueTags.length > 3 && (
-                  <span className="text-xs text-muted-foreground px-2 py-1">
+                  <span className="text-xs text-muted-foreground px-2 py-1 font-[900]">
                     +{subjectWithMetrics.uniqueTags.length - 3} more
                   </span>
                 )}
