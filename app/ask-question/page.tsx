@@ -41,7 +41,7 @@ const AskQuestionPage = () => {
               setIsLoading={setIsLoading}
             /> */}
             <Spotlight
-              className="-top-40 left-0 md:-top-20 md:left-60"
+              className="-top-190 left-0 md:-top-20 md:left-60"
               fill="#1c9cf0"
             />
             <AskQuestionFormTA
