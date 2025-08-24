@@ -225,7 +225,7 @@ export default function HomePage() {
         </span>
         <h1 className="text-4xl md:text-5xl font-bold bg-clip-text 
         text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400">
-          Home
+          Homee 
         </h1>
       </div>
       <SearchBar />
