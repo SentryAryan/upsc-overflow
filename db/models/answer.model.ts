@@ -25,6 +25,7 @@ const answerSchema: Schema<AnswerTypeSchema> = new mongoose.Schema(
     answerer: {
       type: String,
       required: true,
+      index: true,
     },
   },
   {

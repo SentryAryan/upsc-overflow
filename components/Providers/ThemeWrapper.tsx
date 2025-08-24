@@ -7,6 +7,8 @@ import { dark, shadcn } from "@clerk/themes";
 import { GridBackground } from "../ui/grid-background";
 import { Spotlight as SpotlightNew } from "../ui/spotlight-new";
 import { Spotlight } from "../ui/spotlight";
+import { VisualSpotlightShowcase } from "@/components/ui/hero-spotlight";
+
 
 export function ThemeWrapper({ children }: { children: React.ReactNode }) {
   const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
@@ -22,6 +24,7 @@ export function ThemeWrapper({ children }: { children: React.ReactNode }) {
           isDarkMode ? "dark" : ""
         } overflow-x-hidden`}
       >
+        {/* <VisualSpotlightShowcase /> */}
         {/* <SpotlightNew /> */}
         {/* <Spotlight
           className="-top-40 left-0 md:-top-20 md:left-60"

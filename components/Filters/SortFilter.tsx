@@ -3,7 +3,7 @@ import React from "react";
 
 interface SortFilterProps {
   // We might not need direct props if we handle routing internally
-  sortFilterType?: "tags" | "subjects" | "others";
+  sortFilterType?: "tags" | "subjects" | "others" | "users";
 }
 
 const SortFilter: React.FC<SortFilterProps> = ({
@@ -21,9 +21,14 @@ const SortFilter: React.FC<SortFilterProps> = ({
 
   const router = useRouter();
   const searchParams = useSearchParams();
+  // Default to sorting based on questions for popular tags and subjects and users else default to date-asc
   const currentSortBy =
     (searchParams.get("sortBy") as SortByType) ||
-    (sortFilterType === "tags" || sortFilterType === "subjects" ? "questions-desc" : "date-desc"); // Default to sorting based on questions for popular tags and subjects else default to date-asc
+    (sortFilterType === "tags" ||
+    sortFilterType === "subjects" ||
+    sortFilterType === "users"
+      ? "questions-desc"
+      : "date-desc");
   const sortOptions: { label: string; value: SortByType }[] =
     sortFilterType === "tags"
       ? [
@@ -37,6 +42,14 @@ const SortFilter: React.FC<SortFilterProps> = ({
           { label: "Most Questions", value: "questions-desc" },
           { label: "Most Answers", value: "answers-desc" },
           { label: "Most Comments", value: "comments-desc" },
+          { label: "Most Tags", value: "tags-desc" },
+        ]
+      : sortFilterType === "users"
+      ? [
+          { label: "Most Questions", value: "questions-desc" },
+          { label: "Most Answers", value: "answers-desc" },
+          { label: "Most Comments", value: "comments-desc" },
+          { label: "Most Subjects", value: "subjects-desc" },
           { label: "Most Tags", value: "tags-desc" },
         ]
       : [

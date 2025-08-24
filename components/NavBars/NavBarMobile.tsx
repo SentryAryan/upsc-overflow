@@ -1,6 +1,6 @@
 "use client";
 
-import { Book, FileQuestion, Home, Tag } from "lucide-react";
+import { Book, FileQuestion, Home, Tag, Users } from "lucide-react";
 import { NavBar } from "@/components/ui/tube-light-navbar";
 import { useUser } from "@clerk/nextjs";
 import { usePathname, useSearchParams } from "next/navigation";
@@ -15,17 +15,20 @@ export default function NavBarMobile({ className }: { className?: string }) {
     useState<string>("/popular-tags");
   const [popularSubjectsPath, setPopularSubjectsPath] =
     useState<string>("/popular-subjects");
+  const [communityPath, setCommunityPath] = useState<string>("/community");
   const navItems = isSignedIn
     ? [
         { name: "Home", url: homePath, icon: Home },
         { name: "Ask Question", url: "/ask-question", icon: FileQuestion },
         { name: "Popular Tags", url: popularTagsPath, icon: Tag },
         { name: "Popular Subjects", url: popularSubjectsPath, icon: Book },
+        { name: "Community", url: communityPath, icon: Users },
       ]
     : [
         { name: "Home", url: homePath, icon: Home },
         { name: "Popular Tags", url: popularTagsPath, icon: Tag },
         { name: "Popular Subjects", url: popularSubjectsPath, icon: Book },
+        { name: "Community", url: communityPath, icon: Users },
       ];
 
   useEffect(() => {
@@ -48,6 +51,13 @@ export default function NavBarMobile({ className }: { className?: string }) {
         ? `/popular-subjects?${searchString}`
         : "/popular-subjects";
       setPopularSubjectsPath(fullPath);
+    }
+    if (pathname === "/community") {
+      const searchString = searchParams.toString();
+      const fullPath = searchString
+        ? `/community?${searchString}`
+        : "/community";
+      setCommunityPath(fullPath);
     }
   }, [pathname, searchParams]);
 

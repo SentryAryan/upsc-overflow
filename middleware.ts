@@ -5,6 +5,7 @@ const isPublicRoute = createRouteMatcher([
   "/",
   "/popular-tags",
   "/popular-subjects",
+  "/community",
 ]);
 
 export default clerkMiddleware(async (auth, req) => {

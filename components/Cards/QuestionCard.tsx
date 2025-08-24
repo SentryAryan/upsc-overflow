@@ -7,7 +7,14 @@ import {
 } from "@/components/ui/tooltip";
 import { format } from "date-fns";
 import parse from "html-react-parser";
-import { ArrowDown, ArrowUp, Hash, LucideIcon, MessageCircle, MessageSquare } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  Hash,
+  LucideIcon,
+  MessageCircle,
+  MessageSquare,
+} from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
@@ -124,7 +131,7 @@ const QuestionCard = ({ question }: { question: QuestionCardProps }) => {
       value: question.tags?.length || 0,
       label: "tags",
       color: "text-secondary-foreground",
-    }
+    },
   ];
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -251,8 +258,9 @@ const QuestionCard = ({ question }: { question: QuestionCardProps }) => {
           </div>
         )}
         {question.tags.length === 0 && (
-          <span className="text-xs text-muted-foreground px-2 py-1">
-            No tags
+          <span className="inline-flex w-full justify-center items-center gap-2 bg-secondary text-destructive px-3 py-1.5 rounded-md border border-border z-10 font-[900]">
+            <Hash className="h-3 w-3 sm:h-4 sm:w-4" />
+            No tags found
           </span>
         )}
       </div>
@@ -276,9 +284,7 @@ const QuestionCard = ({ question }: { question: QuestionCardProps }) => {
                 </span>
               </div>
             )}
-            <span className="truncate">
-              {askerName}
-            </span>
+            <span className="truncate">{askerName}</span>
           </div>
           <span className="text-xs sm:text-sm opacity-75 ml-9 sm:ml-0 sm:before:content-['•'] sm:before:mx-2">
             {createdAt}
