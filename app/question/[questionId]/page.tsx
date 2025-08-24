@@ -539,7 +539,7 @@ const QuestionPage = () => {
 
   return (
     <div className="container mx-auto py-8 px-4 md:px-6 flex flex-col gap-6 max-w-[1200px] min-h-screen transition-all duration-300 ease-in-out pt-16">
-      <Spotlight className="top-0 left-0" fill="#1c9cf0" />
+      <Spotlight className="-top-190 left-0 md:-top-20 md:left-60" fill="#1c9cf0" />
       {/* Title */}
       <div className="flex flex-wrap items-center justify-center gap-4 text-card-foreground mt-10 md:mt-0">
         <span className="inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary/10 text-primary border border-primary dark:border-border card-shadow">
