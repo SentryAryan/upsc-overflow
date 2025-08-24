@@ -22,6 +22,7 @@ import { setQuestionUpdate } from "@/lib/redux/slices/questionUpdate.slice";
 import { RootState } from "@/lib/redux/store";
 import { useUser } from "@clerk/nextjs";
 import axios from "axios";
+import { Home as HomeIcon } from "lucide-react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -216,6 +217,12 @@ export default function HomePage() {
         isSignedIn ? "" : "pt-20"
       }`}
     >
+      <div className="flex items-center justify-center gap-3 text-card-foreground">
+        <span className="inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary/10 text-primary border border-primary dark:border-border card-shadow">
+          <HomeIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+        </span>
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Home</h1>
+      </div>
       <SearchBar />
       <HomePagination totalPages={totalPages} subject={subject || undefined} />
 

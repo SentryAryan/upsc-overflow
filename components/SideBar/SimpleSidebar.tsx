@@ -56,6 +56,7 @@ export function SimpleSidebar({ ...props }: SimpleSidebarProps) {
     useState<string>("/popular-tags");
   const [popularSubjectsPath, setPopularSubjectsPath] =
     useState<string>("/popular-subjects");
+  const [communityPath, setCommunityPath] = useState<string>("/community");
   const loggedInSidebarItems: SidebarItemType[] = [
     {
       name: "Home",
@@ -78,6 +79,11 @@ export function SimpleSidebar({ ...props }: SimpleSidebarProps) {
       icon: Book,
     },
     {
+      name: "Community",
+      path: communityPath,
+      icon: Users,
+    },
+    {
       name: "Discussions",
       path: "/discussions",
       icon: MessageSquare,
@@ -91,11 +97,6 @@ export function SimpleSidebar({ ...props }: SimpleSidebarProps) {
       name: "Achievements",
       path: "/achievements",
       icon: Award,
-    },
-    {
-      name: "Community",
-      path: "/community",
-      icon: Users,
     },
     {
       name: "Settings",
@@ -119,6 +120,11 @@ export function SimpleSidebar({ ...props }: SimpleSidebarProps) {
       name: "Popular Subjects",
       path: popularSubjectsPath,
       icon: Book,
+    },
+    {
+      name: "Community",
+      path: communityPath,
+      icon: Users,
     },
   ];
 
@@ -147,6 +153,13 @@ export function SimpleSidebar({ ...props }: SimpleSidebarProps) {
         ? `/popular-subjects?${searchString}`
         : "/popular-subjects";
       setPopularSubjectsPath(fullPath);
+    }
+    if (pathname === "/community") {
+      const searchString = searchParams.toString();
+      const fullPath = searchString
+        ? `/community?${searchString}`
+        : "/community";
+      setCommunityPath(fullPath);
     }
   }, [pathname, searchParams]);
 

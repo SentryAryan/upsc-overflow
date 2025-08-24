@@ -1,17 +1,17 @@
 "use client";
-import PopularCard from "@/components/Cards/PopularCard";
 import SortFilter from "@/components/Filters/SortFilter";
 import SearchBar from "@/components/Forms/SearchBar";
 import axios from "axios";
-import { Tag } from "lucide-react";
+import { Users } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import UserCard from "../../components/Cards/UserCard";
 import HomePagination from "../../components/Filters/HomePagination";
 import { LoaderDemo } from "../../components/Loaders/LoaderDemo";
 
-const PopularTagsPage = () => {
+const CommunityPage = () => {
   const searchParams = useSearchParams();
-  const [tagsWithMetrics, setTagsWithMetrics] = useState<any[]>([]);
+  const [usersWithMetrics, setUsersWithMetrics] = useState<any[]>([]);
   const currentPage = Number(searchParams.get("page")) || 1;
   const [totalPages, setTotalPages] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -21,11 +21,11 @@ const PopularTagsPage = () => {
     try {
       setIsLoading(true);
       const response = await axios.get(
-        `/api/tags/getAll?page=${currentPage}&limit=10${
+        `/api/users/getAll?page=${currentPage}&limit=10${
           sortBy ? `&sortBy=${sortBy}` : ""
         }`
       );
-      setTagsWithMetrics(response.data.data);
+      setUsersWithMetrics(response.data.data);
       setTotalPages(response.data.data[0]?.totalPages || 0);
     } catch (error) {
       console.log(error);
@@ -42,24 +42,25 @@ const PopularTagsPage = () => {
     <div className="flex flex-col items-center w-full px-10 py-0 min-[640px]:py-14 md:py-4 gap-8">
       <div className="flex items-center justify-center gap-3 text-card-foreground">
         <span className="inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary/10 text-primary border border-primary dark:border-border card-shadow">
-          <Tag className="w-4 h-4 sm:w-5 sm:h-5" />
+          <Users className="w-4 h-4 sm:w-5 sm:h-5" />
         </span>
-        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Popular Tags</h1>
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+          Community
+        </h1>
       </div>
       <SearchBar />
       <HomePagination totalPages={totalPages} />
-      <SortFilter sortFilterType="tags" />
+      <SortFilter sortFilterType="users" />
       {isLoading ? (
         <div className="flex items-center justify-center h-[30vh] md:h-[70vh]">
           <LoaderDemo />
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-8 w-full ">
-          {tagsWithMetrics.map((tagWithMetrics) => (
-            <PopularCard
-              key={tagWithMetrics.tag}
-              tagWithMetrics={tagWithMetrics}
-              popularCardType="tags"
+          {usersWithMetrics.map((userWithMetrics) => (
+            <UserCard
+              key={userWithMetrics.user.id}
+              userWithMetrics={userWithMetrics}
             />
           ))}
         </div>
@@ -68,4 +69,4 @@ const PopularTagsPage = () => {
   );
 };
 
-export default PopularTagsPage;
+export default CommunityPage;

@@ -31,6 +31,7 @@ const commentSchema: Schema<CommentTypeSchema> = new mongoose.Schema(
     commenter: {
       type: String,
       required: true,
+      index: true,
     },
   },
   {

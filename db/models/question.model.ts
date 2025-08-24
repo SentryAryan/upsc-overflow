@@ -57,7 +57,7 @@ const questionSchema: Schema<QuestionTypeSchema> = new mongoose.Schema(
         },
       ],
     },
-    asker: { type: String, required: true },
+    asker: { type: String, required: true, index: true },
   },
   {
     timestamps: true,
