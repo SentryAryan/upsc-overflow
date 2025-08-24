@@ -81,7 +81,7 @@ export default function SubjectPage() {
       ) : currentPage > totalPages ? (
         <p className="text-center mt-4 text-muted-foreground">No more pages</p>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full">
+        <div className="grid grid-cols-1 gap-8 w-full">
           <Spotlight
             className="-top-120 left-0 md:-top-20 md:left-60"
             fill="#1c9cf0"
