@@ -60,7 +60,7 @@ const PopularTagsPage = () => {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-8 w-full ">
           <Spotlight
-            className="-top-190 left-0 md:-top-20 md:left-60"
+            className="-top-140 left-0 md:-top-20 md:left-60"
             fill="#1c9cf0"
           />
           {tagsWithMetrics.map((tagWithMetrics) => (
