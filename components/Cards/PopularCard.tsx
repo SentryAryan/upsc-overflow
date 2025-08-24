@@ -207,7 +207,7 @@ const PopularCard = ({
       {/* Card Description - Show first question title */}
       {/* First Question of Tags */}
       {popularCardType === "tags" && (
-        <div className="text-muted-foreground mb-3 sm:mb-4 line-clamp-2 sm:line-clamp-3 flex-grow relative text-sm sm:text-base font-[900]">
+        <div className="text-muted-foreground mb-3 sm:mb-4 flex-grow relative text-sm sm:text-base font-[900]">
           {tagWithMetrics?.firstQuestion ||
             "No questions available for this tag"}
           {tagWithMetrics?.numberOfQuestions &&
@@ -221,7 +221,7 @@ const PopularCard = ({
 
       {/* First Question of Subjects */}
       {popularCardType === "subjects" && (
-        <div className="text-muted-foreground mb-3 sm:mb-4 line-clamp-2 sm:line-clamp-3 flex-grow relative text-sm sm:text-base">
+        <div className="text-muted-foreground mb-3 sm:mb-4 flex-grow relative text-sm sm:text-base">
           {subjectWithMetrics?.firstQuestion ||
             "No questions available for this subject"}
           {subjectWithMetrics?.numberOfQuestions &&
@@ -322,10 +322,10 @@ const PopularCard = ({
       )}
 
       {/* Card Footer */}
-      <div className="flex flex-col flex-wrap items-start justify-between pt-3 sm:pt-4 border-t border-secondary dark:border-border mt-auto gap-2 sm:gap-3 relative">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-0 text-xs sm:text-sm text-muted-foreground min-w-0 flex-1">
+      <div className="flex flex-col lg:flex-row flex-wrap items-start justify-between pt-3 sm:pt-4 border-t border-secondary dark:border-border mt-auto gap-2 sm:gap-3 relative">
+        <div className="flex items-center text-xs sm:text-sm text-muted-foreground min-w-0 flex-1 font-[900]">
           <div className="flex items-center">
-            <div className="w-6 h-6 sm:w-7 sm:h-7 bg-primary/20 rounded-full flex items-center justify-center mr-1 sm:mr-2 flex-shrink-0">
+            <div className="w-7 h-7 bg-primary/20 rounded-full flex items-center justify-center mr-2 flex-shrink-0">
               {popularCardType === "tags" ? (
                 <Hash className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
               ) : (
@@ -338,7 +338,7 @@ const PopularCard = ({
                 : subjectWithMetrics?.subject}
             </span>
           </div>
-          <span className="text-xs sm:text-sm opacity-75 ml-7 sm:ml-0 sm:before:content-['•'] sm:before:mx-2">
+          <span className="text-xs sm:text-sm opacity-75 ml-0 before:content-['•'] before:mx-2 font-[900]">
             {popularCardType === "tags"
               ? tagWithMetrics?.numberOfQuestions
               : subjectWithMetrics?.numberOfQuestions}{" "}

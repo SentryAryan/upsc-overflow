@@ -1,18 +1,18 @@
 "use client";
 import {
- Tooltip,
- TooltipContent,
- TooltipProvider,
- TooltipTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { format } from "date-fns";
 import {
- Book,
- Hash,
- Mail,
- MessageCircle,
- MessageCircleQuestion,
- MessageSquare,
+  Book,
+  Hash,
+  Mail,
+  MessageCircle,
+  MessageCircleQuestion,
+  MessageSquare,
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -54,7 +54,9 @@ const UserCard = ({
   const primaryEmail =
     userWithMetrics.user.emailAddresses?.[0]?.emailAddress ?? "";
   const firstNameOnly = (
-    userWithMetrics.user.firstName ?? fullName.split(" ")[0] ?? ""
+    userWithMetrics.user.firstName ??
+    fullName.split(" ")[0] ??
+    ""
   ).trim();
 
   const createdAtDate = userWithMetrics.user.createdAt
@@ -84,15 +86,15 @@ const UserCard = ({
       color: "text-secondary-foreground",
     },
     {
-      icon: Hash,
-      value: userWithMetrics.uniqueTags?.length || 0,
-      label: "tags",
-      color: "text-secondary-foreground",
-    },
-    {
       icon: Book,
       value: userWithMetrics.uniqueSubjects?.length || 0,
       label: "subjects",
+      color: "text-secondary-foreground",
+    },
+    {
+      icon: Hash,
+      value: userWithMetrics.uniqueTags?.length || 0,
+      label: "tags",
       color: "text-secondary-foreground",
     },
   ] as const;
@@ -297,9 +299,8 @@ const UserCard = ({
       )}
 
       {/* Footer */}
-      <div className="flex flex-col flex-wrap items-start justify-between pt-3 sm:pt-4 border-t border-secondary dark:border-border mt-auto gap-2 sm:gap-3 relative">
-       
-       {/* Email and Created At */}
+      <div className="flex flex-col lg:flex-row flex-wrap items-start justify-between pt-3 sm:pt-4 border-t border-secondary dark:border-border mt-auto gap-2 sm:gap-3 relative">
+        {/* Email and Created At */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-0 text-xs sm:text-sm text-muted-foreground min-w-0 flex-1 font-[900]">
           <div className="flex items-center">
             <div className="w-6 h-6 sm:w-7 sm:h-7 bg-primary/20 rounded-full flex items-center justify-center mr-1 sm:mr-2 flex-shrink-0">
@@ -327,7 +328,7 @@ const UserCard = ({
             </span>
           ))}
         </div>
-        </div>
+      </div>
     </div>
   );
 };

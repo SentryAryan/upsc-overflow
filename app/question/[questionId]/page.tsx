@@ -21,7 +21,10 @@ import {
   Edit,
   MessageCircle,
   Trash2,
-  MessageCircleQuestion, 
+  MessageCircleQuestion,
+  Bookmark,
+  BookmarkCheck, 
+  BookmarkX,
 } from "lucide-react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
@@ -96,6 +99,7 @@ const QuestionPage = () => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isSaved, setIsSaved] = useState<boolean>(false);
 
   // Add state for answer editing
   const [expandedAnswerEdit, setExpandedAnswerEdit] = useState<string | null>(
@@ -482,10 +486,37 @@ const QuestionPage = () => {
     }
   };
 
+  const getIsSaved = async (questionId: string) => {
+    try {
+      const response = await axios.get(
+        `/api/questions/getIsSaved?questionId=${questionId}`
+      );
+      setIsSaved(response.data.data);
+    } catch (error: any) {
+      console.log(error.message);
+    }
+  };
+
+  const toggleSave = async (questionId: string) => {
+    try {
+      const response = await axios.put(`/api/questions/toggleSave`, {
+        questionId,
+        saver: userId,
+      });
+      setIsSaved(response.data.data);
+      toast.success(response.data.data ? "Question saved successfully": "Question unsaved successfully");
+    }
+    catch (error: any) {
+      console.log(error.message);
+      toast.error("Failed to save question");
+    }
+  };
+
   useEffect(() => {
     console.log("This is the questionId", questionId);
     if (questionId) {
       getQuestionById(questionId as string);
+      getIsSaved(questionId as string);
     }
   }, []);
 
@@ -558,6 +589,19 @@ const QuestionPage = () => {
           <h1 className="text-2xl md:text-3xl font-bold text-card-foreground flex-1">
             {question.title}
           </h1>
+
+          {/* Save button */}
+          <button
+            onClick={() => toggleSave(question._id)}
+            className={`p-2 ${isSaved ? "text-chart-4 hover:text-chart-4/80 hover:bg-chart-4/10" : "text-destructive hover:text-destructive/80 hover:bg-destructive/10"} rounded-full transition-all duration-300 ease-in-out group cursor-pointer`}
+            title={isSaved ? "Unsave this question" : "Save this question"}
+          >
+            {isSaved ? (
+              <BookmarkCheck className="h-5 w-5" />
+            ) : (
+              <BookmarkX className="h-5 w-5" />
+            )}
+          </button>
 
           {/* Edit and Delete buttons - only visible to question author */}
           {question.asker === userId && (
