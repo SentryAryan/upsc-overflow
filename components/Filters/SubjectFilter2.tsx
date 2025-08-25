@@ -43,7 +43,7 @@ const SubjectFilter: React.FC<SubjectFilterProps> = ({
   };
 
   return (
-    <div className="mb-4 flex flex-wrap gap-3 items-center">
+    <div className="mb-4 flex flex-wrap gap-3 items-center justify-center">
       <span className="text-foreground font-semibold mr-2 animate-slide-up">
         Filter by Subject:
       </span>

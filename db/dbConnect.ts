@@ -1,4 +1,9 @@
 import mongoose from "mongoose";
+import "@/db/models/question.model";
+import "@/db/models/answer.model";
+import "@/db/models/comment.model";
+import "@/db/models/like.model";
+import "@/db/models/save.model";
 
 const dbConnect = async (): Promise<void> => {
   try {

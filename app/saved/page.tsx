@@ -22,17 +22,14 @@ import { setQuestionUpdate } from "@/lib/redux/slices/questionUpdate.slice";
 import { RootState } from "@/lib/redux/store";
 import { useUser } from "@clerk/nextjs";
 import axios from "axios";
-import { Home as HomeIcon } from "lucide-react";
+import { Bookmark } from "lucide-react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
-import QuestionCard from "../components/Cards/QuestionCard";
-import { Spotlight } from "../components/ui/spotlight";
-import {
-  setAvailableSubjects,
-  setSelectedSubject,
-} from "../lib/redux/slices/filterSubjects.slice";
+import QuestionCard from "@/components/Cards/QuestionCard";
+import { Spotlight } from "@/components/ui/spotlight";
+import { setSelectedSubject } from "@/lib/redux/slices/filterSubjects.slice";
 
 export interface QuestionCardProps extends QuestionType {
   likesAnswersComments: {
@@ -43,8 +40,8 @@ export interface QuestionCardProps extends QuestionType {
   };
 }
 
-export default function HomePage() {
-  console.log("HomePage.jsx");
+export default function SavedPage() {
+  console.log("SavedPage.jsx");
   const { user, isSignedIn } = useUser();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -55,32 +52,9 @@ export default function HomePage() {
   const totalPages = useSelector(
     (state: RootState) => state.questions.totalPages
   );
-  const availableSubjects = useSelector(
-    (state: RootState) => state.filterSubjects.availableSubjects
-  );
+  const [availableSubjects, setAvailableSubjects] = useState<string[]>([]);
   const selectedSubject = useSelector(
     (state: RootState) => state.filterSubjects.selectedSubject
-  );
-  const previousPath = useSelector(
-    (state: RootState) => state.previousPath.previousPath
-  );
-  const previousSubject = useSelector(
-    (state: RootState) => state.previousPath.previousSubject
-  );
-  const previousTag = useSelector(
-    (state: RootState) => state.previousPath.previousTag
-  );
-  const previousQuestion = useSelector(
-    (state: RootState) => state.previousPath.previousQuestion
-  );
-  const previousSortBy = useSelector(
-    (state: RootState) => state.previousPath.previousSortBy
-  );
-  const previousPage = useSelector(
-    (state: RootState) => state.previousPath.previousPage
-  );
-  const questionUpdate = useSelector(
-    (state: RootState) => state.questionUpdate
   );
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const currentPage = Number(searchParams.get("page")) || 1;
@@ -94,21 +68,12 @@ export default function HomePage() {
         await fetchSubjects();
       }
       const response = await axios.get(
-        `/api/questions/get-all?page=${currentPage}&limit=10${
+        `/api/questions/getAllSaved?page=${currentPage}&limit=10${
           sortBy ? `&sortBy=${encodeURIComponent(sortBy)}` : ""
         }${subject ? `&subject=${encodeURIComponent(subject)}` : ""}`
       );
-      console.log(response.data.data);
-      console.log(typeof response.data.data[0]?.createdAt);
-      console.log(response.data.data[0]);
       dispatch(setQuestions(response.data.data));
       dispatch(setTotalPages(response.data.data[0].totalPages));
-      // const uniqueSubjects: string[] = [];
-      // fetchedQuestions.forEach((question: QuestionType) => {
-      //   if (!uniqueSubjects.includes(question.subject)) {
-      //     uniqueSubjects.push(question.subject);
-      //   }
-      // });
     } catch (error: any) {
       console.log(error);
       console.log(error.response.data.message);
@@ -137,8 +102,8 @@ export default function HomePage() {
 
   const fetchSubjects = async () => {
     try {
-      const response = await axios.get("/api/questions/getAllSubjects");
-      dispatch(setAvailableSubjects(response.data.data));
+      const response = await axios.get("/api/subjects/getAllSaved");
+      setAvailableSubjects(response.data.data);
     } catch (error: any) {
       console.log(error.response.data.message);
       toast.error(`Subjects not found, visit previous pages`);
@@ -146,65 +111,6 @@ export default function HomePage() {
   };
 
   useEffect(() => {
-    // if (questions.length === 0) {
-    //   fetchQuestions();
-    // }
-    // if (availableSubjects.length === 0) {
-    //   fetchSubjects();
-    // }
-    // console.log(
-    //   `selectedSubject = ${selectedSubject === null ? "null" : selectedSubject}`
-    // );
-    // console.log(
-    //   `previousSubject = ${previousSubject === null ? "null" : previousSubject}`
-    // );
-    // console.log(
-    //   `searchParams.get("subject") !== previousSubject = ${
-    //     searchParams.get("subject") !== previousSubject
-    //   }`
-    // );
-    // console.log(
-    //   `searchParams.get("tag") !== previousTag = ${
-    //     searchParams.get("tag") !== previousTag
-    //   }`
-    // );
-    // console.log(
-    //   `searchParams.get("question") !== previousQuestion = ${
-    //     searchParams.get("question") !== previousQuestion
-    //   }`
-    // );
-    // console.log(
-    //   `searchParams.get("sortBy") !== previousSortBy = ${
-    //     searchParams.get("sortBy") !== previousSortBy
-    //   }`
-    // );
-    // console.log(
-    //   `Number(searchParams.get("page")) !== previousPage = ${
-    //     Number(searchParams.get("page")) !== previousPage
-    //   }`
-    // );
-    // console.log(`pathname !== previousPath = ${pathname !== previousPath}`);
-    // console.log(`Number(null) = ${Number(null)}`);
-    // console.log(
-    //   `Number(searchParams.get("page")) = ${Number(searchParams.get("page"))}`
-    // );
-    // console.log(`questionUpdate = ${questionUpdate}`);
-
-    //TODO: Add back the previous path check
-    // if (
-    //   pathname !== previousPath ||
-    //   searchParams.get("subject") !== previousSubject ||
-    //   searchParams.get("tag") !== previousTag ||
-    //   searchParams.get("question") !== previousQuestion ||
-    //   searchParams.get("sortBy") !== previousSortBy ||
-    //   Number(searchParams.get("page")) !== previousPage ||
-    //   questionUpdate
-    // ) {
-    //   fetchQuestions();
-    // } else {
-    //   setIsLoading(false);
-    // }
-
     fetchQuestions();
   }, [currentPage, sortBy, subject]);
 
@@ -214,29 +120,35 @@ export default function HomePage() {
 
   return (
     <div
-      className={`flex flex-col items-center w-full px-10 py-0 min-[640px]:py-14 md:py-4 gap-8`}
+      className={`flex flex-col justify-center items-center w-full px-10 py-0 min-[640px]:py-14 md:py-4 gap-8`}
     >
       {/* Title */}
-      <div className="flex items-center justify-center gap-4 text-card-foreground mt-10 md:mt-0">
+      <div className="flex items-center justify-center gap-4 text-card-foreground ml-14 md:ml-0">
         <span className="inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary/10 text-primary border border-primary dark:border-border card-shadow">
-          <HomeIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+          <Bookmark className="w-4 h-4 sm:w-5 sm:h-5" />
         </span>
         <h1
           className="text-4xl md:text-5xl font-bold bg-clip-text 
-        text-transparent bg-gradient-to-b from-accent-foreground to-foreground text-center"
+        text-transparent bg-gradient-to-b from-accent-foreground to-foreground md:text-center"
         >
-          Home
+          Saved Questions
         </h1>
       </div>
+
+      {/* Search Bar */}
       <SearchBar />
+
+      {/* Pagination */}
       <HomePagination totalPages={totalPages} subject={subject || undefined} />
 
+      {/* Subject Filter */}
       <SubjectFilter
         subjects={availableSubjects}
         selectedSubject={selectedSubject}
         handleSelectSubject={handleSelectSubject}
       />
 
+      {/* Sort Filter */}
       <SortFilter />
 
       {isLoading ? (
@@ -254,7 +166,7 @@ export default function HomePage() {
       ) : (
         <div className="grid grid-cols-1 gap-8 w-full">
           <Spotlight
-            className="-top-190 left-0 md:-top-120 md:left-60"
+            className="-top-75 left-0 md:-top-40 md:left-60"
             fill="#1c9cf0"
           />
           {questions.map((question: QuestionCardProps) => (

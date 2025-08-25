@@ -1,0 +1,153 @@
+import dbConnect from "@/db/dbConnect";
+import Answer, { AnswerTypeSchema } from "@/db/models/answer.model";
+import Comment from "@/db/models/comment.model";
+import Like from "@/db/models/like.model";
+import { generateApiResponse } from "@/lib/helpers/api-response.helper";
+import { errorHandler } from "@/lib/helpers/error-handler.helper";
+import { NextRequest, NextResponse as res } from "next/server";
+import { generateApiError } from "@/lib/helpers/api-error.helper";
+import { auth, User } from "@clerk/nextjs/server";
+import Save from "@/db/models/save.model";
+import getClerkUserById from "@/lib/helpers/getClerkUserById";
+
+export const GET = errorHandler(async (req: NextRequest) => {
+  await dbConnect();
+  const page = Number(req.nextUrl.searchParams.get("page")) || 1;
+  const limit = Number(req.nextUrl.searchParams.get("limit")) || 10;
+  const sortBy = req.nextUrl.searchParams.get("sortBy") || "date-desc";
+  const subject = req.nextUrl.searchParams.get("subject") || null;
+  const { userId } = await auth();
+
+  if (!userId) {
+    throw generateApiError(
+      400,
+      "User ID is required, kindly login to continue",
+      ["User ID is required, kindly login to continue"]
+    );
+  }
+
+  const savedQuestions = await Save.find({
+    saver: userId,
+  }).populate("question");
+
+  let filteredSavedQuestions = savedQuestions;
+  if (subject) {
+    filteredSavedQuestions = savedQuestions.filter(
+      (savedQuestion) => savedQuestion.question.subject === subject
+    );
+    console.log("filteredSavedQuestions", filteredSavedQuestions);
+  }
+  const totalPages = Math.ceil(filteredSavedQuestions.length / limit);
+
+  const savedQuestionsWithMetrics = await Promise.all(
+    filteredSavedQuestions.map(async (savedQuestion) => {
+      try {
+        const user: User = await getClerkUserById(savedQuestion.question.asker);
+        const upvotes = await Like.countDocuments({
+          question: savedQuestion.question._id,
+          isLiked: true,
+        });
+        const downvotes = await Like.countDocuments({
+          question: savedQuestion.question._id,
+          isLiked: false,
+        });
+        const answers = await Answer.find({
+          question: savedQuestion.question._id,
+        });
+        const commentsOnQuestion = await Comment.countDocuments({
+          question: savedQuestion.question._id,
+        });
+        const commentsOnAnswers = await Promise.all(
+          answers.map(async (answer) => {
+            const comments = await Comment.countDocuments({
+              answer: answer._id,
+            });
+            return comments;
+          })
+        );
+        const comments =
+          commentsOnQuestion +
+          commentsOnAnswers.reduce((acc, curr) => acc + curr, 0);
+        return {
+          ...savedQuestion.question._doc,
+          user: user || {
+            firstName: "Anonymous",
+            lastName: "",
+            imageUrl: null,
+          },
+          likesAnswersComments: {
+            likes: upvotes,
+            dislikes: downvotes,
+            answers: answers.length,
+            comments,
+          },
+          totalPages,
+        };
+      } catch (error) {
+        return {
+          ...savedQuestion.question._doc,
+          user: {
+            firstName: "Anonymous",
+            lastName: "",
+            imageUrl: null,
+          },
+          likesAnswersComments: {
+            likes: 0,
+            dislikes: 0,
+            answers: 0,
+            comments: 0,
+          },
+          totalPages,
+        };
+      }
+    })
+  );
+
+  const sortedSavedQuestionsWithMetrics = savedQuestionsWithMetrics.sort(
+    (a, b) => {
+      switch (sortBy) {
+        case "date-desc":
+          return b.createdAt - a.createdAt;
+        case "date-asc":
+          return a.createdAt - b.createdAt;
+        case "votes-desc":
+          return b.likesAnswersComments.likes -
+            b.likesAnswersComments.dislikes !==
+            a.likesAnswersComments.likes - a.likesAnswersComments.dislikes
+            ? b.likesAnswersComments.likes -
+                b.likesAnswersComments.dislikes -
+                (a.likesAnswersComments.likes - a.likesAnswersComments.dislikes)
+            : b.createdAt - a.createdAt;
+        case "answers-desc":
+          return b.likesAnswersComments.answers !==
+            a.likesAnswersComments.answers
+            ? b.likesAnswersComments.answers - a.likesAnswersComments.answers
+            : b.createdAt - a.createdAt;
+        case "comments-desc":
+          return b.likesAnswersComments.comments !==
+            a.likesAnswersComments.comments
+            ? b.likesAnswersComments.comments - a.likesAnswersComments.comments
+            : b.createdAt - a.createdAt;
+        case "tags-desc":
+          return b.tags.length !== a.tags.length
+            ? b.tags.length - a.tags.length
+            : b.createdAt - a.createdAt;
+        default:
+          return b.createdAt - a.createdAt;
+      }
+    }
+  );
+
+  const slicedSavedQuestionsWithMetrics = sortedSavedQuestionsWithMetrics.slice(
+    (page - 1) * limit,
+    page * limit
+  );
+
+  return res.json(
+    generateApiResponse(
+      200,
+      "Questions fetched successfully",
+      slicedSavedQuestionsWithMetrics
+    )
+  );
+});

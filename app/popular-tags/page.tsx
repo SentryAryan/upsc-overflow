@@ -45,8 +45,8 @@ const PopularTagsPage = () => {
         <span className="inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary/10 text-primary border border-primary dark:border-border card-shadow">
           <Tag className="w-4 h-4 sm:w-5 sm:h-5" />
         </span>
-        <h1 className="text-3xl md:text-4xl font-bold bg-clip-text 
-        text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400">
+        <h1 className="text-4xl md:text-5xl font-bold bg-clip-text 
+        text-transparent bg-gradient-to-b from-accent-foreground to-foreground text-center">
           Popular Tags
         </h1>
       </div>
@@ -60,7 +60,7 @@ const PopularTagsPage = () => {
       ) : (
         <div className="grid grid-cols-1 gap-8 w-full ">
           <Spotlight
-            className="-top-140 left-0 md:-top-20 md:left-60"
+            className="-top-140 left-0 md:-top-120 md:left-60"
             fill="#1c9cf0"
           />
           {tagsWithMetrics.map((tagWithMetrics) => (
