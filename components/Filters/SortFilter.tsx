@@ -83,7 +83,7 @@ const SortFilter: React.FC<SortFilterProps> = ({
   };
 
   return (
-    <div className="mb-4 flex flex-wrap gap-3 items-center">
+    <div className="mb-4 flex flex-wrap gap-3 items-center justify-center">
       <span className="text-foreground font-semibold mr-2 animate-slide-up">
         Sort by:
       </span>

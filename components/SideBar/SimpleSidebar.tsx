@@ -20,6 +20,7 @@ import { useUser } from "@clerk/nextjs";
 import {
   Award,
   Book,
+  Bookmark,
   FileQuestion,
   HelpCircle,
   Home,
@@ -57,6 +58,7 @@ export function SimpleSidebar({ ...props }: SimpleSidebarProps) {
   const [popularSubjectsPath, setPopularSubjectsPath] =
     useState<string>("/popular-subjects");
   const [communityPath, setCommunityPath] = useState<string>("/community");
+  const [savedPath, setSavedPath] = useState<string>("/saved");
   const loggedInSidebarItems: SidebarItemType[] = [
     {
       name: "Home",
@@ -84,25 +86,30 @@ export function SimpleSidebar({ ...props }: SimpleSidebarProps) {
       icon: Users,
     },
     {
-      name: "Discussions",
-      path: "/discussions",
-      icon: MessageSquare,
+      name: "Saved",
+      path: savedPath,
+      icon: Bookmark,
     },
-    {
-      name: "Resources",
-      path: "/resources",
-      icon: Book,
-    },
-    {
-      name: "Achievements",
-      path: "/achievements",
-      icon: Award,
-    },
-    {
-      name: "Settings",
-      path: "/settings",
-      icon: Settings,
-    },
+    // {
+    //   name: "Discussions",
+    //   path: "/discussions",
+    //   icon: MessageSquare,
+    // },
+    // {
+    //   name: "Resources",
+    //   path: "/resources",
+    //   icon: Book,
+    // },
+    // {
+    //   name: "Achievements",
+    //   path: "/achievements",
+    //   icon: Award,
+    // },
+    // {
+    //   name: "Settings",
+    //   path: "/settings",
+    //   icon: Settings,
+    // },
   ];
 
   const loggedOutSidebarItems: SidebarItemType[] = [
@@ -160,6 +167,11 @@ export function SimpleSidebar({ ...props }: SimpleSidebarProps) {
         ? `/community?${searchString}`
         : "/community";
       setCommunityPath(fullPath);
+    }
+    if (pathname === "/saved") {
+      const searchString = searchParams.toString();
+      const fullPath = searchString ? `/saved?${searchString}` : "/saved";
+      setSavedPath(fullPath);
     }
   }, [pathname, searchParams]);
 

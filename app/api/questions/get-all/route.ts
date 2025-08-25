@@ -271,7 +271,7 @@ export const GET = errorHandler(async (req: NextRequest) => {
             ? b.tags.length - a.tags.length
             : b.createdAt - a.createdAt;
         default:
-          return a.createdAt - b.createdAt;
+          return b.createdAt - a.createdAt;
       }
     });
 

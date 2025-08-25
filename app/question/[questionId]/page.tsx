@@ -569,16 +569,16 @@ const QuestionPage = () => {
   }
 
   return (
-    <div className="container mx-auto py-8 px-4 md:px-6 flex flex-col gap-6 max-w-[1200px] min-h-screen transition-all duration-300 ease-in-out pt-16">
-      <Spotlight className="-top-290 left-0 md:-top-20 md:left-60" fill="#1c9cf0" />
+    <div className="container mx-auto px-4 md:px-6 flex flex-col gap-6 max-w-[1200px] min-h-screen transition-all duration-300 ease-in-out pt-8">
+      <Spotlight className="-top-70 left-0 md:-top-70 md:left-60" fill="#1c9cf0" />
       {/* Title */}
-      <div className="flex flex-wrap items-center justify-center gap-4 text-card-foreground mt-10 md:mt-0">
+      <div className="flex flex-wrap items-center justify-center gap-4 text-card-foreground md:mt-0">
         <span className="inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary/10 text-primary border border-primary dark:border-border card-shadow">
           <MessageCircleQuestion className="w-4 h-4 sm:w-5 sm:h-5" />
         </span>
         <h1
-          className="text-3xl md:text-4xl font-bold bg-clip-text 
-        text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400"
+          className="text-4xl md:text-5xl font-bold bg-clip-text 
+        text-transparent bg-gradient-to-b from-accent-foreground to-foreground text-center"
         >
           Question Details
         </h1>
