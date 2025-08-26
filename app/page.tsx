@@ -29,10 +29,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import QuestionCard from "../components/Cards/QuestionCard";
 import { Spotlight } from "../components/ui/spotlight";
-import {
-  setAvailableSubjects,
-  setSelectedSubject,
-} from "../lib/redux/slices/filterSubjects.slice";
+import { setSelectedSubject } from "../lib/redux/slices/filterSubjects.slice";
 
 export interface QuestionCardProps extends QuestionType {
   likesAnswersComments: {
@@ -55,32 +52,9 @@ export default function HomePage() {
   const totalPages = useSelector(
     (state: RootState) => state.questions.totalPages
   );
-  const availableSubjects = useSelector(
-    (state: RootState) => state.filterSubjects.availableSubjects
-  );
+  const [availableSubjects, setAvailableSubjects] = useState<string[]>([]);
   const selectedSubject = useSelector(
     (state: RootState) => state.filterSubjects.selectedSubject
-  );
-  const previousPath = useSelector(
-    (state: RootState) => state.previousPath.previousPath
-  );
-  const previousSubject = useSelector(
-    (state: RootState) => state.previousPath.previousSubject
-  );
-  const previousTag = useSelector(
-    (state: RootState) => state.previousPath.previousTag
-  );
-  const previousQuestion = useSelector(
-    (state: RootState) => state.previousPath.previousQuestion
-  );
-  const previousSortBy = useSelector(
-    (state: RootState) => state.previousPath.previousSortBy
-  );
-  const previousPage = useSelector(
-    (state: RootState) => state.previousPath.previousPage
-  );
-  const questionUpdate = useSelector(
-    (state: RootState) => state.questionUpdate
   );
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const currentPage = Number(searchParams.get("page")) || 1;
@@ -98,17 +72,8 @@ export default function HomePage() {
           sortBy ? `&sortBy=${encodeURIComponent(sortBy)}` : ""
         }${subject ? `&subject=${encodeURIComponent(subject)}` : ""}`
       );
-      console.log(response.data.data);
-      console.log(typeof response.data.data[0]?.createdAt);
-      console.log(response.data.data[0]);
       dispatch(setQuestions(response.data.data));
       dispatch(setTotalPages(response.data.data[0].totalPages));
-      // const uniqueSubjects: string[] = [];
-      // fetchedQuestions.forEach((question: QuestionType) => {
-      //   if (!uniqueSubjects.includes(question.subject)) {
-      //     uniqueSubjects.push(question.subject);
-      //   }
-      // });
     } catch (error: any) {
       console.log(error);
       console.log(error.response.data.message);
@@ -138,7 +103,7 @@ export default function HomePage() {
   const fetchSubjects = async () => {
     try {
       const response = await axios.get("/api/questions/getAllSubjects");
-      dispatch(setAvailableSubjects(response.data.data));
+      setAvailableSubjects(response.data.data);
     } catch (error: any) {
       console.log(error.response.data.message);
       toast.error(`Subjects not found, visit previous pages`);
@@ -146,71 +111,8 @@ export default function HomePage() {
   };
 
   useEffect(() => {
-    // if (questions.length === 0) {
-    //   fetchQuestions();
-    // }
-    // if (availableSubjects.length === 0) {
-    //   fetchSubjects();
-    // }
-    // console.log(
-    //   `selectedSubject = ${selectedSubject === null ? "null" : selectedSubject}`
-    // );
-    // console.log(
-    //   `previousSubject = ${previousSubject === null ? "null" : previousSubject}`
-    // );
-    // console.log(
-    //   `searchParams.get("subject") !== previousSubject = ${
-    //     searchParams.get("subject") !== previousSubject
-    //   }`
-    // );
-    // console.log(
-    //   `searchParams.get("tag") !== previousTag = ${
-    //     searchParams.get("tag") !== previousTag
-    //   }`
-    // );
-    // console.log(
-    //   `searchParams.get("question") !== previousQuestion = ${
-    //     searchParams.get("question") !== previousQuestion
-    //   }`
-    // );
-    // console.log(
-    //   `searchParams.get("sortBy") !== previousSortBy = ${
-    //     searchParams.get("sortBy") !== previousSortBy
-    //   }`
-    // );
-    // console.log(
-    //   `Number(searchParams.get("page")) !== previousPage = ${
-    //     Number(searchParams.get("page")) !== previousPage
-    //   }`
-    // );
-    // console.log(`pathname !== previousPath = ${pathname !== previousPath}`);
-    // console.log(`Number(null) = ${Number(null)}`);
-    // console.log(
-    //   `Number(searchParams.get("page")) = ${Number(searchParams.get("page"))}`
-    // );
-    // console.log(`questionUpdate = ${questionUpdate}`);
-
-    //TODO: Add back the previous path check
-    // if (
-    //   pathname !== previousPath ||
-    //   searchParams.get("subject") !== previousSubject ||
-    //   searchParams.get("tag") !== previousTag ||
-    //   searchParams.get("question") !== previousQuestion ||
-    //   searchParams.get("sortBy") !== previousSortBy ||
-    //   Number(searchParams.get("page")) !== previousPage ||
-    //   questionUpdate
-    // ) {
-    //   fetchQuestions();
-    // } else {
-    //   setIsLoading(false);
-    // }
-
     fetchQuestions();
   }, [currentPage, sortBy, subject]);
-
-  // const filteredQuestions = selectedSubject
-  //   ? questions.filter((q: QuestionType) => q.subject === selectedSubject)
-  //   : questions;
 
   return (
     <div
