@@ -4,6 +4,7 @@ import "@/db/models/answer.model";
 import "@/db/models/comment.model";
 import "@/db/models/like.model";
 import "@/db/models/save.model";
+import "@/db/models/subscription.model";
 
 const dbConnect = async (): Promise<void> => {
   try {

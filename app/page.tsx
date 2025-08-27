@@ -149,10 +149,6 @@ export default function HomePage() {
         <p className="text-center mt-4 text-muted-foreground animate-slide-up">
           No questions found for the selected subject.
         </p>
-      ) : currentPage > totalPages ? (
-        <p className="text-center mt-4 text-muted-foreground animate-slide-up">
-          No more pages currently
-        </p>
       ) : (
         <div className="grid grid-cols-1 gap-8 w-full">
           <Spotlight

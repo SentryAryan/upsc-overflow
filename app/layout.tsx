@@ -10,6 +10,7 @@ import { SimpleSidebar } from "../components/SideBar/SimpleSidebar";
 import "./globals.css";
 import NavBarMobile from "../components/NavBars/NavBarMobile";
 import MenuDemo2 from "../components/Menu/MenuDemo2";
+import { Footerdemo } from "@/components/ui/footer/footer-section";
 
 const openSans = Open_Sans({
   variable: "--font-sans",
@@ -42,7 +43,7 @@ export default async function RootLayout({
           <ThemeWrapper>
             <SidebarProvider>
               <SimpleSidebar />
-              <main className="flex-1 flex flex-col items-center justify-center overflow-x-hidden py-8 min-[640px]:py-14 md:py-4">
+              <main className="flex-1 flex flex-col items-center justify-center overflow-x-hidden pt-8 min-[640px]:pt-14 md:pt-4">
                 <header className="fixed top-0 right-4 flex justify-end items-center p-4 gap-4 z-100 rounded-full">
                   <MenuDemo2 />
                 </header>
@@ -54,6 +55,8 @@ export default async function RootLayout({
                 </div>
 
                 {children}
+
+                <Footerdemo />
 
                 <Toaster />
               </main>
