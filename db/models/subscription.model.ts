@@ -12,6 +12,9 @@ const subscriptionSchema: Schema<SubscriptionTypeSchema> = new mongoose.Schema(
       type: String,
       required: true,
       index: true,
+      trim: true,
+      unique: true,
+      lowercase: true,
     },
   },
   {

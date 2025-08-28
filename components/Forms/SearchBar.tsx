@@ -160,7 +160,7 @@ export default function SearchBar() {
   };
 
   return (
-    <div className="relative w-full max-w-2xl">
+    <div className="relative w-full">
       <div className="w-full flex items-center gap-2">
         <div className="relative flex-1">
           <Input
@@ -171,7 +171,7 @@ export default function SearchBar() {
             onFocus={handleFocus}
             onBlur={handleBlur}
             placeholder="Search questions, tags, or subjects..."
-            className="input pr-10 h-12 text-base shadow-md! dark:shadow-xs! border-mode focus:border-primary dark:focus:border-primary transition-all duration-200 bg-background! text-foreground"
+            className="input pr-10 h-12 text-base shadow-md! dark:shadow-xs! border-mode focus:border-primary dark:focus:border-primary transition-all duration-200 bg-background! text-foreground placeholder:text-xs md:placeholder:text-base"
           />
           <div
             className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer group"
@@ -326,7 +326,8 @@ export default function SearchBar() {
                                             );
                                           }}
                                         >
-                                          #{tag}
+                                          {tag[0] === "#" ? "" : "#"}
+                                          {tag}
                                         </TooltipTrigger>
                                         <TooltipContent
                                           onMouseDown={(e) => {
@@ -339,7 +340,9 @@ export default function SearchBar() {
                                           }}
                                           className="cursor-pointer"
                                         >
-                                          View all questions in #{tag}
+                                          View all questions in{" "}
+                                          {tag[0] === "#" ? "" : "#"}
+                                          {tag}
                                         </TooltipContent>
                                       </Tooltip>
                                     </TooltipProvider>
@@ -358,9 +361,15 @@ export default function SearchBar() {
                                 className={`font-[900] ${voteColor} flex items-center bg-secondary px-3 py-1.5 rounded-full group-hover:filter-shadow font-[900] hover:scale-90 transition-all duration-300`}
                               >
                                 {voteCount >= 0 ? (
-                                  <ArrowUp size={14} className="mr-1 font-[900]" />
+                                  <ArrowUp
+                                    size={14}
+                                    className="mr-1 font-[900]"
+                                  />
                                 ) : (
-                                  <ArrowDown size={14} className="mr-1 font-[900]" />
+                                  <ArrowDown
+                                    size={14}
+                                    className="mr-1 font-[900]"
+                                  />
                                 )}
                                 {Math.abs(voteCount)}
                               </span>

@@ -236,7 +236,8 @@ const QuestionCard = ({ question }: { question: QuestionCardProps }) => {
                       router.push(`/tags?tag=${encodeURIComponent(tag)}`);
                     }}
                   >
-                    #{tag}
+                    {tag[0] === "#" ? "" : "#"}
+                    {tag}
                   </TooltipTrigger>
                   <TooltipContent
                     onClick={(e) => {
@@ -245,7 +246,8 @@ const QuestionCard = ({ question }: { question: QuestionCardProps }) => {
                     }}
                     className="cursor-pointer"
                   >
-                    View all questions in #{tag}
+                    View all questions in {tag[0] === "#" ? "" : "#"}
+                    {tag}
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>

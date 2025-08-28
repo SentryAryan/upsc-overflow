@@ -120,10 +120,10 @@ export default function SavedPage() {
 
   return (
     <div
-      className={`flex flex-col justify-center items-center w-full px-10 py-0 min-[640px]:py-14 md:py-4 gap-8`}
+      className={`flex flex-col justify-center items-center w-full px-6 md:px-10 pt-12 md:pt-0 gap-8`}
     >
       {/* Title */}
-      <div className="flex items-center justify-center gap-4 text-card-foreground ml-14 md:ml-0">
+      <div className="flex flex-col md:flex-row items-center justify-center gap-4 text-card-foreground">
         <span className="inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary/10 text-primary border border-primary dark:border-border card-shadow">
           <Bookmark className="w-4 h-4 sm:w-5 sm:h-5" />
         </span>

@@ -23,7 +23,7 @@ import {
   Trash2,
   MessageCircleQuestion,
   Bookmark,
-  BookmarkCheck, 
+  BookmarkCheck,
   BookmarkX,
 } from "lucide-react";
 import Image from "next/image";
@@ -504,9 +504,12 @@ const QuestionPage = () => {
         saver: userId,
       });
       setIsSaved(response.data.data);
-      toast.success(response.data.data ? "Question saved successfully": "Question unsaved successfully");
-    }
-    catch (error: any) {
+      toast.success(
+        response.data.data
+          ? "Question saved successfully"
+          : "Question unsaved successfully"
+      );
+    } catch (error: any) {
       console.log(error.message);
       toast.error("Failed to save question");
     }
@@ -569,8 +572,11 @@ const QuestionPage = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 md:px-6 flex flex-col gap-6 max-w-[1200px] min-h-screen transition-all duration-300 ease-in-out pt-8">
-      <Spotlight className="-top-70 left-0 md:-top-70 md:left-60" fill="#1c9cf0" />
+    <div className="container mx-auto px-6 md:px-10 pt-12 md:pt-0 flex flex-col gap-6 min-h-screen transition-all duration-300 ease-in-out">
+      <Spotlight
+        className="-top-70 left-0 md:-top-70 md:left-60"
+        fill="#1c9cf0"
+      />
       {/* Title */}
       <div className="flex flex-wrap items-center justify-center gap-4 text-card-foreground md:mt-0">
         <span className="inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary/10 text-primary border border-primary dark:border-border card-shadow">
@@ -583,6 +589,7 @@ const QuestionPage = () => {
           Question Details
         </h1>
       </div>
+      
       {/* Question Section - Enhanced */}
       <div className="bg-background rounded-lg shadow-md hover:shadow-lg p-6 md:p-8 border-2 border-border transition-all group">
         <div className="flex justify-between items-start mb-4">
@@ -593,7 +600,11 @@ const QuestionPage = () => {
           {/* Save button */}
           <button
             onClick={() => toggleSave(question._id)}
-            className={`p-2 ${isSaved ? "text-chart-4 hover:text-chart-4/80 hover:bg-chart-4/10" : "text-destructive hover:text-destructive/80 hover:bg-destructive/10"} rounded-full transition-all duration-300 ease-in-out group cursor-pointer`}
+            className={`p-2 ${
+              isSaved
+                ? "text-chart-4 hover:text-chart-4/80 hover:bg-chart-4/10"
+                : "text-destructive hover:text-destructive/80 hover:bg-destructive/10"
+            } rounded-full transition-all duration-300 ease-in-out group cursor-pointer`}
             title={isSaved ? "Unsave this question" : "Save this question"}
           >
             {isSaved ? (
@@ -804,7 +815,8 @@ const QuestionPage = () => {
                       router.push(`/tags?tag=${encodeURIComponent(tag)}`);
                     }}
                   >
-                    #{tag}
+                    {tag[0] === "#" ? "" : "#"}
+                    {tag}
                   </TooltipTrigger>
                   <TooltipContent
                     onClick={(e) => {
@@ -813,7 +825,8 @@ const QuestionPage = () => {
                     }}
                     className="cursor-pointer"
                   >
-                    View all questions in #{tag}
+                    View all questions in {tag[0] === "#" ? "" : "#"}
+                    {tag}
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
