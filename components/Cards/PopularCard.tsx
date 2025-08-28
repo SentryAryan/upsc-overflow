@@ -155,7 +155,9 @@ const PopularCard = ({
       <div className="flex items-start justify-between mb-2 sm:mb-3 relative">
         <h1 className="text-base sm:text-lg md:text-xl font-semibold text-card-foreground mb-1 sm:mb-2 flex-1 group-hover:text-primary line-clamp-2">
           {popularCardType === "tags"
-            ? `#${tagWithMetrics?.tag}`
+            ? `${tagWithMetrics?.tag?.[0] === "#" ? "" : "#"}${
+                tagWithMetrics?.tag
+              }`
             : subjectWithMetrics?.subject}
         </h1>
 
@@ -177,7 +179,9 @@ const PopularCard = ({
               }}
             >
               {popularCardType === "tags"
-                ? `#${tagWithMetrics?.tag}`
+                ? `${tagWithMetrics?.tag?.[0] === "#" ? "" : "#"}${
+                    tagWithMetrics?.tag
+                  }`
                 : subjectWithMetrics?.subject}
             </TooltipTrigger>
             <TooltipContent
@@ -197,7 +201,9 @@ const PopularCard = ({
             >
               View all questions in{" "}
               {popularCardType === "tags"
-                ? `#${tagWithMetrics?.tag}`
+                ? `${tagWithMetrics?.tag?.[0] === "#" ? "" : "#"}${
+                    tagWithMetrics?.tag
+                  }`
                 : subjectWithMetrics?.subject}
             </TooltipContent>
           </Tooltip>
@@ -297,7 +303,8 @@ const PopularCard = ({
                             router.push(`/tags?tag=${encodeURIComponent(tag)}`);
                           }}
                         >
-                          #{tag}
+                          {tag[0] === "#" ? "" : "#"}
+                          {tag}
                         </TooltipTrigger>
                         <TooltipContent
                           onClick={(e) => {
@@ -306,7 +313,8 @@ const PopularCard = ({
                           }}
                           className="cursor-pointer"
                         >
-                          View all questions in #{tag}
+                          View all questions in {tag[0] === "#" ? "" : "#"}
+                          {tag}
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>

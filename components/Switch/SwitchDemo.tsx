@@ -16,14 +16,18 @@ export function SwitchDemo() {
       <Label htmlFor="dark-mode" className="cursor-pointer text-sm">
         Mode :
       </Label>
-      <Sun className="h-4 w-4" />
+      <Label htmlFor="dark-mode" className="cursor-pointer text-sm">
+        <Sun className="h-4 w-4" />
+      </Label>
       <Switch
         checked={isDarkMode}
         onCheckedChange={() => dispatch(toggleDarkMode())}
         id="dark-mode"
         className="cursor-pointer dark"
       />
-      <Moon className="h-4 w-4" />
+      <Label htmlFor="dark-mode" className="cursor-pointer text-sm">
+        <Moon className="h-4 w-4" />
+      </Label>
     </div>
   );
 }

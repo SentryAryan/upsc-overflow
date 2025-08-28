@@ -16,8 +16,7 @@ import {
   SignedOut,
   UserButton,
 } from "@clerk/nextjs";
-import { dark, shadcn } from "@clerk/themes";
-import { AlignJustify, LogIn, LogOut, UserPlus } from "lucide-react";
+import { LogIn, LogOut, UserPlus, Settings } from "lucide-react";
 import { SwitchDemo } from "../Switch/SwitchDemo";
 import { Button } from "../ui/button";
 import { RootState } from "../../lib/redux/store";
@@ -35,11 +34,12 @@ export default function MenuDemo2() {
         <>
           <div className="flex items-center space-x-4">
             <FloatingActionPanelTrigger
-              title="Settings"
+              title="Settings/Profile :"
               mode="actions"
-              className="cursor-pointer rounded-full p-4 flex items-center justify-center "
+              className="cursor-pointer rounded-full p-4 flex items-center justify-center gap-2 w-full border-3! border-primary! shadow-none! font-[900]! hover:text-primary!"
             >
-              <AlignJustify />
+              <Settings className="h-4 w-4 font-[900]" />
+              <p className="text-md">Settings/Profile</p>
             </FloatingActionPanelTrigger>
           </div>
 
@@ -61,7 +61,7 @@ export default function MenuDemo2() {
                   >
                     <SignInButton>
                       <Button
-                        className="cursor-pointer w-full h-full"
+                        className="cursor-pointer w-full h-full hover:scale-105 transition-all duration-300"
                         variant="outline"
                       >
                         <LogIn className="h-4 w-4" />
@@ -76,7 +76,7 @@ export default function MenuDemo2() {
                   >
                     <SignUpButton>
                       <Button
-                        className="cursor-pointer w-full h-full"
+                        className="cursor-pointer w-full h-full hover:scale-105 transition-all duration-300"
                         variant="outline"
                       >
                         <UserPlus className="h-4 w-4" />
@@ -105,7 +105,7 @@ export default function MenuDemo2() {
                   >
                     <SignOutButton>
                       <Button
-                        className="cursor-pointer w-full h-full"
+                        className="cursor-pointer w-full h-full hover:scale-105 transition-all duration-300"
                         variant="outline"
                       >
                         <LogOut className="h-4 w-4" />

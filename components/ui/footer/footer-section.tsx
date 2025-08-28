@@ -33,6 +33,7 @@ import { useEffect, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { SwitchDemo } from "@/components/Switch/SwitchDemo";
 import { SubscriptionForm } from "@/components/Forms/SubscriptionForm";
+import { cn } from "@/lib/utils";
 
 function Footerdemo() {
   const pathname = usePathname();
@@ -117,7 +118,7 @@ function Footerdemo() {
   }, [pathname, searchParams]);
 
   return (
-    <footer className="relative border-t bg-background text-foreground transition-colors duration-300 mt-10">
+    <footer className="relative border-t bg-background text-foreground transition-colors duration-300 mt-10 rounded-3xl">
       <div className="container mx-auto px-4 py-12 md:px-6 lg:px-8">
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
           {/* Newsletter */}
@@ -144,24 +145,31 @@ function Footerdemo() {
           {/* Quick Links */}
           <div className="relative flex flex-col">
             <h3 className="mb-4 text-lg font-semibold">Quick Links</h3>
-            <nav className="space-y-2 text-sm">
-              {quickLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  href={link.url}
-                  className="flex items-center gap-2 text-sm text-foreground hover:text-primary font-semibold"
-                >
-                  <link.icon className="h-4 w-4" />
-                  {link.name}
-                </Link>
-              ))}
+            <nav className="space-y-3 text-sm">
+              {quickLinks.map((link) => {
+                const itemPathname = link.url.split("?")[0];
+                const isActive =
+                pathname === itemPathname ||
+                (itemPathname !== "/" && pathname.startsWith(itemPathname));
+                return (
+                  <Link
+                    key={link.name}
+                    href={link.url}
+                    className={cn("w-max px-4 py-2 rounded-full flex items-center gap-2 text-sm text-foreground hover:text-primary font-semibold hover:bg-muted  transition-all duration-300 hover:scale-105", isActive ? "bg-muted text-primary shadow-md" : "text-foreground")}
+                  >
+                    <link.icon className="h-4 w-4" />
+                    {link.name}
+                  </Link>
+                )
+              })}
             </nav>
           </div>
 
           {/* Contact Us */}
           <div>
             <h3 className="mb-4 text-lg font-semibold">Contact Us</h3>
-            <address className="space-y-2 text-sm not-italic">
+            <address className="flex flex-col gap-4 text-sm not-italic">
+              {/* Address */}
               <span className="flex flex-col items-start gap-2 flex-wrap">
                 <span className="flex items-center gap-2 font-[900]">
                   <MapPin className="h-4 w-4" />
@@ -172,6 +180,8 @@ function Footerdemo() {
                   Lucknow(226017)
                 </p>
               </span>
+
+              {/* Phone */}
               <span className="flex flex-col items-start gap-2 flex-wrap">
                 <span className="flex items-center gap-2 font-[900]">
                   <Phone className="h-4 w-4" />
@@ -179,6 +189,8 @@ function Footerdemo() {
                 </span>
                 <p>8707392404</p>
               </span>
+
+              {/* Email */}
               <span className="flex flex-col items-start gap-2 flex-wrap">
                 <span className="flex items-center gap-2 font-[900]">
                   <Mail className="h-4 w-4" />
@@ -240,7 +252,7 @@ function Footerdemo() {
         {/* Footer Bottom */}
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t pt-8 text-center md:flex-row">
           <p className="text-sm text-muted-foreground">
-            © 2024 Your Company. All rights reserved.
+            © 2025 UPSC Overflow. All rights reserved.
           </p>
           <nav className="flex gap-4 text-sm">
             <a href="#" className="transition-colors hover:text-primary">

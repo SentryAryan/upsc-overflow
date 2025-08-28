@@ -10,6 +10,7 @@ const subscriptionSchema = z.object({
   email: z
     .string({ message: "Email must be a string" })
     .trim()
+    .toLowerCase()
     .nonempty({ message: "Email is required" })
     .email({ message: "Invalid email" }),
 });
