@@ -4,11 +4,12 @@ import SortFilter from "@/components/Filters/SortFilter";
 import SearchBar from "@/components/Forms/SearchBar";
 import axios from "axios";
 import { Tag } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import HomePagination from "../../components/Filters/HomePagination";
 import { LoaderDemo } from "../../components/Loaders/LoaderDemo";
 import { Spotlight } from "../../components/ui/spotlight";
+import { toast } from "sonner";
 
 const PopularTagsPage = () => {
   const searchParams = useSearchParams();
@@ -17,7 +18,9 @@ const PopularTagsPage = () => {
   const [totalPages, setTotalPages] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const sortBy = searchParams.get("sortBy");
-
+  const currentSearchParams = searchParams.toString();
+  const router = useRouter();
+  const pathname = usePathname();
   const fetchTagsWithMetrics = async () => {
     try {
       setIsLoading(true);
@@ -26,10 +29,23 @@ const PopularTagsPage = () => {
           sortBy ? `&sortBy=${sortBy}` : ""
         }`
       );
+      if (response.data.data.length === 0) {
+        toast.error("No tags found");
+        setTagsWithMetrics([]);
+        setTotalPages(0);
+        if (currentSearchParams) {
+          router.push(pathname);
+        }
+        return;
+      }
       setTagsWithMetrics(response.data.data);
       setTotalPages(response.data.data[0]?.totalPages || 0);
     } catch (error) {
       console.log(error);
+      if (currentSearchParams) {
+        router.push(pathname);
+      }
+      toast.error(`Tags not found`);
     } finally {
       setIsLoading(false);
     }
@@ -46,8 +62,10 @@ const PopularTagsPage = () => {
         <span className="inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary/10 text-primary border border-primary dark:border-border card-shadow">
           <Tag className="w-4 h-4 sm:w-5 sm:h-5" />
         </span>
-        <h1 className="text-4xl md:text-5xl font-bold bg-clip-text 
-        text-transparent bg-gradient-to-b from-accent-foreground to-foreground text-center">
+        <h1
+          className="text-4xl md:text-5xl font-bold bg-clip-text 
+        text-transparent bg-gradient-to-b from-accent-foreground to-foreground text-center"
+        >
           Popular Tags
         </h1>
       </div>

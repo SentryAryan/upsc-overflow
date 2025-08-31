@@ -23,7 +23,7 @@ import { RootState } from "@/lib/redux/store";
 import { useUser } from "@clerk/nextjs";
 import axios from "axios";
 import { Home as HomeIcon } from "lucide-react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
@@ -43,6 +43,7 @@ export interface QuestionCardProps extends QuestionType {
 export default function HomePage() {
   console.log("HomePage.jsx");
   const { user, isSignedIn } = useUser();
+  const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const dispatch = useDispatch();
@@ -58,8 +59,9 @@ export default function HomePage() {
   );
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const currentPage = Number(searchParams.get("page")) || 1;
-  const sortBy = searchParams.get("sortBy");
+  const sortBy: string = searchParams.get("sortBy") || "date-desc";
   const subject = searchParams.get("subject");
+  const currentSearchParams = searchParams.toString();
 
   const fetchQuestions = async () => {
     try {
@@ -72,6 +74,16 @@ export default function HomePage() {
           sortBy ? `&sortBy=${encodeURIComponent(sortBy)}` : ""
         }${subject ? `&subject=${encodeURIComponent(subject)}` : ""}`
       );
+      // if no questions found(reasons = someone changed the URI from browser etc.), redirect to page 1
+      if (response.data.data.length === 0) {
+        toast.error("No questions found");
+        dispatch(setQuestions([]));
+        dispatch(setTotalPages(0));
+        if (currentSearchParams) {
+          router.push(pathname);
+        }
+        return;
+      }
       dispatch(setQuestions(response.data.data));
       dispatch(setTotalPages(response.data.data[0].totalPages));
     } catch (error: any) {
@@ -83,6 +95,10 @@ export default function HomePage() {
       );
       dispatch(setQuestions([]));
       dispatch(setTotalPages(0));
+      if (currentSearchParams) {
+        router.push(pathname);
+      }
+      return;
     } finally {
       setIsLoading(false);
       dispatch(setPreviousPath(pathname));
@@ -115,7 +131,9 @@ export default function HomePage() {
   }, [currentPage, sortBy, subject]);
 
   return (
-    <div className={`mx-auto flex flex-col items-center w-full px-6 md:px-10 gap-8`}>
+    <div
+      className={`mx-auto flex flex-col items-center w-full px-6 md:px-10 gap-8`}
+    >
       {/* Title */}
       <div className="flex items-center justify-center gap-4 text-card-foreground mt-10 md:mt-0">
         <span className="inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary/10 text-primary border border-primary dark:border-border card-shadow">
@@ -140,7 +158,7 @@ export default function HomePage() {
       <SortFilter />
 
       {isLoading ? (
-        <div className="flex items-center justify-center h-[5vh] md:h-[70vh]">
+        <div className="flex items-center justify-center h-[5vh] md:h-[10vh]">
           <LoaderDemo />
         </div>
       ) : questions.length === 0 && selectedSubject !== null ? (

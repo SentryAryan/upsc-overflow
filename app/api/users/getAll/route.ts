@@ -7,19 +7,41 @@ import { errorHandler } from "@/lib/helpers/error-handler.helper";
 import { NextRequest, NextResponse as res } from "next/server";
 import getAllClerkUsers from "@/lib/helpers/getAllClerkUsers";
 import { User } from "@clerk/nextjs/server";
+import { generateApiError } from "@/lib/helpers/api-error.helper";
 
 export const GET = errorHandler(async (req: NextRequest) => {
   await dbConnect();
-  const page = Number(req.nextUrl.searchParams.get("page")) || 1;
+  let page = Number(req.nextUrl.searchParams.get("page"));
+  console.log(page);
+  if (isNaN(page) || page < 1) {
+    throw generateApiError(400, "Invalid Page Number", ["Invalid Page Number"]);
+  }
   const limit = Number(req.nextUrl.searchParams.get("limit")) || 10;
   const sortBy = req.nextUrl.searchParams.get("sortBy") || "questions-desc";
+  const sortByOptions = [
+    "questions-desc",
+    "answers-desc",
+    "comments-desc",
+    "tags-desc",
+    "subjects-desc",
+  ];
 
   // Get all users from clerk
   const clerkUsers = await getAllClerkUsers();
-  console.log("This is the clerkUsers", clerkUsers);
+  // console.log("This is the clerkUsers", clerkUsers);
 
   const users = clerkUsers.data.map((u: User) => u);
+  if (users.length === 0) {
+    throw generateApiError(404, "No users found", ["No users found"]);
+  }
+
   const totalPages = Math.ceil(users.length / limit);
+  if (page > totalPages) {
+    throw generateApiError(400, "Invalid Page Number", ["Invalid Page Number"]);
+  }
+  if (!sortByOptions.includes(sortBy)) {
+    throw generateApiError(400, "Invalid Sort By", ["Invalid Sort By"]);
+  }
 
   const usersWithQuestions = await Promise.all(
     users.map(async (user) => {

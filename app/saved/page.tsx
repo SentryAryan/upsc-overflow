@@ -23,7 +23,7 @@ import { RootState } from "@/lib/redux/store";
 import { useUser } from "@clerk/nextjs";
 import axios from "axios";
 import { Bookmark } from "lucide-react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
@@ -43,6 +43,7 @@ export interface QuestionCardProps extends QuestionType {
 export default function SavedPage() {
   console.log("SavedPage.jsx");
   const { user, isSignedIn } = useUser();
+  const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const dispatch = useDispatch();
@@ -60,6 +61,7 @@ export default function SavedPage() {
   const currentPage = Number(searchParams.get("page")) || 1;
   const sortBy = searchParams.get("sortBy");
   const subject = searchParams.get("subject");
+  const currentSearchParams = searchParams.toString();
 
   const fetchQuestions = async () => {
     try {
@@ -72,17 +74,28 @@ export default function SavedPage() {
           sortBy ? `&sortBy=${encodeURIComponent(sortBy)}` : ""
         }${subject ? `&subject=${encodeURIComponent(subject)}` : ""}`
       );
+      // if no questions found(reasons = someone changed the URI from browser etc.), redirect to page 1
+      if (response.data.data.length === 0) {
+        toast.error("No questions found");
+        dispatch(setQuestions([]));
+        dispatch(setTotalPages(0));
+        if (currentSearchParams) {
+          router.push(pathname);
+        }
+        return;
+      }
       dispatch(setQuestions(response.data.data));
       dispatch(setTotalPages(response.data.data[0].totalPages));
     } catch (error: any) {
       console.log(error);
       console.log(error.response.data.message);
-      toast.error(
-        error.response.data.message ||
-          "Questions not found, visit previous pages"
-      );
+      toast.error(error.response.data.message || "Questions not found");
       dispatch(setQuestions([]));
       dispatch(setTotalPages(0));
+      if (currentSearchParams) {
+        router.push(pathname);
+      }
+      return;
     } finally {
       setIsLoading(false);
       dispatch(setPreviousPath(pathname));
@@ -152,12 +165,12 @@ export default function SavedPage() {
       <SortFilter />
 
       {isLoading ? (
-        <div className="flex items-center justify-center h-[5vh] md:h-[70vh]">
+        <div className="flex items-center justify-center h-[5vh] md:h-[10vh]">
           <LoaderDemo />
         </div>
-      ) : questions.length === 0 && selectedSubject !== null ? (
+      ) : questions.length === 0 ? (
         <p className="text-center mt-4 text-muted-foreground animate-slide-up">
-          No questions found for the selected subject.
+          No questions found
         </p>
       ) : (
         <div className="grid grid-cols-1 gap-8 w-full">
