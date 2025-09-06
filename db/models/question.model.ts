@@ -1,5 +1,6 @@
 import mongoose, { Document, Schema } from "mongoose";
 import { User } from "@clerk/nextjs/server";
+import { subjects } from "@/lib/constants/subjects";
 
 export interface QuestionTypeSchema extends Document {
   title: string;
@@ -25,18 +26,6 @@ export interface QuestionType {
   isDislikedByLoggedInUser: boolean;
   user: User;
 }
-
-export const subjects = [
-  "science",
-  "math",
-  "english",
-  "physics",
-  "chemistry",
-  "biology",
-  "history",
-  "geography",
-  "other",
-];
 
 const questionSchema: Schema<QuestionTypeSchema> = new mongoose.Schema(
   {

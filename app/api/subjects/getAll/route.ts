@@ -5,13 +5,45 @@ import Question from "@/db/models/question.model";
 import { generateApiResponse } from "@/lib/helpers/api-response.helper";
 import { errorHandler } from "@/lib/helpers/error-handler.helper";
 import { NextRequest, NextResponse as res } from "next/server";
+import { generateApiError } from "@/lib/helpers/api-error.helper";
 
 export const GET = errorHandler(async (req: NextRequest) => {
   await dbConnect();
-  const subjects: string[] = await Question.distinct("subject");
-  const page = Number(req.nextUrl.searchParams.get("page")) || 1;
+
+  let page = Number(req.nextUrl.searchParams.get("page"));
   const limit = Number(req.nextUrl.searchParams.get("limit")) || 10;
   const sortBy = req.nextUrl.searchParams.get("sortBy") || "questions-desc";
+  const sortByOptions = [
+    "questions-desc",
+    "answers-desc",
+    "comments-desc",
+    "tags-desc",
+  ];
+
+  console.log("page received =", req.nextUrl.searchParams.get("page"));
+  console.log(
+    "isNaN(req.nextUrl.searchParams.get('page')) =",
+    isNaN(Number(req.nextUrl.searchParams.get("page")))
+  );
+  console.log("sortBy received =", req.nextUrl.searchParams.get("sortBy"));
+
+  if (isNaN(page) || page < 1) {
+    throw generateApiError(400, "Invalid Page Number", ["Invalid Page Number"]);
+  }
+
+  const subjects: string[] = await Question.distinct("subject");
+  if (subjects.length === 0) {
+    throw generateApiError(404, "No subjects found", ["No subjects found"]);
+  }
+
+  const totalPages = Math.ceil(subjects.length / limit);
+  if (page > totalPages) {
+    throw generateApiError(400, "Invalid Page Number", ["Invalid Page Number"]);
+  }
+
+  if (!sortByOptions.includes(sortBy)) {
+    throw generateApiError(400, "Invalid Sort By", ["Invalid Sort By"]);
+  }
 
   const questionsRelatedToSubjects = await Promise.all(
     subjects.map(async (subject) => {
@@ -19,8 +51,6 @@ export const GET = errorHandler(async (req: NextRequest) => {
       return { subject, questions };
     })
   );
-
-  const totalPages = Math.ceil(questionsRelatedToSubjects.length / limit);
 
   const subjectsWithQuestionsAndCommentsAndAnswers = await Promise.all(
     questionsRelatedToSubjects.map(async (subjectData) => {

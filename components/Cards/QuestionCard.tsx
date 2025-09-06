@@ -76,6 +76,7 @@ const truncateHtml = (html: string | null | undefined, maxLength: number) => {
 // };
 
 const QuestionCard = ({ question }: { question: QuestionCardProps }) => {
+  console.log("QuestionCard.jsx");
   const router = useRouter();
   const createdAt = question.createdAt
     ? format(new Date(question.createdAt), "MMM dd, yyyy 'at' hh:mm a")

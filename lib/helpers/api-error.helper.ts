@@ -4,6 +4,8 @@ export interface ApiError extends Error {
   success: boolean;
 }
 
+export type ApiErrorType = ApiError | Error;
+
 export const generateApiError = (
   statusCode: number,
   message: string,
