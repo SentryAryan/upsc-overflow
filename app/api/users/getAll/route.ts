@@ -12,19 +12,22 @@ import { generateApiError } from "@/lib/helpers/api-error.helper";
 export const GET = errorHandler(async (req: NextRequest) => {
   await dbConnect();
   let page = Number(req.nextUrl.searchParams.get("page"));
-  console.log(page);
-  if (isNaN(page) || page < 1) {
-    throw generateApiError(400, "Invalid Page Number", ["Invalid Page Number"]);
-  }
   const limit = Number(req.nextUrl.searchParams.get("limit")) || 10;
   const sortBy = req.nextUrl.searchParams.get("sortBy") || "questions-desc";
   const sortByOptions = [
     "questions-desc",
     "answers-desc",
     "comments-desc",
-    "tags-desc",
     "subjects-desc",
+    "tags-desc",
   ];
+
+  console.log("page received =", req.nextUrl.searchParams.get("page"));
+  console.log("sortBy received =", req.nextUrl.searchParams.get("sortBy"));
+
+  if (isNaN(page) || page < 1) {
+    throw generateApiError(400, "Invalid Page Number", ["Invalid Page Number"]);
+  }
 
   // Get all users from clerk
   const clerkUsers = await getAllClerkUsers();

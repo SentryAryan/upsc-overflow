@@ -218,7 +218,7 @@ function Footerdemo() {
                         <Button
                           variant="outline"
                           size="icon"
-                          className="rounded-full"
+                          className="rounded-full hover:scale-115 hover:bg-muted transition-all duration-300"
                         >
                           <social.icon className="h-4 w-4" />
                           <span className="sr-only">{social.name}</span>

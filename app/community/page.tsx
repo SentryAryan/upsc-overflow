@@ -12,6 +12,7 @@ import { Spotlight } from "../../components/ui/spotlight";
 import { toast } from "sonner";
 
 const CommunityPage = () => {
+  console.log("CommunityPage.jsx");
   const sortByOptions = [
     "questions-desc",
     "answers-desc",
@@ -21,8 +22,13 @@ const CommunityPage = () => {
   ];
   const searchParams = useSearchParams();
   const router = useRouter();
-  const currentPage = Number(searchParams.get("page"));
+  let currentPage = Number(searchParams.get("page"));
+  console.log("currentPage =", currentPage);
+  if (searchParams.get("page") === null) {
+    currentPage = 1;
+  }
   const sortBy = searchParams.get("sortBy");
+  console.log("sortBy =", sortBy);
   const [usersWithMetrics, setUsersWithMetrics] = useState<any[]>([]);
   const [totalPages, setTotalPages] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -44,6 +50,7 @@ const CommunityPage = () => {
       toast.error(error.response?.data?.message || `Users not found`);
       setUsersWithMetrics([]);
       setTotalPages(0);
+      
       // If invalid page number, push to page 1 with default sortBy
       if (error.response?.data?.errors.includes("Invalid Page Number")) {
         const pathToPush = `?page=1${
@@ -73,7 +80,7 @@ const CommunityPage = () => {
   // Fetch users with metrics on mount and when currentPage or sortBy changes
   useEffect(() => {
     fetchTagsWithMetrics();
-  }, [currentPage, sortBy, searchParams]);
+  }, [currentPage, sortBy]);
 
   return (
     <div className="flex flex-col items-center w-full px-6 md:px-10 pt-12 md:pt-0 gap-8">
@@ -105,7 +112,7 @@ const CommunityPage = () => {
           <LoaderDemo />
         </div>
       ) : usersWithMetrics.length === 0 ? (
-        <p className="text-center mt-4 text-muted-foreground">
+        <p className="text-center mt-4 text-muted-foreground flex justify-center items-center h-[20vh] sm:h-[30vh]">
           No users found.
         </p>
       ) : (

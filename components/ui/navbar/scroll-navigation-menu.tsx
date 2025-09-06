@@ -237,7 +237,7 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
               whileTap={{ scale: 0.95 }}
             >
               <Link href={homePath} className="text-2xl font-bold text-foreground">
-                Logo
+                UPSC-OVERFLOW
               </Link>
             </motion.div>
 

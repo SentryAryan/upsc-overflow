@@ -169,7 +169,7 @@ export default function SavedPage() {
           <LoaderDemo />
         </div>
       ) : questions.length === 0 ? (
-        <p className="text-center mt-4 text-muted-foreground animate-slide-up">
+        <p className="text-center mt-4 text-muted-foreground animate-slide-up flex justify-center items-center h-[20vh] sm:h-[30vh]">
           No questions found
         </p>
       ) : (

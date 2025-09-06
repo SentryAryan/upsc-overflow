@@ -19,12 +19,31 @@ function escapeRegex(string: string) {
 
 export const GET = errorHandler(async (req: NextRequest) => {
   await dbConnect();
-  const page = Number(req.nextUrl.searchParams.get("page")) || 1;
-  const limit = Number(req.nextUrl.searchParams.get("limit")) || 5;
+  let page = Number(req.nextUrl.searchParams.get("page"));
+  const limit = Number(req.nextUrl.searchParams.get("limit")) || 10;
+  const sortBy = req.nextUrl.searchParams.get("sortBy") || "date-desc";
+  const sortByOptions = [
+    "date-desc",
+    "date-asc",
+    "votes-desc",
+    "answers-desc",
+    "comments-desc",
+    "tags-desc",
+  ];
   const subject = req.nextUrl.searchParams.get("subject");
   const tag = req.nextUrl.searchParams.get("tag");
   const question = req.nextUrl.searchParams.get("question");
-  const sortBy = req.nextUrl.searchParams.get("sortBy") || "date-desc";
+
+  console.log("page received =", req.nextUrl.searchParams.get("page"));
+  console.log(
+    "isNaN(req.nextUrl.searchParams.get('page')) =",
+    isNaN(Number(req.nextUrl.searchParams.get("page")))
+  );
+  console.log("sortBy received =", req.nextUrl.searchParams.get("sortBy"));
+
+  if (isNaN(page) || page < 1) {
+    throw generateApiError(400, "Invalid Page Number", ["Invalid Page Number"]);
+  }
 
   let searchQuery;
   if (question) {
@@ -308,6 +327,21 @@ export const GET = errorHandler(async (req: NextRequest) => {
       ? await Question.countDocuments(searchQuery)
       : await Question.countDocuments();
   }
+  // For testing no questions found edge case
+  // questions = []
+  // totalQuestions = 0
+
+  if (totalQuestions === 0) {
+    throw generateApiError(404, "No questions found", ["No questions found"]);
+  }
+
+  const totalPages = Math.ceil(totalQuestions / limit);
+  if (page > totalPages) {
+    throw generateApiError(400, "Invalid Page Number", ["Invalid Page Number"]);
+  }
+  if (!sortByOptions.includes(sortBy)) {
+    throw generateApiError(400, "Invalid Sort By", ["Invalid Sort By"]);
+  }
 
   // Try to fetch user data but handle failures gracefully
   const users = await Promise.all(
@@ -366,13 +400,13 @@ export const GET = errorHandler(async (req: NextRequest) => {
         ...question,
         user: users[index],
         likesAnswersComments: likesAnswersComments[index],
-        totalPages: Math.ceil(totalQuestions / limit),
+        totalPages,
       }))
     : questions.map((question, index) => ({
         ...question._doc,
         user: users[index],
         likesAnswersComments: likesAnswersComments[index],
-        totalPages: Math.ceil(totalQuestions / limit),
+        totalPages,
       }));
 
   console.log(typeof questions[0]?.createdAt);
