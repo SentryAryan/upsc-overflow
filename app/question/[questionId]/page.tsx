@@ -5,7 +5,7 @@ import { CommentFormTA } from "@/components/Forms/CommentFormTA";
 import { UpdateAnswerForm } from "@/components/Forms/UpdateAnswerForm";
 import { UpdateCommentForm } from "@/components/Forms/UpdateCommentForm";
 import { UpdateQuestionForm } from "@/components/Forms/UpdateQuestionForm";
-import { LoaderDemo } from "@/components/Loaders/LoaderDemo";
+import PulsatingLoader from "@/components/Loaders/PulsatingLoader";
 import { AnswerTypeSchema } from "@/db/models/answer.model";
 import { QuestionType } from "@/db/models/question.model";
 import { setQuestionUpdate } from "@/lib/redux/slices/questionUpdate.slice";
@@ -558,7 +558,7 @@ const QuestionPage = () => {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <LoaderDemo />
+        <PulsatingLoader />
       </div>
     );
   }
@@ -886,7 +886,7 @@ const QuestionPage = () => {
           {/* Display Question Comments */}
           {isQuestionCommentLoading ? (
             <div className="flex justify-center items-center py-8">
-              <LoaderDemo />
+              <PulsatingLoader />
             </div>
           ) : (
             <>
@@ -908,7 +908,7 @@ const QuestionPage = () => {
                         {isCommentDeleting === comment._id && (
                           <div className="absolute inset-0 bg-background/90 backdrop-blur-sm flex items-center justify-center z-20 rounded-lg transition-all duration-300 ease-in-out">
                             <div className="flex flex-col items-center gap-3">
-                              <LoaderDemo />
+                              <PulsatingLoader />
                               <span className="text-sm text-muted-foreground font-medium">
                                 Deleting comment...
                               </span>
@@ -1114,7 +1114,7 @@ const QuestionPage = () => {
       {/* Combined Answer Sections with common loader */}
       {isLoadingAnswers ? (
         <div className="flex justify-center items-center py-12">
-          <LoaderDemo />
+          <PulsatingLoader />
         </div>
       ) : (
         <>
@@ -1192,7 +1192,7 @@ const QuestionPage = () => {
                       isAnswerUpdating === answer._id) && (
                       <div className="absolute inset-0 bg-background/90 backdrop-blur-sm flex items-center justify-center z-20 rounded-lg transition-all duration-300 ease-in-out">
                         <div className="flex flex-col items-center gap-3">
-                          <LoaderDemo />
+                          <PulsatingLoader />
                           <span className="text-sm text-muted-foreground font-medium">
                             {isAnswerDeleting === answer._id
                               ? "Deleting answer..."
@@ -1454,7 +1454,7 @@ const QuestionPage = () => {
                       {/* Display comments with enhanced styling */}
                       {isCommentLoading === answer._id ? (
                         <div className="flex justify-center items-center py-8">
-                          <LoaderDemo />
+                          <PulsatingLoader />
                         </div>
                       ) : (
                         <>
@@ -1479,7 +1479,7 @@ const QuestionPage = () => {
                                     {isCommentDeleting === comment._id && (
                                       <div className="absolute inset-0 bg-background/90 backdrop-blur-sm flex items-center justify-center z-20 rounded-lg transition-all duration-300 ease-in-out">
                                         <div className="flex flex-col items-center gap-3">
-                                          <LoaderDemo />
+                                          <PulsatingLoader />
                                           <span className="text-sm text-muted-foreground font-medium">
                                             Deleting comment...
                                           </span>

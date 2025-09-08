@@ -5,7 +5,7 @@ import HomePagination from "@/components/Filters/HomePagination";
 import SortFilter from "@/components/Filters/SortFilter";
 import SubjectFilter from "@/components/Filters/SubjectFilter2";
 import SearchBar from "@/components/Forms/SearchBar";
-import { LoaderDemo } from "@/components/Loaders/LoaderDemo";
+import PulsatingLoader from "@/components/Loaders/PulsatingLoader";
 import { Spotlight } from "@/components/ui/spotlight";
 import { QuestionType } from "@/db/models/question.model";
 import axios from "axios";
@@ -170,7 +170,7 @@ export default function SavedPage() {
 
       {isLoading ? (
         <div className="flex items-center justify-center h-[5vh] md:h-[10vh]">
-          <LoaderDemo />
+          <PulsatingLoader />
         </div>
       ) : questions.length === 0 ? (
         <p className="text-center mt-4 text-muted-foreground animate-slide-up flex justify-center items-center h-[20vh] sm:h-[30vh]">

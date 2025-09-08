@@ -2,7 +2,7 @@
 
 import HomePagination from "@/components/Filters/HomePagination";
 import SortFilter from "@/components/Filters/SortFilter";
-import { LoaderDemo } from "@/components/Loaders/LoaderDemo";
+import PulsatingLoader from "@/components/Loaders/PulsatingLoader";
 import { setQuestions } from "@/lib/redux/slices/questions.slice";
 import { RootState } from "@/lib/redux/store";
 import axios from "axios";
@@ -137,7 +137,7 @@ export default function SubjectPage() {
       {/* Questions */}
       {isLoading ? (
         <div className="flex items-center justify-center h-[5vh] md:h-[70vh]">
-          <LoaderDemo />
+          <PulsatingLoader />
         </div>
       ) : questions.length === 0 ? (
         <p className="text-center mt-4 text-muted-foreground flex justify-center items-center h-[20vh] sm:h-[30vh]">

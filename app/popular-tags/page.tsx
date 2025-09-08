@@ -4,10 +4,10 @@ import SortFilter from "@/components/Filters/SortFilter";
 import SearchBar from "@/components/Forms/SearchBar";
 import axios from "axios";
 import { Tag } from "lucide-react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import HomePagination from "../../components/Filters/HomePagination";
-import { LoaderDemo } from "../../components/Loaders/LoaderDemo";
+import PulsatingLoader from "../../components/Loaders/PulsatingLoader";
 import { Spotlight } from "../../components/ui/spotlight";
 import { toast } from "sonner";
 
@@ -106,7 +106,7 @@ const PopularTagsPage = () => {
       {/* Tags */}
       {isLoading ? (
         <div className="flex items-center justify-center h-[30vh]">
-          <LoaderDemo />
+          <PulsatingLoader />
         </div>
       ) : tagsWithMetrics.length === 0 ? (
         <p className="text-center mt-4 text-muted-foreground flex justify-center items-center h-[20vh] sm:h-[30vh]">
