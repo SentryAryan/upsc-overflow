@@ -15,6 +15,7 @@ const SubjectFilter: React.FC<SubjectFilterProps> = ({
   selectedSubject,
   handleSelectSubject,
 }) => {
+  console.log("SubjectFilter.jsx");
   const router = useRouter();
   const searchParams = useSearchParams();
   const dispatch = useDispatch();

@@ -2,10 +2,7 @@ import dbConnect from "@/db/dbConnect";
 import Answer, { AnswerTypeSchema } from "@/db/models/answer.model";
 import Comment from "@/db/models/comment.model";
 import Like from "@/db/models/like.model";
-import Question, {
-  QuestionTypeSchema,
-  QuestionType,
-} from "@/db/models/question.model";
+import Question from "@/db/models/question.model";
 import { generateApiResponse } from "@/lib/helpers/api-response.helper";
 import { errorHandler } from "@/lib/helpers/error-handler.helper";
 import getClerkUserById from "@/lib/helpers/getClerkUserById";
@@ -31,8 +28,10 @@ export const GET = errorHandler(async (req: NextRequest) => {
     "tags-desc",
   ];
   const subject = req.nextUrl.searchParams.get("subject");
+  console.log("typeof subject =", typeof subject);
   const tag = req.nextUrl.searchParams.get("tag");
   const question = req.nextUrl.searchParams.get("question");
+  const homePage = req.nextUrl.searchParams.get("homePage");
 
   console.log("page received =", req.nextUrl.searchParams.get("page"));
   console.log(
@@ -43,6 +42,14 @@ export const GET = errorHandler(async (req: NextRequest) => {
 
   if (isNaN(page) || page < 1) {
     throw generateApiError(400, "Invalid Page Number", ["Invalid Page Number"]);
+  }
+
+  const allUniqueSubjects: string[] = await Question.distinct("subject");
+  console.log("allUniqueSubjects =", allUniqueSubjects);
+
+  // If invalid subject, throw error
+  if (homePage && subject && !allUniqueSubjects.includes(subject)) {
+    throw generateApiError(404, "Invalid Subject", ["Invalid Subject"]);
   }
 
   let searchQuery;
@@ -249,12 +256,12 @@ export const GET = errorHandler(async (req: NextRequest) => {
         };
       })
     );
-    console.log("Single question", questionsWithMetrics[0]);
-    console.log("Date field =", questionsWithMetrics[0].createdAt);
-    console.log(
-      "Type of Date field =",
-      typeof questionsWithMetrics[0].createdAt
-    );
+    // console.log("Single question", questionsWithMetrics[0]);
+    // console.log("Date field =", questionsWithMetrics[0].createdAt);
+    // console.log(
+    //   "Type of Date field =",
+    //   typeof questionsWithMetrics[0].createdAt
+    // );
 
     // Step 3: Sort based on criteria
     questionsWithMetrics.sort((a, b) => {

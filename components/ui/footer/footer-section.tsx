@@ -25,7 +25,7 @@ import {
   Mail,
   Phone,
   MapPin,
-  Loader2,
+  LayoutDashboard,
 } from "lucide-react";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
@@ -47,6 +47,8 @@ function Footerdemo() {
     useState<string>("/popular-subjects");
   const [communityPath, setCommunityPath] = useState<string>("/community");
   const [savedPath, setSavedPath] = useState<string>("/saved");
+  const [dashboardPath, setDashboardPath] = useState<string>("/dashboard");
+
   const quickLinks = isSignedIn
     ? [
         { name: "Home", url: homePath, icon: Home },
@@ -55,6 +57,7 @@ function Footerdemo() {
         { name: "Popular Subjects", url: popularSubjectsPath, icon: Book },
         { name: "Community", url: communityPath, icon: Users },
         { name: "Saved", url: savedPath, icon: Bookmark },
+        { name: "Dashboard", url: dashboardPath, icon: LayoutDashboard },
       ]
     : [
         { name: "Home", url: homePath, icon: Home },
@@ -114,6 +117,11 @@ function Footerdemo() {
       const searchString = searchParams.toString();
       const fullPath = searchString ? `/saved?${searchString}` : "/saved";
       setSavedPath(fullPath);
+    }
+    if (pathname === "/dashboard") {
+      const searchString = searchParams.toString();
+      const fullPath = searchString ? `/dashboard?${searchString}` : "/dashboard";
+      setDashboardPath(fullPath);
     }
   }, [pathname, searchParams]);
 

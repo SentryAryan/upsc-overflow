@@ -3,7 +3,7 @@ import React from "react";
 
 interface SortFilterProps {
   // We might not need direct props if we handle routing internally
-  sortFilterType?: "tags" | "subjects" | "others" | "users";
+  sortFilterType?: "tags" | "subjects" | "others" | "users" | "saved";
 }
 
 const SortFilter: React.FC<SortFilterProps> = ({
@@ -17,7 +17,9 @@ const SortFilter: React.FC<SortFilterProps> = ({
     | "comments-desc"
     | "questions-desc"
     | "subjects-desc"
-    | "tags-desc";
+    | "tags-desc"
+    | "saved-date-desc"
+    | "saved-date-asc";
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -28,6 +30,8 @@ const SortFilter: React.FC<SortFilterProps> = ({
     sortFilterType === "subjects" ||
     sortFilterType === "users"
       ? "questions-desc"
+      : sortFilterType === "saved"
+      ? "saved-date-desc"
       : "date-desc");
   const sortOptions: { label: string; value: SortByType }[] =
     sortFilterType === "tags"
@@ -50,6 +54,17 @@ const SortFilter: React.FC<SortFilterProps> = ({
           { label: "Most Answers", value: "answers-desc" },
           { label: "Most Comments", value: "comments-desc" },
           { label: "Most Subjects", value: "subjects-desc" },
+          { label: "Most Tags", value: "tags-desc" },
+        ]
+      : sortFilterType === "saved"
+      ? [
+          { label: "Latest(saved)", value: "saved-date-desc" },
+          { label: "Earliest(saved)", value: "saved-date-asc" },
+          { label: "Latest(created)", value: "date-desc" },
+          { label: "Earliest(created)", value: "date-asc" },
+          { label: "Most Votes", value: "votes-desc" },
+          { label: "Most Answers", value: "answers-desc" },
+          { label: "Most Comments", value: "comments-desc" },
           { label: "Most Tags", value: "tags-desc" },
         ]
       : [

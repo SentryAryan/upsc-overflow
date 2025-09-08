@@ -13,6 +13,7 @@ import {
   Bookmark,
   FileQuestion,
   Home,
+  LayoutDashboard,
   LucideIcon,
   Menu,
   Tag,
@@ -46,7 +47,6 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [hoveredItem, setHoveredItem] = useState<number | null>(null);
   const { isSignedIn } = useUser();
-  const [isLoading, setIsLoading] = useState(false);
   const [homePath, setHomePath] = useState<string>("/");
   const [popularTagsPath, setPopularTagsPath] =
     useState<string>("/popular-tags");
@@ -54,6 +54,7 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
     useState<string>("/popular-subjects");
   const [communityPath, setCommunityPath] = useState<string>("/community");
   const [savedPath, setSavedPath] = useState<string>("/saved");
+  const [dashboardPath, setDashboardPath] = useState<string>("/dashboard");
 
   const menuItems: MenuItem[] = isSignedIn
     ? [
@@ -84,7 +85,7 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
         {
           id: 5,
           title: "Community",
-          url: "/community",
+          url: communityPath,
           icon: Users,
         },
         {
@@ -92,6 +93,12 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
           title: "Saved",
           url: savedPath,
           icon: Bookmark,
+        },
+        {
+          id: 7,
+          title: "Dashboard",
+          url: dashboardPath,
+          icon: LayoutDashboard,
         },
       ]
     : [
@@ -153,6 +160,11 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
       const searchString = searchParams.toString();
       const fullPath = searchString ? `/saved?${searchString}` : "/saved";
       setSavedPath(fullPath);
+    }
+    if (pathname === "/dashboard") {
+      const searchString = searchParams.toString();
+      const fullPath = searchString ? `/dashboard?${searchString}` : "/dashboard";
+      setDashboardPath(fullPath);
     }
   }, [pathname, searchParams]);
 
@@ -236,7 +248,10 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <Link href={homePath} className="text-2xl font-bold text-foreground">
+              <Link
+                href={homePath}
+                className="text-2xl font-bold text-foreground"
+              >
                 UPSC-OVERFLOW
               </Link>
             </motion.div>
@@ -313,7 +328,7 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
       >
         <motion.button
           onClick={toggleMenu}
-          className="w-14 h-14 bg-primary text-primary-foreground rounded-full shadow-lg flex items-center justify-center cursor-pointer"
+          className="w-14 h-14 bg-background text-foreground rounded-full shadow-2xl flex items-center justify-center cursor-pointer"
           variants={hamburgerVariants}
           animate={isScrolled ? "scrolled" : "normal"}
           whileHover={{ scale: 1.1, rotate: 180 }}

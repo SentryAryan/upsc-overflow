@@ -12,9 +12,31 @@ import getClerkUserById from "@/lib/helpers/getClerkUserById";
 
 export const GET = errorHandler(async (req: NextRequest) => {
   await dbConnect();
-  const page = Number(req.nextUrl.searchParams.get("page")) || 1;
+  let page = Number(req.nextUrl.searchParams.get("page"));
   const limit = Number(req.nextUrl.searchParams.get("limit")) || 10;
-  const sortBy = req.nextUrl.searchParams.get("sortBy") || "date-desc";
+  const sortBy = req.nextUrl.searchParams.get("sortBy") || "saved-date-desc";
+  const sortByOptions = [
+    "saved-date-desc",
+    "saved-date-asc",
+    "date-desc",
+    "date-asc",
+    "votes-desc",
+    "answers-desc",
+    "comments-desc",
+    "tags-desc",
+  ];
+
+  console.log("page received =", req.nextUrl.searchParams.get("page"));
+  console.log(
+    "isNaN(req.nextUrl.searchParams.get('page')) =",
+    isNaN(Number(req.nextUrl.searchParams.get("page")))
+  );
+  console.log("sortBy received =", req.nextUrl.searchParams.get("sortBy"));
+
+  if (isNaN(page) || page < 1) {
+    throw generateApiError(400, "Invalid Page Number", ["Invalid Page Number"]);
+  }
+
   const subject = req.nextUrl.searchParams.get("subject") || null;
   const { userId } = await auth();
 
@@ -30,6 +52,24 @@ export const GET = errorHandler(async (req: NextRequest) => {
     saver: userId,
   }).populate("question");
 
+  const uniqueSubjectsRelatedToSavedQuestions = [
+    ...new Set(
+      savedQuestions.map((savedQuestion) => savedQuestion.question.subject)
+    ),
+  ];
+
+  // If invalid subject, throw error
+  if (subject && !uniqueSubjectsRelatedToSavedQuestions.includes(subject)) {
+    throw generateApiError(404, "Invalid Subject", ["Invalid Subject"]);
+  }
+
+  // If no saved questions found, throw error
+  if (savedQuestions.length === 0) {
+    throw generateApiError(404, "No saved questions found", [
+      "No saved questions found",
+    ]);
+  }
+
   let filteredSavedQuestions = savedQuestions;
   if (subject) {
     filteredSavedQuestions = savedQuestions.filter(
@@ -38,6 +78,12 @@ export const GET = errorHandler(async (req: NextRequest) => {
     console.log("filteredSavedQuestions", filteredSavedQuestions);
   }
   const totalPages = Math.ceil(filteredSavedQuestions.length / limit);
+  if (page > totalPages) {
+    throw generateApiError(400, "Invalid Page Number", ["Invalid Page Number"]);
+  }
+  if (!sortByOptions.includes(sortBy)) {
+    throw generateApiError(400, "Invalid Sort By", ["Invalid Sort By"]);
+  }
 
   const savedQuestionsWithMetrics = await Promise.all(
     filteredSavedQuestions.map(async (savedQuestion) => {
@@ -70,6 +116,7 @@ export const GET = errorHandler(async (req: NextRequest) => {
           commentsOnAnswers.reduce((acc, curr) => acc + curr, 0);
         return {
           ...savedQuestion.question._doc,
+          savedCreatedAt: savedQuestion.createdAt,
           user: user || {
             firstName: "Anonymous",
             lastName: "",
@@ -86,6 +133,7 @@ export const GET = errorHandler(async (req: NextRequest) => {
       } catch (error) {
         return {
           ...savedQuestion.question._doc,
+          savedCreatedAt: savedQuestion.createdAt,
           user: {
             firstName: "Anonymous",
             lastName: "",
@@ -106,6 +154,10 @@ export const GET = errorHandler(async (req: NextRequest) => {
   const sortedSavedQuestionsWithMetrics = savedQuestionsWithMetrics.sort(
     (a, b) => {
       switch (sortBy) {
+        case "saved-date-desc":
+          return b.savedCreatedAt - a.savedCreatedAt;
+        case "saved-date-asc":
+          return a.savedCreatedAt - b.savedCreatedAt;
         case "date-desc":
           return b.createdAt - a.createdAt;
         case "date-asc":
@@ -117,23 +169,23 @@ export const GET = errorHandler(async (req: NextRequest) => {
             ? b.likesAnswersComments.likes -
                 b.likesAnswersComments.dislikes -
                 (a.likesAnswersComments.likes - a.likesAnswersComments.dislikes)
-            : b.createdAt - a.createdAt;
+            : b.savedCreatedAt - a.savedCreatedAt;
         case "answers-desc":
           return b.likesAnswersComments.answers !==
             a.likesAnswersComments.answers
             ? b.likesAnswersComments.answers - a.likesAnswersComments.answers
-            : b.createdAt - a.createdAt;
+            : b.savedCreatedAt - a.savedCreatedAt;
         case "comments-desc":
           return b.likesAnswersComments.comments !==
             a.likesAnswersComments.comments
             ? b.likesAnswersComments.comments - a.likesAnswersComments.comments
-            : b.createdAt - a.createdAt;
+            : b.savedCreatedAt - a.savedCreatedAt;
         case "tags-desc":
           return b.tags.length !== a.tags.length
             ? b.tags.length - a.tags.length
-            : b.createdAt - a.createdAt;
+            : b.savedCreatedAt - a.savedCreatedAt;
         default:
-          return b.createdAt - a.createdAt;
+          return b.savedCreatedAt - a.savedCreatedAt;
       }
     }
   );

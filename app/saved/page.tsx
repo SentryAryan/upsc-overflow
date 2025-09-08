@@ -1,35 +1,18 @@
 "use client";
 
+import QuestionCard from "@/components/Cards/QuestionCard";
 import HomePagination from "@/components/Filters/HomePagination";
 import SortFilter from "@/components/Filters/SortFilter";
 import SubjectFilter from "@/components/Filters/SubjectFilter2";
 import SearchBar from "@/components/Forms/SearchBar";
-import { LoaderDemo } from "@/components/Loaders/LoaderDemo";
+import PulsatingLoader from "@/components/Loaders/PulsatingLoader";
+import { Spotlight } from "@/components/ui/spotlight";
 import { QuestionType } from "@/db/models/question.model";
-import {
-  setPreviousPage,
-  setPreviousPath,
-  setPreviousQuestion,
-  setPreviousSortBy,
-  setPreviousSubject,
-  setPreviousTag,
-} from "@/lib/redux/slices/previousPath.slice";
-import {
-  setQuestions,
-  setTotalPages,
-} from "@/lib/redux/slices/questions.slice";
-import { setQuestionUpdate } from "@/lib/redux/slices/questionUpdate.slice";
-import { RootState } from "@/lib/redux/store";
-import { useUser } from "@clerk/nextjs";
 import axios from "axios";
 import { Bookmark } from "lucide-react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
-import QuestionCard from "@/components/Cards/QuestionCard";
-import { Spotlight } from "@/components/ui/spotlight";
-import { setSelectedSubject } from "@/lib/redux/slices/filterSubjects.slice";
 
 export interface QuestionCardProps extends QuestionType {
   likesAnswersComments: {
@@ -42,26 +25,31 @@ export interface QuestionCardProps extends QuestionType {
 
 export default function SavedPage() {
   console.log("SavedPage.jsx");
-  const { user, isSignedIn } = useUser();
-  const router = useRouter();
-  const pathname = usePathname();
+  const sortByOptions = [
+    "saved-date-desc",
+    "saved-date-asc",
+    "date-desc",
+    "date-asc",
+    "votes-desc",
+    "answers-desc",
+    "comments-desc",
+    "tags-desc",
+  ];
   const searchParams = useSearchParams();
-  const dispatch = useDispatch();
-  const questions = useSelector(
-    (state: RootState) => state.questions.questions
-  );
-  const totalPages = useSelector(
-    (state: RootState) => state.questions.totalPages
-  );
-  const [availableSubjects, setAvailableSubjects] = useState<string[]>([]);
-  const selectedSubject = useSelector(
-    (state: RootState) => state.filterSubjects.selectedSubject
-  );
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const currentPage = Number(searchParams.get("page")) || 1;
+  const router = useRouter();
+  let currentPage = Number(searchParams.get("page"));
+  // console.log("currentPage =", currentPage);
+  if (searchParams.get("page") === null) {
+    currentPage = 1;
+  }
   const sortBy = searchParams.get("sortBy");
+  // console.log("sortBy =", sortBy);
   const subject = searchParams.get("subject");
-  const currentSearchParams = searchParams.toString();
+  const [questions, setQuestions] = useState<QuestionCardProps[]>([]);
+  const [totalPages, setTotalPages] = useState<number>(0);
+  const [availableSubjects, setAvailableSubjects] = useState<string[]>([]);
+  const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const fetchQuestions = async () => {
     try {
@@ -74,43 +62,63 @@ export default function SavedPage() {
           sortBy ? `&sortBy=${encodeURIComponent(sortBy)}` : ""
         }${subject ? `&subject=${encodeURIComponent(subject)}` : ""}`
       );
-      // if no questions found(reasons = someone changed the URI from browser etc.), redirect to page 1
-      if (response.data.data.length === 0) {
-        toast.error("No questions found");
-        dispatch(setQuestions([]));
-        dispatch(setTotalPages(0));
-        if (currentSearchParams) {
-          router.push(pathname);
-        }
-        return;
-      }
-      dispatch(setQuestions(response.data.data));
-      dispatch(setTotalPages(response.data.data[0].totalPages));
+      toast.success("Questions fetched successfully");
+      setQuestions(response.data.data);
+      setTotalPages(response.data.data[0].totalPages);
     } catch (error: any) {
-      console.log(error);
-      console.log(error.response.data.message);
-      toast.error(error.response.data.message || "Questions not found");
-      dispatch(setQuestions([]));
-      dispatch(setTotalPages(0));
-      if (currentSearchParams) {
-        router.push(pathname);
+      console.log(error.response?.data?.message);
+      toast.error(error.response?.data?.message || `Questions not found`);
+
+      setQuestions([]);
+      setTotalPages(0);
+
+      // If invalid page number, push to page 1 with default sortBy
+      if (error.response?.data?.errors.includes("Invalid Page Number")) {
+        const pathToPush = `?page=1${
+          sortBy
+            ? sortByOptions.includes(sortBy)
+              ? `&sortBy=${sortBy}`
+              : `&sortBy=${encodeURIComponent("saved-date-desc")}`
+            : ""
+        }${subject ? `&subject=${encodeURIComponent(subject)}` : ""}`;
+        router.push(pathToPush);
       }
-      return;
+
+      // If invalid sortBy, push to page 1 with default sortBy
+      if (error.response?.data?.errors.includes("Invalid Sort By")) {
+        const pathToPush = `?${
+          isNaN(currentPage) || currentPage < 1
+            ? `page=1`
+            : `page=${currentPage}`
+        }&sortBy=${encodeURIComponent("saved-date-desc")}${
+          subject ? `&subject=${encodeURIComponent(subject)}` : ""
+        }`;
+        router.push(pathToPush);
+      }
+
+      // If invalid subject, push to page 1 with default sortBy with no subject parameter to display questions of all subjects
+      if (error.response?.data?.errors.includes("Invalid Subject")) {
+        const pathToPush = `?${
+          isNaN(currentPage) || currentPage < 1
+            ? `page=1`
+            : `page=${currentPage}`
+        }${
+          sortBy
+            ? sortByOptions.includes(sortBy)
+              ? `&sortBy=${sortBy}`
+              : `&sortBy=${encodeURIComponent("saved-date-desc")}`
+            : ""
+        }`;
+        router.push(pathToPush);
+      }
     } finally {
       setIsLoading(false);
-      dispatch(setPreviousPath(pathname));
-      dispatch(setPreviousSubject(searchParams.get("subject")));
-      dispatch(setPreviousTag(searchParams.get("tag")));
-      dispatch(setPreviousQuestion(searchParams.get("question")));
-      dispatch(setPreviousSortBy(sortBy));
-      dispatch(setPreviousPage(Number(searchParams.get("page"))));
-      dispatch(setSelectedSubject(subject || null));
-      dispatch(setQuestionUpdate(false));
+      setSelectedSubject(subject || null);
     }
   };
 
   const handleSelectSubject = (subject: string | null) => {
-    dispatch(setSelectedSubject(subject));
+    setSelectedSubject(subject);
   };
 
   const fetchSubjects = async () => {
@@ -127,10 +135,6 @@ export default function SavedPage() {
     fetchQuestions();
   }, [currentPage, sortBy, subject]);
 
-  // const filteredQuestions = selectedSubject
-  //   ? questions.filter((q: QuestionType) => q.subject === selectedSubject)
-  //   : questions;
-
   return (
     <div
       className={`flex flex-col justify-center items-center w-full px-6 md:px-10 pt-12 md:pt-0 gap-8`}
@@ -144,7 +148,7 @@ export default function SavedPage() {
           className="text-4xl md:text-5xl font-bold bg-clip-text 
         text-transparent bg-gradient-to-b from-accent-foreground to-foreground md:text-center"
         >
-          Saved Questions
+          Saved Questions({questions.length})
         </h1>
       </div>
 
@@ -162,11 +166,11 @@ export default function SavedPage() {
       />
 
       {/* Sort Filter */}
-      <SortFilter />
+      <SortFilter sortFilterType="saved" />
 
       {isLoading ? (
         <div className="flex items-center justify-center h-[5vh] md:h-[10vh]">
-          <LoaderDemo />
+          <PulsatingLoader />
         </div>
       ) : questions.length === 0 ? (
         <p className="text-center mt-4 text-muted-foreground animate-slide-up flex justify-center items-center h-[20vh] sm:h-[30vh]">

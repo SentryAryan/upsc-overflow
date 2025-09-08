@@ -1,7 +1,7 @@
 "use client";
 
 import { AskQuestionFormTA } from "@/components/Forms/AskQuestionFormTA";
-import { LoaderDemo } from "@/components/Loaders/LoaderDemo";
+import PulsatingLoader from "@/components/Loaders/PulsatingLoader";
 import { useAuth } from "@clerk/nextjs";
 import { FileQuestion } from "lucide-react";
 import { useState } from "react";
@@ -31,7 +31,7 @@ const AskQuestionPage = () => {
 
         {isLoading ? (
           <div className="flex items-center justify-center h-[40vh] md:h-[70vh] bg-background rounded-lg shadow-md border-mode">
-            <LoaderDemo />
+            <PulsatingLoader />
           </div>
         ) : (
           <div className="flex justify-center bg-background rounded-lg w-full">

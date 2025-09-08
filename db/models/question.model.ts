@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema } from "mongoose";
 import { User } from "@clerk/nextjs/server";
-import { subjects } from "@/lib/constants/subjects";
+import subjects from "@/lib/constants/subjects";
 
 export interface QuestionTypeSchema extends Document {
   title: string;

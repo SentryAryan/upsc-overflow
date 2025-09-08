@@ -238,6 +238,10 @@
   @apply shadow-[var(--shadow-mode)] hover:shadow-[var(--shadow-mode-hover)];
 }
 
+@utility card-shadow-no-hover {
+  @apply shadow-[var(--shadow-mode)];
+}
+
 @utility filter-shadow {
   @apply shadow-[var(--shadow-mode)];
 }
