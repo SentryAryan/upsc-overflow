@@ -7,23 +7,13 @@ import SearchBar from "@/components/Forms/SearchBar";
 import { LoaderDemo } from "@/components/Loaders/LoaderDemo";
 import { QuestionType } from "@/db/models/question.model";
 import {
-  setPreviousPage,
-  setPreviousPath,
-  setPreviousQuestion,
-  setPreviousSortBy,
-  setPreviousSubject,
-  setPreviousTag,
-} from "@/lib/redux/slices/previousPath.slice";
-import {
   setQuestions,
   setTotalPages,
 } from "@/lib/redux/slices/questions.slice";
-import { setQuestionUpdate } from "@/lib/redux/slices/questionUpdate.slice";
 import { RootState } from "@/lib/redux/store";
-import { useUser } from "@clerk/nextjs";
 import axios from "axios";
 import { Home as HomeIcon } from "lucide-react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
@@ -41,11 +31,25 @@ export interface QuestionCardProps extends QuestionType {
 }
 
 export default function HomePage() {
-  console.log("HomePage.jsx");
-  const { user, isSignedIn } = useUser();
-  const router = useRouter();
-  const pathname = usePathname();
+  console.log("QuestionsPage.jsx");
+  const sortByOptions = [
+    "date-desc",
+    "date-asc",
+    "votes-desc",
+    "answers-desc",
+    "comments-desc",
+    "tags-desc",
+  ];
   const searchParams = useSearchParams();
+  const router = useRouter();
+  let currentPage = Number(searchParams.get("page"));
+  console.log("currentPage =", currentPage);
+  if (searchParams.get("page") === null) {
+    currentPage = 1;
+  }
+  const sortBy = searchParams.get("sortBy");
+  console.log("sortBy =", sortBy);
+  const subject = searchParams.get("subject");
   const dispatch = useDispatch();
   const questions = useSelector(
     (state: RootState) => state.questions.questions
@@ -58,10 +62,6 @@ export default function HomePage() {
     (state: RootState) => state.filterSubjects.selectedSubject
   );
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const currentPage = Number(searchParams.get("page")) || 1;
-  const sortBy: string = searchParams.get("sortBy") || "date-desc";
-  const subject = searchParams.get("subject");
-  const currentSearchParams = searchParams.toString();
 
   const fetchQuestions = async () => {
     try {
@@ -72,43 +72,60 @@ export default function HomePage() {
       const response = await axios.get(
         `/api/questions/get-all?page=${currentPage}&limit=10${
           sortBy ? `&sortBy=${encodeURIComponent(sortBy)}` : ""
-        }${subject ? `&subject=${encodeURIComponent(subject)}` : ""}`
+        }${subject ? `&subject=${encodeURIComponent(subject)}` : ""}&homePage=true`
       );
-      // if no questions found(reasons = someone changed the URI from browser etc.), redirect to page 1
-      if (response.data.data.length === 0) {
-        toast.error("No questions found");
-        dispatch(setQuestions([]));
-        dispatch(setTotalPages(0));
-        if (currentSearchParams) {
-          router.push(pathname);
-        }
-        return;
-      }
+      toast.success("Questions fetched successfully");
       dispatch(setQuestions(response.data.data));
       dispatch(setTotalPages(response.data.data[0].totalPages));
     } catch (error: any) {
-      console.log(error);
-      console.log(error.response.data.message);
-      toast.error(
-        error.response.data.message ||
-          "Questions not found, visit previous pages"
-      );
+      console.log(error.response?.data?.message);
+      toast.error(error.response?.data?.message || `Questions not found`);
+
       dispatch(setQuestions([]));
       dispatch(setTotalPages(0));
-      if (currentSearchParams) {
-        router.push(pathname);
+
+      // If invalid page number, push to page 1 with default sortBy
+      if (error.response?.data?.errors.includes("Invalid Page Number")) {
+        const pathToPush = `?page=1${
+          sortBy
+            ? sortByOptions.includes(sortBy)
+              ? `&sortBy=${sortBy}`
+              : `&sortBy=${encodeURIComponent("date-desc")}`
+            : ""
+        }${subject ? `&subject=${encodeURIComponent(subject)}` : ""}`;
+        router.push(pathToPush);
       }
-      return;
+
+      // If invalid sortBy, push to page 1 with default sortBy
+      if (error.response?.data?.errors.includes("Invalid Sort By")) {
+        const pathToPush = `?${
+          isNaN(currentPage) || currentPage < 1
+            ? `page=1`
+            : `page=${currentPage}`
+        }&sortBy=${encodeURIComponent("date-desc")}${
+          subject ? `&subject=${encodeURIComponent(subject)}` : ""
+        }`;
+        router.push(pathToPush);
+      }
+
+      // If invalid subject, push to page 1 with default sortBy with no subject parameter to display questions of all subjects
+      if (error.response?.data?.errors.includes("Invalid Subject")) {
+        const pathToPush = `?${
+          isNaN(currentPage) || currentPage < 1
+            ? `page=1`
+            : `page=${currentPage}`
+        }${
+          sortBy
+            ? sortByOptions.includes(sortBy)
+              ? `&sortBy=${sortBy}`
+              : `&sortBy=${encodeURIComponent("date-desc")}`
+            : ""
+        }`;
+        router.push(pathToPush);
+      }
     } finally {
       setIsLoading(false);
-      dispatch(setPreviousPath(pathname));
-      dispatch(setPreviousSubject(searchParams.get("subject")));
-      dispatch(setPreviousTag(searchParams.get("tag")));
-      dispatch(setPreviousQuestion(searchParams.get("question")));
-      dispatch(setPreviousSortBy(sortBy));
-      dispatch(setPreviousPage(Number(searchParams.get("page"))));
       dispatch(setSelectedSubject(subject || null));
-      dispatch(setQuestionUpdate(false));
     }
   };
 
@@ -143,7 +160,7 @@ export default function HomePage() {
           className="text-4xl md:text-5xl font-bold bg-clip-text 
         text-transparent bg-gradient-to-b from-accent-foreground to-foreground text-center"
         >
-          Home
+          Home({questions.length})
         </h1>
       </div>
       <SearchBar />
@@ -161,9 +178,9 @@ export default function HomePage() {
         <div className="flex items-center justify-center h-[5vh] md:h-[10vh]">
           <LoaderDemo />
         </div>
-      ) : questions.length === 0 && selectedSubject !== null ? (
-        <p className="text-center mt-4 text-muted-foreground animate-slide-up">
-          No questions found for the selected subject.
+      ) : questions.length === 0 ? (
+        <p className="text-center mt-4 text-muted-foreground animate-slide-up flex justify-center items-center h-[20vh] sm:h-[30vh]">
+          No questions found.
         </p>
       ) : (
         <div className="grid grid-cols-1 gap-8 w-full">

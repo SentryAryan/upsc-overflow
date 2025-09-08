@@ -287,9 +287,9 @@ const QuestionCard = ({ question }: { question: QuestionCardProps }) => {
                 </span>
               </div>
             )}
-            <span className="truncate">{askerName}</span>
+            <span className="truncate font-[900]">{askerName}</span>
           </div>
-          <span className="text-xs sm:text-sm opacity-75 ml-9 sm:ml-0 sm:before:content-['•'] sm:before:mx-2">
+          <span className="text-xs sm:text-sm opacity-75 ml-9 sm:ml-0 sm:before:content-['•'] sm:before:mx-2 font-[900]">
             {createdAt}
           </span>
         </div>

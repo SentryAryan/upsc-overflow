@@ -7,7 +7,7 @@ import { setQuestions } from "@/lib/redux/slices/questions.slice";
 import { RootState } from "@/lib/redux/store";
 import axios from "axios";
 import { Search } from "lucide-react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
@@ -103,7 +103,7 @@ export default function QuestionsPage() {
           className="text-4xl md:text-5xl font-bold bg-clip-text 
         text-transparent bg-gradient-to-b from-accent-foreground to-foreground text-center"
         >
-          Search results for "{questionQuery}"
+          Search results for "{questionQuery}"({questions.length})
         </h1>
       </div>
 

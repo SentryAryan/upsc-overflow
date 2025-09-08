@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import QuestionCard from "@/components/Cards/QuestionCard";
 import SearchBar from "@/components/Forms/SearchBar";
 import { Spotlight } from "@/components/ui/spotlight";
-import { subjects } from "@/lib/constants/subjects";
+import subjects from "@/lib/constants/subjects";
 
 export default function SubjectPage() {
   console.log("SubjectPage.jsx");
@@ -29,12 +29,12 @@ export default function SubjectPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   let currentPage = Number(searchParams.get("page"));
-  console.log("currentPage =", currentPage);
+  // console.log("currentPage =", currentPage);
   if (searchParams.get("page") === null) {
     currentPage = 1;
   }
   const sortBy = searchParams.get("sortBy");
-  console.log("sortBy =", sortBy);
+  // console.log("sortBy =", sortBy);
   const subject = searchParams.get("subject") || "";
   const dispatch = useDispatch();
   const questions = useSelector(
@@ -118,7 +118,7 @@ export default function SubjectPage() {
           className="text-4xl md:text-5xl font-bold bg-clip-text 
         text-transparent bg-gradient-to-b from-accent-foreground to-foreground text-center"
         >
-          Questions in subject = "{subject}"
+          Questions in subject = "{subject}"({questions.length})
         </h1>
       </div>
 

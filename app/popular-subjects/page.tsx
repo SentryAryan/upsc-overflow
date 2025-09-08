@@ -4,7 +4,7 @@ import SortFilter from "@/components/Filters/SortFilter";
 import SearchBar from "@/components/Forms/SearchBar";
 import axios from "axios";
 import { Book } from "lucide-react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import HomePagination from "../../components/Filters/HomePagination";
 import { LoaderDemo } from "../../components/Loaders/LoaderDemo";
@@ -90,7 +90,7 @@ const PopularSubjectsPage = () => {
           className="text-4xl md:text-5xl font-bold bg-clip-text 
         text-transparent bg-gradient-to-b from-accent-foreground to-foreground text-center"
         >
-          Popular Subjects
+          Popular Subjects({subjectsWithMetrics.length})
         </h1>
       </div>
 

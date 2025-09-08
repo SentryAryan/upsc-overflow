@@ -7,63 +7,89 @@ import { setQuestions } from "@/lib/redux/slices/questions.slice";
 import { RootState } from "@/lib/redux/store";
 import axios from "axios";
 import { Tag } from "lucide-react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
-import QuestionCard from "../../components/Cards/QuestionCard";
-import SearchBar from "../../components/Forms/SearchBar";
-import { Spotlight } from "../../components/ui/spotlight";
+import QuestionCard from "@/components/Cards/QuestionCard";
+import SearchBar from "@/components/Forms/SearchBar";
+import { Spotlight } from "@/components/ui/spotlight";
 
 export default function TagPage() {
+  console.log("TagPage.jsx");
+  const sortByOptions = [
+    "date-desc",
+    "date-asc",
+    "votes-desc",
+    "answers-desc",
+    "comments-desc",
+    "tags-desc",
+  ];
   const searchParams = useSearchParams();
+  const router = useRouter();
+  let currentPage = Number(searchParams.get("page"));
+  // console.log("currentPage =", currentPage);
+  if (searchParams.get("page") === null) {
+    currentPage = 1;
+  }
+  const sortBy = searchParams.get("sortBy");
+  // console.log("sortBy =", sortBy);
+  const receivedTag = searchParams.get("tag") || "";
+  // const decodedTag = decodeURIComponent(receivedTag);
+
+  console.log("tag received =", receivedTag);
+  // console.log("tag by decodedURIComponent =", decodedTag);
+  // console.log("tag by encodeURIComponent =", encodeURIComponent(decodedTag));
+  // console.log("tag by encodeURI =", encodeURI(decodedTag));
+
   const dispatch = useDispatch();
   const questions = useSelector(
     (state: RootState) => state.questions.questions
   );
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const currentPage = Number(searchParams.get("page")) || 1;
-  const receivedTag = searchParams.get("tag") || "";
-  const decodedTag = decodeURIComponent(receivedTag); // Decode URL-encoded spaces (%20)
-  const sortBy = searchParams.get("sortBy");
-
-  console.log("tag received =", receivedTag);
-  console.log("tag by decodedURIComponent =", decodedTag);
-  console.log("tag by encodeURIComponent =", encodeURIComponent(decodedTag));
-  console.log("tag by encodeURI =", encodeURI(decodedTag));
-
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [totalPages, setTotalPages] = useState<number>(0);
-  const currentSearchParams = searchParams.toString();
-  const router = useRouter();
-  const pathname = usePathname();
 
   const fetchQuestions = async () => {
     try {
       setIsLoading(true);
       const response = await axios.get(
         `/api/questions/get-all?page=${currentPage}&limit=10&tag=${encodeURIComponent(
-          decodedTag
+          receivedTag
         )}${sortBy ? `&sortBy=${sortBy}` : ""}`
       );
-      if (response.data.data.length === 0) {
-        toast.error("No questions found");
-        dispatch(setQuestions([]));
-        setTotalPages(0);
-        if (currentSearchParams) {
-          router.push(`${pathname}?tag=${encodeURIComponent(decodedTag)}`);
-        }
-        return;
-      }
+      toast.success("Questions fetched successfully");
       dispatch(setQuestions(response.data.data));
       setTotalPages(response.data.data[0]?.totalPages || 0);
     } catch (error: any) {
+      console.log(error.response?.data?.message);
+      toast.error(error.response?.data?.message || `Questions not found`);
+
       dispatch(setQuestions([]));
       setTotalPages(0);
-      if (currentSearchParams) {
-        router.push(`${pathname}?tag=${encodeURIComponent(decodedTag)}`);
+
+      // If invalid page number, push to page 1 with default sortBy
+      if (error.response?.data?.errors.includes("Invalid Page Number")) {
+        const pathToPush = `?page=1${
+          sortBy
+            ? sortByOptions.includes(sortBy)
+              ? `&sortBy=${sortBy}`
+              : `&sortBy=${encodeURIComponent("date-desc")}`
+            : ""
+        }&tag=${encodeURIComponent(receivedTag)}`;
+        router.push(pathToPush);
       }
-      console.log(error.response?.data?.message);
-      toast.error(`Questions not found`);
+
+      // If invalid sortBy, push to page 1 with default sortBy
+      if (error.response?.data?.errors.includes("Invalid Sort By")) {
+        const pathToPush = `?${
+          isNaN(currentPage) || currentPage < 1
+            ? `page=1`
+            : `page=${currentPage}`
+        }&sortBy=${encodeURIComponent("date-desc")}&tag=${encodeURIComponent(
+          receivedTag
+        )}`;
+        router.push(pathToPush);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -71,7 +97,7 @@ export default function TagPage() {
 
   useEffect(() => {
     fetchQuestions();
-  }, [currentPage, decodedTag, sortBy]);
+  }, [currentPage, receivedTag, sortBy]);
 
   return (
     <div className="flex flex-col items-center w-full px-6 md:px-10 pt-12 md:pt-0 min-h-screen gap-4">
@@ -84,8 +110,8 @@ export default function TagPage() {
           className="text-4xl md:text-5xl font-bold bg-clip-text 
         text-transparent bg-gradient-to-b from-accent-foreground to-foreground text-center"
         >
-          Questions tagged with "{decodedTag?.[0] === "#" ? "" : "#"}
-          {decodedTag}"
+          Questions tagged with "{receivedTag?.[0] === "#" ? "" : "#"}
+          {receivedTag}"({questions.length})
         </h1>
       </div>
 
@@ -94,7 +120,7 @@ export default function TagPage() {
 
       {/* Pagination */}
       <HomePagination
-        tag={encodeURIComponent(decodedTag)}
+        tag={encodeURIComponent(receivedTag)}
         totalPages={totalPages}
       />
 
@@ -107,11 +133,9 @@ export default function TagPage() {
           <LoaderDemo />
         </div>
       ) : questions.length === 0 ? (
-        <p className="text-center mt-4 text-muted-foreground">
+        <p className="text-center mt-4 text-muted-foreground flex justify-center items-center h-[20vh] sm:h-[30vh]">
           No questions found with this tag.
         </p>
-      ) : currentPage > totalPages ? (
-        <p className="text-center mt-4 text-muted-foreground">No more pages</p>
       ) : (
         <div className="grid grid-cols-1 gap-8 w-full">
           <Spotlight

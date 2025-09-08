@@ -1,4 +1,4 @@
-export const subjects = [
+const subjects = [
   "science",
   "math",
   "english",
@@ -9,3 +9,5 @@ export const subjects = [
   "geography",
   "other",
 ];
+
+export default subjects;

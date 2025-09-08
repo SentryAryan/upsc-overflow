@@ -90,7 +90,7 @@ const PopularTagsPage = () => {
           className="text-4xl md:text-5xl font-bold bg-clip-text 
         text-transparent bg-gradient-to-b from-accent-foreground to-foreground text-center"
         >
-          Popular Tags
+          Popular Tags({tagsWithMetrics.length})
         </h1>
       </div>
 
