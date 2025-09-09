@@ -13,19 +13,24 @@ import Like from "@/db/models/like.model";
 export const GET = errorHandler(async (req: NextRequest) => {
   const { userId } = await auth();
 
-  if (!userId) {
+  const profileId = req.nextUrl.searchParams.get("profileId");
+  const idToUse = profileId || userId || "";  
+
+  if (!profileId && !userId) {
+    console.log("Inside the if condition");
     throw generateApiError(401, "Unauthorized", ["Unauthorized"]);
   }
+  console.log("Outside the if condition");
 
   await dbConnect();
 
-  const user = await getClerkUserById(userId);
-  const questions = await Question.find({ asker: userId });
-  const answers = await Answer.find({ answerer: userId });
-  const comments = await Comment.find({ commenter: userId });
-  const upvotes = await Like.countDocuments({ liker: userId, isLiked: true });
+  const user = await getClerkUserById(idToUse);
+  const questions = await Question.find({ asker: idToUse });
+  const answers = await Answer.find({ answerer: idToUse });
+  const comments = await Comment.find({ commenter: idToUse });
+  const upvotes = await Like.countDocuments({ liker: idToUse, isLiked: true });
   const downvotes = await Like.countDocuments({
-    liker: userId,
+    liker: idToUse,
     isLiked: false,
   });
 

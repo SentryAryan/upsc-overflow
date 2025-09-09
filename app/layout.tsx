@@ -7,7 +7,6 @@ import { currentUser } from "@clerk/nextjs/server";
 import "./globals.css";
 import { Footerdemo } from "@/components/ui/footer/footer-section";
 import { ScrollNavigationMenu } from "@/components/ui/navbar/scroll-navigation-menu";
-import { Spotlight } from "../components/ui/spotlight";
 
 const openSans = Open_Sans({
   variable: "--font-sans",
@@ -20,7 +19,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "UPSC Overflow",
+  title: "UPSC Overflow | Aryan Srivastaav",
   description: "A community platform for UPSC aspirants",
 };
 

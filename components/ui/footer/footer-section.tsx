@@ -26,6 +26,7 @@ import {
   Phone,
   MapPin,
   LayoutDashboard,
+  Brain,
 } from "lucide-react";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
@@ -48,11 +49,13 @@ function Footerdemo() {
   const [communityPath, setCommunityPath] = useState<string>("/community");
   const [savedPath, setSavedPath] = useState<string>("/saved");
   const [dashboardPath, setDashboardPath] = useState<string>("/dashboard");
+  const [chatPath, setChatPath] = useState<string>("/chat");
 
   const quickLinks = isSignedIn
     ? [
         { name: "Home", url: homePath, icon: Home },
         { name: "Ask Question", url: "/ask-question", icon: FileQuestion },
+        { name: "Ask AI", url: chatPath, icon: Brain },
         { name: "Popular Tags", url: popularTagsPath, icon: Tag },
         { name: "Popular Subjects", url: popularSubjectsPath, icon: Book },
         { name: "Community", url: communityPath, icon: Users },
@@ -120,8 +123,15 @@ function Footerdemo() {
     }
     if (pathname === "/dashboard") {
       const searchString = searchParams.toString();
-      const fullPath = searchString ? `/dashboard?${searchString}` : "/dashboard";
+      const fullPath = searchString
+        ? `/dashboard?${searchString}`
+        : "/dashboard";
       setDashboardPath(fullPath);
+    }
+    if (pathname === "/chat") {
+      const searchString = searchParams.toString();
+      const fullPath = searchString ? `/chat?${searchString}` : "/chat";
+      setChatPath(fullPath);
     }
   }, [pathname, searchParams]);
 
@@ -157,18 +167,23 @@ function Footerdemo() {
               {quickLinks.map((link) => {
                 const itemPathname = link.url.split("?")[0];
                 const isActive =
-                pathname === itemPathname ||
-                (itemPathname !== "/" && pathname.startsWith(itemPathname));
+                  pathname === itemPathname ||
+                  (itemPathname !== "/" && pathname.startsWith(itemPathname));
                 return (
                   <Link
                     key={link.name}
                     href={link.url}
-                    className={cn("w-max px-4 py-2 rounded-full flex items-center gap-2 text-sm text-foreground hover:text-primary font-semibold hover:bg-muted  transition-all duration-300 hover:scale-105", isActive ? "bg-muted text-primary shadow-md" : "text-foreground")}
+                    className={cn(
+                      "w-max px-4 py-2 rounded-full flex items-center gap-2 text-sm text-foreground hover:text-primary font-semibold hover:bg-muted  transition-all duration-300 hover:scale-105",
+                      isActive
+                        ? "bg-muted text-primary shadow-md"
+                        : "text-foreground"
+                    )}
                   >
                     <link.icon className="h-4 w-4" />
                     {link.name}
                   </Link>
-                )
+                );
               })}
             </nav>
           </div>

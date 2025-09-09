@@ -124,6 +124,10 @@ const UserCard = ({
     setMousePosition({ x: 0, y: 0 });
   };
 
+  const handleMouseDown = () => {
+    router.push(`/profile/${userWithMetrics.user.id}`);
+  };
+
   const cardStyle = {
     transform: isHovered
       ? `perspective(1000px) rotateX(${mousePosition.y}deg) rotateY(${mousePosition.x}deg) translateZ(10px)`
@@ -139,6 +143,7 @@ const UserCard = ({
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      onMouseDown={handleMouseDown}
     >
       {/* Card Title and User */}
       <div className="flex items-center justify-between relative">
