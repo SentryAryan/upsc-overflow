@@ -28,6 +28,7 @@ export default function Chat() {
   const { messages, sendMessage, stop, status } = useChat();
   console.log(status);
   console.log(messages);
+  // console.log(user);
 
   // scrolling refs/state
   const containerRef = useRef<HTMLDivElement | null>(null);
