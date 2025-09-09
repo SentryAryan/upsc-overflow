@@ -16,6 +16,7 @@ import {
   LayoutDashboard,
   LucideIcon,
   Menu,
+  Brain,
   Tag,
   Users,
   X,
@@ -55,7 +56,7 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
   const [communityPath, setCommunityPath] = useState<string>("/community");
   const [savedPath, setSavedPath] = useState<string>("/saved");
   const [dashboardPath, setDashboardPath] = useState<string>("/dashboard");
-
+  const [chatPath, setChatPath] = useState<string>("/chat");
   const menuItems: MenuItem[] = isSignedIn
     ? [
         {
@@ -69,6 +70,12 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
           title: "Ask Question",
           url: "/ask-question",
           icon: FileQuestion,
+        },
+        {
+          id: 8,
+          title: "Ask AI",
+          url: chatPath,
+          icon: Brain,
         },
         {
           id: 3,
@@ -163,8 +170,15 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
     }
     if (pathname === "/dashboard") {
       const searchString = searchParams.toString();
-      const fullPath = searchString ? `/dashboard?${searchString}` : "/dashboard";
+      const fullPath = searchString
+        ? `/dashboard?${searchString}`
+        : "/dashboard";
       setDashboardPath(fullPath);
+    }
+    if (pathname === "/chat") {
+      const searchString = searchParams.toString();
+      const fullPath = searchString ? `/chat?${searchString}` : "/chat";
+      setChatPath(fullPath);
     }
   }, [pathname, searchParams]);
 
@@ -257,9 +271,9 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
             </motion.div>
 
             {/* Desktop Menu */}
-            <div className="hidden lg:block">
+            <div className="hidden xl:block">
               <div className="ml-10 flex items-baseline space-x-4">
-                {menuItems.map((item) => {
+                {menuItems.slice(0, 7).map((item) => {
                   const itemPathname = item.url.split("?")[0];
                   const isActive =
                     pathname === itemPathname ||
@@ -297,19 +311,33 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
                     </motion.div>
                   );
                 })}
+
+                {/* Setting/Profile*/}
                 <MenuDemo2 />
+
+                {/* menu button for other menus if menus are more than 7*/}
+                <div className="cursor-pointer">
+                  <motion.button
+                    onClick={toggleMenu}
+                    className="p-2 rounded-md text-foreground hover:text-primary focus:outline-none"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                  >
+                    <Menu className="w-6 h-6 cursor-pointer" />
+                  </motion.button>
+                </div>
               </div>
             </div>
 
             {/* Mobile menu button */}
-            <div className="lg:hidden">
+            <div className="xl:hidden cursor-pointer">
               <motion.button
                 onClick={toggleMenu}
                 className="p-2 rounded-md text-foreground hover:text-primary focus:outline-none"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >
-                <Menu className="w-6 h-6" />
+                <Menu className="w-6 h-6 cursor-pointer" />
               </motion.button>
             </div>
           </div>
@@ -359,7 +387,7 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
               exit="closed"
               className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50"
             >
-              <div className="relative bg-background border border-border rounded-3xl p-8 shadow-2xl min-w-[300px]">
+              <div className="relative bg-background border border-border rounded-3xl p-8 px-6 pt-16 shadow-2xl min-w-[300px] sm:min-w-[700px] w-full">
                 {/* Close Button */}
                 <motion.button
                   onClick={toggleMenu}
@@ -370,9 +398,11 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
                   <X className="w-5 h-5" />
                 </motion.button>
 
+                {/* Setting/Profile*/}
+                <MenuDemo2 />
+                
                 {/* Menu Items */}
-                <div className="space-y-4 mt-8">
-                  <MenuDemo2 />
+                <div className="space-y-4 mt-8 grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-0 sm:gap-x-14 max-h-[450px] overflow-y-scroll sm:max-h-none p-2 sm:p-0 sm:overflow-hidden">
                   {menuItems.map((item, index) => {
                     const itemPathname = item.url.split("?")[0];
                     const isActive =
@@ -390,7 +420,7 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
                           href={item.url}
                           onClick={toggleMenu}
                           className={cn(
-                            "flex items-center space-x-4 p-4 rounded-xl hover:bg-muted transition-colors group",
+                            "sm:max-w-[280px] flex items-center space-x-4 p-4 rounded-xl hover:bg-muted transition-colors group",
                             isActive
                               ? "bg-muted text-primary shadow-md font-[900]"
                               : "text-foreground"
