@@ -86,7 +86,7 @@ export function AskQuestionFormTA({
   setIsLoading: (isLoading: boolean) => void;
 }) {
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema) as any,
     defaultValues: {
       title: "",
       description: "",

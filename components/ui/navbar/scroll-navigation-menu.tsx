@@ -72,40 +72,40 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
           icon: FileQuestion,
         },
         {
-          id: 8,
+          id: 3,
           title: "Ask AI",
           url: chatPath,
           icon: Brain,
         },
         {
-          id: 3,
-          title: "Popular Tags",
-          url: popularTagsPath,
-          icon: Tag,
-        },
-        {
           id: 4,
-          title: "Popular Subjects",
-          url: popularSubjectsPath,
-          icon: Book,
+          title: "Dashboard",
+          url: dashboardPath,
+          icon: LayoutDashboard,
         },
         {
           id: 5,
-          title: "Community",
-          url: communityPath,
-          icon: Users,
-        },
-        {
-          id: 6,
           title: "Saved",
           url: savedPath,
           icon: Bookmark,
         },
         {
+          id: 6,
+          title: "Popular Tags",
+          url: popularTagsPath,
+          icon: Tag,
+        },
+        {
           id: 7,
-          title: "Dashboard",
-          url: dashboardPath,
-          icon: LayoutDashboard,
+          title: "Popular Subjects",
+          url: popularSubjectsPath,
+          icon: Book,
+        },
+        {
+          id: 8,
+          title: "Community",
+          url: communityPath,
+          icon: Users,
         },
       ]
     : [
@@ -252,10 +252,10 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
           opacity: isScrolled ? 0 : 1,
         }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
-        className={`fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border rounded-b-4xl ${className}`}
+        className={`fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border rounded-b-4xl flex justify-center container ${className}`}
       >
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+        <div className="container flex justify-center px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16 w-full">
             {/* Logo */}
             <motion.div
               className="flex-shrink-0"
@@ -329,16 +329,25 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
               </div>
             </div>
 
-            {/* Mobile menu button */}
-            <div className="xl:hidden cursor-pointer">
-              <motion.button
-                onClick={toggleMenu}
-                className="p-2 rounded-md text-foreground hover:text-primary focus:outline-none"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                <Menu className="w-6 h-6 cursor-pointer" />
-              </motion.button>
+            {/* Mobile Menu */}
+            <div className="flex items-center gap-2">
+              {/* Setting/Profile for mobile */}
+              <div className="xl:hidden cursor-pointer">
+                {/* Setting/Profile*/}
+                <MenuDemo2 />
+              </div>
+
+              {/* Mobile menu button */}
+              <div className="xl:hidden cursor-pointer">
+                <motion.button
+                  onClick={toggleMenu}
+                  className="p-2 rounded-md text-foreground hover:text-primary focus:outline-none"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <Menu className="w-6 h-6 cursor-pointer" />
+                </motion.button>
+              </div>
             </div>
           </div>
         </div>
@@ -400,7 +409,7 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
 
                 {/* Setting/Profile*/}
                 <MenuDemo2 />
-                
+
                 {/* Menu Items */}
                 <div className="space-y-4 mt-8 grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-0 sm:gap-x-14 max-h-[450px] overflow-y-scroll sm:max-h-none p-2 sm:p-0 sm:overflow-hidden">
                   {menuItems.map((item, index) => {

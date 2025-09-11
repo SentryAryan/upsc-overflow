@@ -56,11 +56,11 @@ function Footerdemo() {
         { name: "Home", url: homePath, icon: Home },
         { name: "Ask Question", url: "/ask-question", icon: FileQuestion },
         { name: "Ask AI", url: chatPath, icon: Brain },
+        { name: "Dashboard", url: dashboardPath, icon: LayoutDashboard },
+        { name: "Saved", url: savedPath, icon: Bookmark },
         { name: "Popular Tags", url: popularTagsPath, icon: Tag },
         { name: "Popular Subjects", url: popularSubjectsPath, icon: Book },
         { name: "Community", url: communityPath, icon: Users },
-        { name: "Saved", url: savedPath, icon: Bookmark },
-        { name: "Dashboard", url: dashboardPath, icon: LayoutDashboard },
       ]
     : [
         { name: "Home", url: homePath, icon: Home },
