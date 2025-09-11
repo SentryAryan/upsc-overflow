@@ -39,7 +39,7 @@ export default function MenuDemo2() {
               className="cursor-pointer rounded-full p-4 flex items-center justify-center gap-2 w-full border-3! border-primary! shadow-none! font-[900]! hover:text-primary!"
             >
               <Settings className="h-4 w-4 font-[900]" />
-              <p className="text-md">Settings/Profile</p>
+              <p className="text-md hidden xl:block">Settings/Profile</p>
             </FloatingActionPanelTrigger>
           </div>
 
