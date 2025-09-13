@@ -9,7 +9,7 @@ import { Spotlight } from "@/components/ui/spotlight";
 import { Textarea } from "@/components/ui/textarea";
 import { ChatTypeSchema } from "@/db/models/chat.model";
 import { cn } from "@/lib/utils";
-import { useChat } from "@ai-sdk/react";
+import { UIMessage, useChat } from "@ai-sdk/react";
 import { useUser } from "@clerk/nextjs";
 import axios from "axios";
 import { motion } from "framer-motion";
@@ -17,7 +17,9 @@ import {
   ArrowDown,
   Ban,
   Brain,
+  ChevronUp,
   Check,
+  ChevronDown,
   Copy,
   MessageCircleMore,
   Plus,
@@ -30,7 +32,8 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { ChatTabTypeSchema } from "../../db/models/chatTab.model";
 
-type UseChatReturn = ReturnType<typeof useChat>;
+export type UseChatReturn = ReturnType<typeof useChat>;
+export type UseChatStatus = UseChatReturn["status"];
 
 type ChatProps = {
   selectedChatTab: ChatTabTypeSchema | null;
@@ -45,7 +48,14 @@ type ChatProps = {
   setMessages: UseChatReturn["setMessages"];
   error: UseChatReturn["error"];
   chatTabs: ChatTabTypeSchema[];
+  handleNewChatCreate: () => Promise<void>;
+  chatTabsLoading: boolean;
 };
+
+interface MessageWithAiModel {
+  message: UIMessage;
+  ai_model: string;
+}
 
 const suggestions = [
   "How does AI work?",
@@ -62,6 +72,10 @@ export const models = [
   {
     name: "DeepSeek: DeepSeek V3.1 (free)",
     value: "deepseek/deepseek-chat-v3.1:free",
+  },
+  {
+    name: "Google: Gemini 2.0 Flash Experimental (free)",
+    value: "google/gemini-2.0-flash-exp:free",
   },
   {
     name: "Sonoma Dusk Alpha",
@@ -98,9 +112,11 @@ export default function ChatPage() {
   const [selectedChatTab, setSelectedChatTab] =
     useState<ChatTabTypeSchema | null>(null);
   const { messages, sendMessage, stop, status, setMessages, error } = useChat();
+  const [chatTabsLoading, setChatTabsLoading] = useState<boolean>(true);
 
   const fetchChatTabs = async () => {
     try {
+      setChatTabsLoading(true);
       const response = await axios.get("/api/chat/getAllTabs");
       setChatTabs(response.data.data);
       setSelectedChatTab(response.data.data[0]);
@@ -113,11 +129,14 @@ export default function ChatPage() {
         setChatTabs(response.data.data);
         setSelectedChatTab(response.data.data[0]);
       }
+    } finally {
+      setChatTabsLoading(false);
     }
   };
 
   const handleNewChatCreate = async () => {
     try {
+      setChatTabsLoading(true);
       const response = await axios.post("/api/chat/createChatTab", {
         name: "New Chat Tab",
       });
@@ -125,12 +144,20 @@ export default function ChatPage() {
       setSelectedChatTab(response.data.data[response.data.data.length - 1]);
     } catch (error: any) {
       console.log(error.response.data.message);
+    } finally {
+      setChatTabsLoading(false);
     }
   };
 
   useEffect(() => {
     fetchChatTabs();
   }, []);
+
+  useEffect(() => {
+    if(error) {
+      toast.error("Error fetching chat tabs");
+    }
+  }, [error]);
 
   return (
     <div className="w-full flex flex-col gap-6 items-center justify-center">
@@ -156,7 +183,11 @@ export default function ChatPage() {
             <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden gap-4">
               {open ? <Logo /> : <LogoIcon />}
               {open ? (
-                <Button onClick={handleNewChatCreate} variant="outline">
+                <Button
+                  onClick={handleNewChatCreate}
+                  variant="outline"
+                  disabled={status === "streaming" || status === "submitted"}
+                >
                   <Plus className="w-5 h-5" /> New Chat
                 </Button>
               ) : (
@@ -167,7 +198,10 @@ export default function ChatPage() {
               {chatTabs.length > 0 && (
                 <div className="mt-8 flex flex-col gap-4 h-full!">
                   {chatTabs.map((chatTab: ChatTabTypeSchema, index: number) => {
-                    const name = chatTab.name.length > 15 ? `${chatTab.name.slice(0, 15)}...` : chatTab.name;
+                    const name =
+                      chatTab.name.length > 15
+                        ? `${chatTab.name.slice(0, 15)}...`
+                        : chatTab.name;
                     return open ? (
                       <div
                         key={chatTab?._id?.toString() as string}
@@ -176,7 +210,9 @@ export default function ChatPage() {
                         <span
                           key={chatTab?._id?.toString() as string}
                           onClick={() => {
-                            setSelectedChatTab(chatTab);
+                            if (status === "ready") {
+                              setSelectedChatTab(chatTab);
+                            }
                           }}
                           className={cn(
                             "w-[95%] py-2 px-4 flex justify-start items-center gap-2 rounded-full! hover:bg-muted hover:text-primary cursor-pointer transition-all ease-in-out duration-300 hover:scale-105 border-2 border-border",
@@ -202,6 +238,11 @@ export default function ChatPage() {
                       </span>
                     );
                   })}
+                </div>
+              )}
+              {chatTabsLoading && (
+                <div className="w-full flex flex-col items-center justify-center py-4">
+                  <PulsatingLoader />
                 </div>
               )}
             </div>
@@ -235,6 +276,8 @@ export default function ChatPage() {
           setMessages={setMessages}
           error={error}
           chatTabs={chatTabs}
+          handleNewChatCreate={handleNewChatCreate}
+          chatTabsLoading={chatTabsLoading}
         />
       </div>
     </div>
@@ -255,10 +298,14 @@ function Chat({
   setMessages,
   error,
   chatTabs,
+  handleNewChatCreate,
+  chatTabsLoading,
 }: ChatProps) {
   const { user } = useUser();
   const [input, setInput] = useState("");
   const [selectedModel, setSelectedModel] = useState(models[0].value);
+  const [reasoningOpened, setReasoningOpened] = useState<String[]>([]);
+  const [reasoning, setReasoning] = useState<boolean>(false);
   console.log("error =", error);
   console.log("status =", status);
   console.log("messages =", messages);
@@ -274,6 +321,7 @@ function Chat({
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [initialRender, setInitialRender] = useState<boolean>(true);
   const [isMessagesLoading, setIsMessagesLoading] = useState<boolean>(true);
+  const [chats, setChats] = useState<MessageWithAiModel[]>([]);
   console.log("initialRender =", initialRender);
   console.log("selectedModel =", selectedModel);
 
@@ -282,8 +330,10 @@ function Chat({
     parts: Array<{ type: string; text?: string }>
   ) => {
     const text = parts
-      .filter((p) => p && p.type === "text" && typeof p.text === "string")
-      .map((p) => p.text as string)
+      .filter(
+        (part) => part && part.type === "text" && typeof part.text === "string"
+      )
+      .map((part) => part.text as string)
       .join("\n");
     try {
       await navigator.clipboard.writeText(text);
@@ -358,7 +408,10 @@ function Chat({
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (input.trim() && status === "ready") {
-      sendMessage({ text: input }, { body: { model: selectedModel } });
+      sendMessage(
+        { text: input },
+        { body: { model: selectedModel, reasoning } }
+      );
       setInput("");
       // schedule a short scroll to the last attached message after DOM updates
       window.setTimeout(() => scrollToBottom(true), 40);
@@ -393,14 +446,32 @@ function Chat({
   const handleStoreChat = async () => {
     try {
       console.log("inside handleStoreChat");
-      if (status === "ready") {
+      if (status === "streaming" && messages.length % 2 === 0) {
+        setChats((curr) => [
+          ...curr,
+          {
+            message: messages[messages.length - 2],
+            ai_model: selectedModel,
+          },
+        ]);
+        setChats((curr) => [
+          ...curr,
+          {
+            message: messages[messages.length - 1],
+            ai_model: selectedModel,
+          },
+        ]);
+      }
+      if (status === "ready" && messages.length % 2 === 0 && !initialRender) {
         await axios.post("/api/chat/storeChat", {
           chatTab: selectedChatTab?._id?.toString() as string,
           message: messages[messages.length - 2],
+          ai_model: selectedModel,
         });
         await axios.post("/api/chat/storeChat", {
           chatTab: selectedChatTab?._id?.toString() as string,
           message: messages[messages.length - 1],
+          ai_model: selectedModel,
         });
         const name = messages[0].parts.filter((part) => part.type === "text")[0]
           .text;
@@ -434,6 +505,12 @@ function Chat({
       setMessages(
         response.data.data.map((chat: ChatTypeSchema) => chat.message)
       );
+      setChats(
+        response.data.data.map((chat: ChatTypeSchema) => ({
+          message: chat.message,
+          ai_model: chat.ai_model,
+        }))
+      );
       console.log(
         response.data.data.map((chat: ChatTypeSchema) => chat.message)
       );
@@ -450,7 +527,9 @@ function Chat({
   }, [status]);
 
   useEffect(() => {
-    handleGetCurrentMessagesByChatTabId();
+    if (!initialRender) {
+      handleGetCurrentMessagesByChatTabId();
+    }
     setInitialRender(false);
   }, [selectedChatTab]);
 
@@ -468,8 +547,8 @@ function Chat({
       >
         {/* Messages */}
         {!isMessagesLoading ? (
-        <div
-          ref={containerRef}
+          <div
+            ref={containerRef}
             className={`w-full flex flex-col gap-3 scroll-smooth`}
           >
             {/* Suggestions */}
@@ -513,79 +592,145 @@ function Chat({
             )}
 
             {/* Messages */}
-          {messages.map((message, i) => (
-            <div
-              key={message.id}
-              ref={i === messages.length - 1 ? lastMsgRef : undefined}
-              className={`whitespace-pre-wrap p-3 rounded-md border-mode ${
-                message.role === "user" ? "bg-primary/5" : "bg-background"
-              }`}
-            >
-              {/* Message Header */}
-              <section className="flex items-center gap-2">
-                {message.role === "user" ? (
-                    user?.imageUrl ? (
-                  <Image
-                        src={user?.imageUrl}
-                    alt="User"
-                    width={24}
-                    height={24}
-                    className="rounded-full"
-                  />
+            {messages.map((message, i) => {
+              const isReasoningAvailable =
+                message.parts.filter((part) => part.type === "reasoning")
+                  .length > 0 &&
+                message.parts
+                  .filter((part) => part.type === "reasoning")[0]
+                  .text.trim() !== "";
+              return (
+                <div
+                  key={message.id}
+                  ref={i === messages.length - 1 ? lastMsgRef : undefined}
+                  className={`whitespace-pre-wrap p-3 rounded-md border-mode flex flex-col gap-2 ${
+                    message.role === "user" ? "bg-primary/5" : "bg-background"
+                  }`}
+                >
+                  {/* Message Header */}
+                  <section className="flex items-center gap-2">
+                    {message.role === "user" ? (
+                      user?.imageUrl ? (
+                        <Image
+                          src={user?.imageUrl}
+                          alt="User"
+                          width={24}
+                          height={24}
+                          className="rounded-full"
+                        />
+                      ) : (
+                        <User />
+                      )
                     ) : (
-                      <User />
-                    )
-                ) : (
-                  <Brain />
-                )}
-                <span className="text-sm font-[900] text-muted-foreground mr-2">
-                  {message.role === "user"
-                    ? `${user?.fullName || "User"}`
-                    : "AI"}
-                  :
-                </span>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      copyMessageToClipboard(message.id, message.parts as any)
-                    }
-                    className={`ml-auto inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs text-muted-foreground  cursor-pointer font-[900]! ${
-                      copiedId === message.id
-                        ? "text-green-500 hover:bg-green-500/20"
-                        : "hover:bg-muted"
-                    } transition-all ease-in-out duration-300 hover:scale-105`}
-                    title="Copy message"
-                  >
-                    {copiedId === message.id ? (
-                      <>
-                        <Check className="w-3 h-3 text-green-500" />
-                        <span className="text-green-500">Copied</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-3 h-3" />
-                        <span>Copy</span>
-                      </>
+                      <Brain />
                     )}
-                  </button>
-              </section>
+                    <span className="text-lg font-[900] text-primary mr-2">
+                      {message.role === "user"
+                        ? `${user?.fullName || "User"}`
+                        : `${
+                            chats.find((chat) => chat.message.id === message.id)
+                              ?.ai_model || "AI"
+                          }`}
+                      :
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        copyMessageToClipboard(message.id, message.parts as any)
+                      }
+                      className={`ml-auto inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs text-muted-foreground  cursor-pointer font-[900]! ${
+                        copiedId === message.id
+                          ? "text-green-500 hover:bg-green-500/20"
+                          : "hover:bg-muted"
+                      } transition-all ease-in-out duration-300 hover:scale-105`}
+                      title="Copy message"
+                    >
+                      {copiedId === message.id ? (
+                        <>
+                          <Check className="w-3 h-3 text-green-500" />
+                          <span className="text-green-500">Copied</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-3 h-3" />
+                          <span>Copy</span>
+                        </>
+                      )}
+                    </button>
+                  </section>
 
-                {/* Message Parts(Text) */}
-                {message.parts
-                  .filter((part) => part.type === "text")
-                  .map((part, i) => {
-                    return (
-                      <div
-                        key={`${message.id}-${i}`}
-                        className="mt-1 leading-relaxed"
-                      >
-                        {part.text}
-                      </div>
-                    );
-              })}
-            </div>
-          ))}
-        </div>
+                  {/* Message Parts(Reasoning) */}
+                  {isReasoningAvailable && (
+                    <div className="w-full flex flex-col gap-2 text-muted-foreground mt-2">
+                      <span className="text-sm font-bold flex justify-start items-center gap-2">
+                        <Brain className="w-4 h-4" />
+                        <p>
+                          {message.parts.filter(
+                            (part) => part.type === "reasoning"
+                          )[0].state === "streaming"
+                            ? "Thinking..."
+                            : "Thinking Completed"}
+                        </p>
+                        <Button
+                          variant="outline"
+                          className="w-6 h-6"
+                          size="icon"
+                          onClick={() => {
+                            if (reasoningOpened.includes(message.id)) {
+                              setReasoningOpened(
+                                reasoningOpened.filter(
+                                  (id) => id !== message.id
+                                )
+                              );
+                            } else {
+                              setReasoningOpened([
+                                ...reasoningOpened,
+                                message.id,
+                              ]);
+                            }
+                          }}
+                        >
+                          {reasoningOpened.includes(message.id) ? (
+                            <ChevronUp className="w-4 h-4" />
+                          ) : (
+                            <ChevronDown className="w-4 h-4" />
+                          )}
+                        </Button>
+                      </span>
+
+                      {reasoningOpened.includes(message.id) &&
+                        message.parts
+                          .filter((part) => part.type === "reasoning")
+                          .map((part, i) => {
+                            return (
+                              <div
+                                key={`${message.id}-${i}`}
+                                className="mt-1 leading-relaxed"
+                              >
+                                {part.text}
+                              </div>
+                            );
+                          })}
+                    </div>
+                  )}
+
+                  {/* Message Parts(Text) */}
+                  {message.parts
+                    .filter((part) => part.type === "text")
+                    .map((part, i) => {
+                      return (
+                        <div
+                          key={`${message.id}-${i}`}
+                          className="leading-relaxed"
+                        >
+                          {part.text}
+                        </div>
+                      );
+                    })}
+                </div>
+              );
+            })}
+          </div>
         ) : (
           <div className="w-full flex flex-col items-center justify-center py-4">
             <PulsatingLoader />
@@ -604,7 +749,7 @@ function Chat({
       <div className="mt-6 fixed bottom-1 left-0 right-0 flex justify-center items-center w-screen px-6 md:px-10">
         <form
           onSubmit={handleSubmit}
-          className="container relative w-full flex flex-col justify-center items-center h-full bg-background rounded-xl shadow-lg border-2 border-border max-w-4xl"
+          className="container relative w-full flex flex-col justify-center items-center h-full bg-background rounded-xl shadow-lg border-2 border-border max-w-5xl"
         >
           {/* <Input
             className="p-6 rounded-xl bg-background! border-mode card-shadow-no-hover font-md container! w-full! disabled:opacity-100! border-2"
@@ -630,7 +775,7 @@ function Chat({
                 if (input.trim() && status === "ready") {
                   sendMessage(
                     { text: input },
-                    { body: { model: selectedModel } }
+                    { body: { model: selectedModel, reasoning } }
                   );
                   setInput("");
                   window.setTimeout(() => scrollToBottom(true), 40);
@@ -646,11 +791,27 @@ function Chat({
           {/* Show spinner + Stop while waiting/streaming, otherwise Send button */}
           <div className="w-full flex flex-col sm:flex-row justify-end p-2 px-4 gap-4">
             {/* Select Model */}
-            <div className="w-full flex justify-start">
+            <div className="w-full flex flex-col sm:flex-row justify-start gap-2">
               <SelectModelForm
                 selectedModel={selectedModel}
                 setSelectedModel={setSelectedModel}
               />
+              <Button
+                onClick={(e) => {
+                  e.preventDefault();
+                  setReasoning((curr) => !curr);
+                }}
+                type="button"
+                variant="outline"
+                className={cn(
+                  "w-full! sm:w-max! flex! justify-center! items-center! gap-2 px-3 py-1 text-sm rounded-md bg-background! text-foreground hover:scale-105 hover:text-foreground! transition-transform ease-in-out duration-300 cursor-pointer font-[900]! size-9",
+                  reasoning && "bg-muted! text-primary hover:text-primary!",
+                  "sm:w-10 sm:h-10"
+                )}
+              >
+                <Brain className={cn("w-4 h-4", reasoning && "text-primary")} />
+                <p>Think</p>
+              </Button>
             </div>
 
             {/* Send/Stop/Go-to-latest-message Buttons */}
@@ -659,7 +820,10 @@ function Chat({
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => scrollToBottom(true)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToBottom(true);
+                }}
                 className="w-full sm:w-max flex! justify-center! items-center! gap-2 px-3 py-1 text-sm rounded-md bg-background! text-foreground hover:scale-105 transition-transform ease-in-out duration-300 cursor-pointer font-[900]!"
               >
                 Go to latest message{" "}
@@ -671,6 +835,9 @@ function Chat({
                 chatTabs={chatTabs}
                 setSelectedChatTab={setSelectedChatTab}
                 selectedChatTab={selectedChatTab}
+                handleNewChatCreate={handleNewChatCreate}
+                chatTabsLoading={chatTabsLoading}
+                status={status}
               />
 
               {/* Send/Stop button */}
@@ -685,17 +852,17 @@ function Chat({
                   <Ban className="h-6 w-6 text-destructive" />
                   <span className="sr-only">Stop</span>
                 </Button>
-          ) : (
-            <Button
-              type="submit"
-              variant="default"
-              size="icon"
+              ) : (
+                <Button
+                  type="submit"
+                  variant="default"
+                  size="icon"
                   className="w-full sm:w-max rounded-md transition-transform hover:scale-105 p-2"
-            >
+                >
                   <Send className="h-6 w-6" />
-              <span className="sr-only">Send</span>
-            </Button>
-          )}
+                  <span className="sr-only">Send</span>
+                </Button>
+              )}
             </div>
           </div>
         </form>

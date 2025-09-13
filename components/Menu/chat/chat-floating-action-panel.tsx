@@ -106,7 +106,8 @@ const FloatingActionPanelTrigger = React.forwardRef<
   const { openPanel, uniqueId, setTitle } = useFloatingActionPanel();
   const triggerRef = React.useRef<HTMLButtonElement>(null);
 
-  const handleClick = () => {
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
     if (triggerRef.current) {
       openPanel(triggerRef.current.getBoundingClientRect(), mode);
       setTitle(title);
@@ -198,7 +199,7 @@ const FloatingActionPanelContent = React.forwardRef<
             ref={contentRef}
             layoutId={`floating-panel-${uniqueId}-${mode}`}
             className={cn(
-              "absolute z-50 min-w-[200px] w-screen max-w-md overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-lg outline-none dark:border-zinc-800 dark:bg-zinc-950",
+              "absolute z-50 min-w-[200px] w-max sm:w-screen max-w-md overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-lg outline-none dark:border-zinc-800 dark:bg-zinc-950",
               className
             )}
             style={getPosition()}

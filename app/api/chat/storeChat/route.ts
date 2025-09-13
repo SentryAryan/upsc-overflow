@@ -11,11 +11,12 @@ import { z } from "zod";
 const chatSchema = z.object({
   chatTab: z.string().nonempty({ message: "Chat Tab is required" }),
   message: z.custom<UIMessage>(),
+  ai_model: z.string().nonempty({ message: "AI Model is required" }),
 });
 
 export const POST = errorHandler(async (req: NextRequest) => {
   const validatedData = chatSchema.parse(await req.json());
-  let { message, chatTab } = validatedData;
+  let { message, chatTab, ai_model } = validatedData;
 
   if (!mongoose.Types.ObjectId.isValid(chatTab)) {
     throw generateApiError(400, "Invalid chat ID", ["Invalid chat ID"]);
@@ -26,6 +27,7 @@ export const POST = errorHandler(async (req: NextRequest) => {
   const createdChat = await Chat.create({
     chatTab,
     message,
+    ai_model,
   });
 
   return res.json(
