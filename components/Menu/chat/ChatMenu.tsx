@@ -8,22 +8,31 @@ import {
   FloatingActionPanelTextarea,
   FloatingActionPanelTrigger,
 } from "@/components/Menu/chat/chat-floating-action-panel";
-import { MessageCircle, MessageCircleMore } from "lucide-react";
+import { MessageCircle, MessageCircleMore, Plus } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../lib/redux/store";
 import { ChatTabTypeSchema } from "@/db/models/chatTab.model";
 import { cn } from "../../../lib/utils";
+import { Button } from "../../ui/button";
+import PulsatingLoader from "../../Loaders/PulsatingLoader";
+import { UseChatStatus } from "../../../app/chat/page";
 
 export default function ChatMenu({
   chatTabs,
   setSelectedChatTab,
   selectedChatTab,
+  handleNewChatCreate,
+  chatTabsLoading,
+  status,
 }: {
   chatTabs: ChatTabTypeSchema[];
   setSelectedChatTab: React.Dispatch<
     React.SetStateAction<ChatTabTypeSchema | null>
   >;
   selectedChatTab: ChatTabTypeSchema | null;
+  handleNewChatCreate: () => Promise<void>;
+  chatTabsLoading: boolean;
+  status: UseChatStatus;
 }) {
   const handleNoteSubmit = (note: string) => {
     console.log("Submitted note:", note);
@@ -48,6 +57,17 @@ export default function ChatMenu({
           <FloatingActionPanelContent>
             {mode === "actions" ? (
               <div className="flex flex-col justify-center items-center gap-6 p-4">
+                {/* New Chat Button */}
+                <Button
+                  onClick={handleNewChatCreate}
+                  disabled={status === "submitted" || status === "streaming"}
+                  variant="outline"
+                  className="w-full hover:scale-105 transition-all ease-in-out duration-300 cursor-pointer font-[900]!"
+                >
+                  <Plus className="w-5 h-5" /> New Chat
+                </Button>
+
+                {/* Chat Tabs */}
                 {chatTabs.map((chatTab) => {
                   const name =
                     chatTab.name.length > 50
@@ -61,7 +81,9 @@ export default function ChatMenu({
                       <span
                         key={chatTab?._id?.toString() as string}
                         onClick={() => {
-                          setSelectedChatTab(chatTab);
+                          if (status === "ready") {
+                            setSelectedChatTab(chatTab);
+                          }
                         }}
                         className={cn(
                           "w-[95%] py-2 px-4 flex justify-start items-center gap-2 rounded-full! hover:bg-muted hover:text-primary cursor-pointer transition-all ease-in-out duration-300 hover:scale-105 border-2 border-border",
@@ -84,6 +106,13 @@ export default function ChatMenu({
                     </div>
                   );
                 })}
+
+                {/* Show loader while waiting for chat tabs to load */}
+                {chatTabsLoading && (
+                  <div className="w-full flex flex-col items-center justify-center py-4">
+                    <PulsatingLoader />
+                  </div>
+                )}
               </div>
             ) : (
               <FloatingActionPanelForm

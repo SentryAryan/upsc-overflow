@@ -4,6 +4,7 @@ import { UIMessage } from "ai";
 export interface ChatTypeSchema extends Document {
   chatTab: mongoose.Types.ObjectId;
   message: UIMessage;
+  ai_model: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -14,6 +15,11 @@ const chatSchema: Schema<ChatTypeSchema> = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: "ChatTab",
+      index: true,
+    },
+    ai_model: {
+      type: String,
+      required: true,
       index: true,
     },
     message: {

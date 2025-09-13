@@ -62,6 +62,9 @@ const commentSchema = z.object({
 });
 
 export const POST = errorHandler(async (req: NextRequest) => {
+  // const { content: testContent } = await req.json();
+  // console.log("This is the test content", testContent);
+
   const validatedData = commentSchema.parse(await req.json());
   const { content, answer, question, commenter } = validatedData;
 

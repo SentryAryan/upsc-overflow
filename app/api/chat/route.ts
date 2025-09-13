@@ -10,14 +10,33 @@ const openrouter = createOpenRouter({
 export const maxDuration = 30;
 
 export async function POST(req: NextRequest) {
-  const { model, messages }: { model: string; messages: UIMessage[] } =
+  const {
+    model,
+    messages,
+    reasoning,
+  }: { model: string; messages: UIMessage[]; reasoning: boolean } =
     await req.json();
+
+  // console.log("messages =", messages);
+  console.log("reasoning =", reasoning);
+  console.log("model =", model);
+
   const modelReceived = openrouter.chat(model);
+  console.log("modelReceived =", modelReceived);
 
   const result = streamText({
     model: modelReceived,
     messages: convertToModelMessages(messages),
+    providerOptions: {
+      openrouter: {
+        reasoning: {
+          enabled: reasoning,
+        },
+      },
+    },
   });
 
-  return result.toUIMessageStreamResponse();
+  return result.toUIMessageStreamResponse({
+    sendReasoning: true,
+  });
 }
