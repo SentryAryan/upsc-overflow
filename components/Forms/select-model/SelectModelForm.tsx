@@ -42,7 +42,7 @@ export function SelectModelForm({
       {/* Applying dark class separately becuase radix portal is used inside SelectContent */}
       <SelectContent
         className={cn(
-          "max-w-[100%] bg-background! font-[900]",
+          "sm:max-w-[100%] max-w-[300px] bg-background! font-[900]",
           isDarkMode ? "dark" : ""
         )}
       >

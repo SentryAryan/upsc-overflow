@@ -1,5 +1,10 @@
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
-import { streamText, UIMessage, convertToModelMessages } from "ai";
+import {
+  smoothStream,
+  streamText,
+  UIMessage,
+  convertToModelMessages,
+} from "ai";
 import { NextRequest } from "next/server";
 
 const openrouter = createOpenRouter({
@@ -34,6 +39,10 @@ export async function POST(req: NextRequest) {
         },
       },
     },
+    experimental_transform: smoothStream({
+      delayInMs: 10, // optional: defaults to 10ms
+      chunking: "word", // optional: defaults to 'word'
+    }),
   });
 
   return result.toUIMessageStreamResponse({

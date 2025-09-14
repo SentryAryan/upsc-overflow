@@ -34,10 +34,10 @@ export default async function RootLayout({
     <ReduxProvider>
       <html lang="en">
         <body
-          className={`${openSans.variable} ${jetbrainsMono.variable} font-mono antialiased w-screen min-h-screen overflow-x-hidden relative`}
+          className={`${openSans.variable} ${jetbrainsMono.variable} font-mono antialiased w-screen min-h-screen overflow-x-hidden relative always-show-scrollbar`}
         >
           <ThemeWrapper>
-            <main className="container mx-auto flex-1 flex flex-col items-center justify-center overflow-x-hidden pt-12 min-[640px]:pt-26">
+            <main className="container mx-auto flex-1 flex flex-col items-center justify-center overflow-x-hidden pt-12 min-[640px]:pt-26 always-show-scrollbar">
               <ScrollNavigationMenu />
               {children}
               <Footerdemo />

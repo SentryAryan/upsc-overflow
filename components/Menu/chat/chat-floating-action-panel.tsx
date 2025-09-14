@@ -3,6 +3,9 @@
 import { cn } from "@/lib/utils";
 import { AnimatePresence, MotionConfig, motion } from "framer-motion";
 import * as React from "react";
+import { useMediaQuery } from 'react-responsive'
+import { CircleX } from 'lucide-react';
+import { Button } from "../../ui/button";
 
 const TRANSITION = {
   type: "spring" as const,
@@ -144,6 +147,7 @@ const FloatingActionPanelContent = React.forwardRef<
   const { isOpen, closePanel, uniqueId, triggerRect, title, mode } =
     useFloatingActionPanel();
   const contentRef = React.useRef<HTMLDivElement>(null);
+  const isMobile = useMediaQuery({ maxWidth: 320 });
 
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -180,7 +184,7 @@ const FloatingActionPanelContent = React.forwardRef<
     return {
       position: "absolute" as const,
       right: 0,
-      bottom: 50,
+      bottom: isMobile ? -55 : 50,
       transform: `translate3d(${right}px, ${bottom}px, 0)`,
     };
   };
@@ -207,7 +211,12 @@ const FloatingActionPanelContent = React.forwardRef<
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
           >
-            <div className="px-4 py-3 font-medium">{title}</div>
+            <div className="px-4 py-3 font-medium flex justify-between items-center">
+              <p>{title}</p>
+              <Button variant="outline" size="icon" onClick={closePanel} className="cursor-pointer hover:scale-105 transition-all ease-in-out duration-300">
+                <CircleX className="w-8 h-8 cursor-pointer" />
+              </Button>
+            </div>
             {children}
           </motion.div>
         </div>
