@@ -31,6 +31,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { ChatTabTypeSchema } from "../../db/models/chatTab.model";
+import { Response } from "@/components/ai-elements/response";
 
 export type UseChatReturn = ReturnType<typeof useChat>;
 export type UseChatStatus = UseChatReturn["status"];
@@ -72,34 +73,42 @@ export const models = [
   {
     name: "DeepSeek: DeepSeek V3.1 (free)",
     value: "deepseek/deepseek-chat-v3.1:free",
+    isReasoningAvailable: true,
   },
   {
     name: "Google: Gemini 2.0 Flash Experimental (free)",
     value: "google/gemini-2.0-flash-exp:free",
+    isReasoningAvailable: false,
   },
   {
     name: "Sonoma Dusk Alpha",
     value: "openrouter/sonoma-dusk-alpha",
+    isReasoningAvailable: false,
   },
   {
     name: "Sonoma Sky Alpha",
     value: "openrouter/sonoma-sky-alpha",
+    isReasoningAvailable: true,
   },
   {
     name: "NVIDIA: Nemotron Nano 9B V2 (free)",
     value: "nvidia/nemotron-nano-9b-v2:free",
+    isReasoningAvailable: true,
   },
   {
     name: "Qwen: Qwen3 Coder 480B A35B (free)",
     value: "qwen/qwen3-coder:free",
+    isReasoningAvailable: false,
   },
   {
     name: "MoonshotAI: Kimi K2 0711 (free)",
     value: "moonshotai/kimi-k2:free",
+    isReasoningAvailable: false,
   },
   {
     name: "Z.AI: GLM 4.5 Air (free)",
     value: "z-ai/glm-4.5-air:free",
+    isReasoningAvailable: true,
   },
 ];
 
@@ -154,7 +163,7 @@ export default function ChatPage() {
   }, []);
 
   useEffect(() => {
-    if(error) {
+    if (error) {
       toast.error("Error fetching chat tabs");
     }
   }, [error]);
@@ -703,12 +712,12 @@ function Chat({
                           .filter((part) => part.type === "reasoning")
                           .map((part, i) => {
                             return (
-                              <div
+                              <Response
                                 key={`${message.id}-${i}`}
                                 className="mt-1 leading-relaxed"
                               >
                                 {part.text}
-                              </div>
+                              </Response>
                             );
                           })}
                     </div>
@@ -719,12 +728,12 @@ function Chat({
                     .filter((part) => part.type === "text")
                     .map((part, i) => {
                       return (
-                        <div
+                        <Response
                           key={`${message.id}-${i}`}
-                          className="leading-relaxed"
+                          className="leading-relaxed p-2"
                         >
                           {part.text}
-                        </div>
+                        </Response>
                       );
                     })}
                 </div>
