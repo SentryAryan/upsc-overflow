@@ -5,6 +5,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useAuth } from "@clerk/nextjs";
 import { format } from "date-fns";
 import {
   Book,
@@ -38,13 +39,16 @@ interface UserWithMetrics {
 
 const UserCard = ({
   userWithMetrics,
+  isConversation,
 }: {
+  isConversation?: boolean;
   userWithMetrics: UserWithMetrics;
 }) => {
   const router = useRouter();
   const cardRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const { userId } = useAuth();
 
   const fullName =
     `${userWithMetrics.user.firstName ?? ""} ${
@@ -125,7 +129,15 @@ const UserCard = ({
   };
 
   const handleMouseDown = () => {
-    router.push(`/profile/${userWithMetrics.user.id}`);
+    if (isConversation) {
+      const conversationId =
+        userId && userId < userWithMetrics.user.id
+          ? `${userId}::${userWithMetrics.user.id}`
+          : `${userWithMetrics.user.id}::${userId}`;
+      router.push(`/conversation/${encodeURIComponent(conversationId)}`);
+    } else {
+      router.push(`/profile/${encodeURIComponent(userWithMetrics.user.id)}`);
+    }
   };
 
   const cardStyle = {

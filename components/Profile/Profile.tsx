@@ -24,7 +24,7 @@ import {
   Hash,
   MessageCircle,
   MessageSquare,
- TrendingUp,
+  TrendingUp,
   TrendingDown,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -80,7 +80,7 @@ const Profile = ({ profileId }: ProfileProps) => {
   const [data, setData] = useState<UserProfileData | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const apiURL = profileId
-    ? `/api/users/getUserProfile?profileId=${profileId}`
+    ? `/api/users/getUserProfile?profileId=${encodeURIComponent(profileId ?? "")}`
     : `/api/users/getUserProfile`;
 
   // fetch logged in user details
@@ -98,10 +98,10 @@ const Profile = ({ profileId }: ProfileProps) => {
   };
 
   const fullName = useMemo(() => {
-    const first = user?.firstName || data?.user?.firstName || "";
-    const last = user?.lastName || data?.user?.lastName || "";
+    const first = data?.user?.firstName || "";
+    const last = data?.user?.lastName || "";
     return `${first} ${last}`.trim() || "Your Dashboard";
-  }, [user, data]);
+  }, [data]);
 
   // metrics calculation
   const metrics = useMemo(() => {

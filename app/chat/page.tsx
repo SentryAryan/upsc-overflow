@@ -76,6 +76,36 @@ export const models = [
     isReasoningAvailable: true,
   },
   {
+    name: "TNG: DeepSeek R1T2 Chimera (free)",
+    value: "tngtech/deepseek-r1t2-chimera:free",
+    isReasoningAvailable: true,
+  },
+  {
+    name: "Google: Gemini 2.5 Pro",
+    value: "models/gemini-2.5-pro",
+    isReasoningAvailable: true,
+  },
+  {
+    name: "Google: Gemini 2.5 Flash",
+    value: "models/gemini-2.5-flash",
+    isReasoningAvailable: true,
+  },
+  {
+    name: "Google: Gemini 2.5 Flash-Lite",
+    value: "models/gemini-2.5-flash-lite",
+    isReasoningAvailable: false,
+  },
+  {
+    name: "Google: Gemini 2.0 Flash",
+    value: "models/gemini-2.0-flash",
+    isReasoningAvailable: true,
+  },
+  {
+    name: "Google: Gemini 2.0 Flash-Lite",
+    value: "models/gemini-2.0-flash-lite",
+    isReasoningAvailable: true,
+  },
+  {
     name: "Google: Gemini 2.0 Flash Experimental (free)",
     value: "google/gemini-2.0-flash-exp:free",
     isReasoningAvailable: false,

@@ -1,5 +1,4 @@
-import { createOpenRouter } from "@openrouter/ai-sdk-provider";
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import {
   smoothStream,
   streamText,
@@ -8,16 +7,9 @@ import {
 } from "ai";
 import { NextRequest } from "next/server";
 
-const openrouter = createOpenRouter({
-  apiKey: process.env.OPEN_ROUTER_API_KEY,
-});
-
 const google = createGoogleGenerativeAI({
   apiKey: process.env.GOOGLE_API_KEY,
 });
-
-// Allow streaming responses up to 30 seconds
-export const maxDuration = 30;
 
 export async function POST(req: NextRequest) {
   const {
@@ -31,9 +23,7 @@ export async function POST(req: NextRequest) {
   console.log("reasoning =", reasoning);
   console.log("model =", model);
 
-  const modelReceived = model.startsWith("models/")
-    ? google.chat(model)
-    : openrouter.chat(model);
+  const modelReceived = google.chat(model);
   console.log("modelReceived =", modelReceived);
 
   const result = streamText({
@@ -42,19 +32,7 @@ export async function POST(req: NextRequest) {
     system: reasoning
       ? "Do NOT output step-by-step internal reasoning; return a concise final answer."
       : "Do output step-by-step internal reasoning; return a concise final answer.",
-    // maxOutputTokens: 1000,
-    // temperature: 0.3,
-    // maxRetries: 3,
     providerOptions: {
-      openrouter: {
-        reasoning: {
-          enabled: reasoning,
-        },
-        thinkingConfig: {
-          includeThoughts: reasoning,
-          includeThinking: reasoning,
-        },
-      },
       google: {
         reasoning: {
           enabled: reasoning,
@@ -66,7 +44,7 @@ export async function POST(req: NextRequest) {
       },
     },
     experimental_transform: smoothStream({
-      delayInMs: null, // optional: defaults to 10ms
+      delayInMs: 50, // optional: defaults to 10ms
       chunking: "word", // optional: defaults to 'word'
     }),
   });
