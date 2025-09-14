@@ -20,6 +20,7 @@ import {
   Tag,
   Users,
   X,
+  MessageCircle,
 } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
@@ -57,6 +58,9 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
   const [savedPath, setSavedPath] = useState<string>("/saved");
   const [dashboardPath, setDashboardPath] = useState<string>("/dashboard");
   const [chatPath, setChatPath] = useState<string>("/chat");
+  const [conversationPath, setConversationPath] =
+    useState<string>("/conversation");
+
   const menuItems: MenuItem[] = isSignedIn
     ? [
         {
@@ -79,33 +83,39 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
         },
         {
           id: 4,
+          title: "Conversations",
+          url: conversationPath,
+          icon: MessageCircle,
+        },
+        {
+          id: 5,
           title: "Dashboard",
           url: dashboardPath,
           icon: LayoutDashboard,
         },
         {
-          id: 5,
+          id: 6,
           title: "Saved",
           url: savedPath,
           icon: Bookmark,
         },
         {
-          id: 6,
+          id: 7,
+          title: "Community",
+          url: communityPath,
+          icon: Users,
+        },
+        {
+          id: 8,
           title: "Popular Tags",
           url: popularTagsPath,
           icon: Tag,
         },
         {
-          id: 7,
+          id: 9,
           title: "Popular Subjects",
           url: popularSubjectsPath,
           icon: Book,
-        },
-        {
-          id: 8,
-          title: "Community",
-          url: communityPath,
-          icon: Users,
         },
       ]
     : [
@@ -117,21 +127,21 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
         },
         {
           id: 2,
+          title: "Community",
+          url: communityPath,
+          icon: Users,
+        },
+        {
+          id: 3,
           title: "Popular Tags",
           url: popularTagsPath,
           icon: Tag,
         },
         {
-          id: 3,
+          id: 4,
           title: "Popular Subjects",
           url: popularSubjectsPath,
           icon: Book,
-        },
-        {
-          id: 4,
-          title: "Community",
-          url: communityPath,
-          icon: Users,
         },
       ];
 
@@ -179,6 +189,13 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
       const searchString = searchParams.toString();
       const fullPath = searchString ? `/chat?${searchString}` : "/chat";
       setChatPath(fullPath);
+    }
+    if (pathname === "/conversation") {
+      const searchString = searchParams.toString();
+      const fullPath = searchString
+        ? `/conversation?${searchString}`
+        : "/conversation";
+      setConversationPath(fullPath);
     }
   }, [pathname, searchParams]);
 
@@ -252,9 +269,9 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
           opacity: isScrolled ? 0 : 1,
         }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
-        className={`fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border rounded-b-4xl flex justify-center container ${className}`}
+        className={`fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border rounded-b-4xl flex justify-center w-full ${className}`}
       >
-        <div className="container flex justify-center px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-center px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 w-full">
             {/* Logo */}
             <motion.div

@@ -27,6 +27,7 @@ import {
   MapPin,
   LayoutDashboard,
   Brain,
+  MessageCircle,
 } from "lucide-react";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
@@ -50,12 +51,15 @@ function Footerdemo() {
   const [savedPath, setSavedPath] = useState<string>("/saved");
   const [dashboardPath, setDashboardPath] = useState<string>("/dashboard");
   const [chatPath, setChatPath] = useState<string>("/chat");
+  const [conversationPath, setConversationPath] =
+    useState<string>("/conversation");
 
   const quickLinks = isSignedIn
     ? [
         { name: "Home", url: homePath, icon: Home },
         { name: "Ask Question", url: "/ask-question", icon: FileQuestion },
         { name: "Ask AI", url: chatPath, icon: Brain },
+        { name: "Conversations", url: conversationPath, icon: MessageCircle },
         { name: "Dashboard", url: dashboardPath, icon: LayoutDashboard },
         { name: "Saved", url: savedPath, icon: Bookmark },
         { name: "Popular Tags", url: popularTagsPath, icon: Tag },
@@ -132,6 +136,13 @@ function Footerdemo() {
       const searchString = searchParams.toString();
       const fullPath = searchString ? `/chat?${searchString}` : "/chat";
       setChatPath(fullPath);
+    }
+    if (pathname === "/conversation") {
+      const searchString = searchParams.toString();
+      const fullPath = searchString
+        ? `/conversation?${searchString}`
+        : "/conversation";
+      setConversationPath(fullPath);
     }
   }, [pathname, searchParams]);
 
