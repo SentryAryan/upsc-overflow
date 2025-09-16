@@ -58,14 +58,27 @@ export function SelectModelForm({
               key={model.value}
               value={model.value}
               className={cn(
-                "cursor-pointer hover:scale-105 transition-all duration-300 ease-in-out font-[900]",
+                "cursor-pointer hover:scale-105 transition-all duration-300 ease-in-out font-[900] text-foreground!",
                 isDarkMode ? "dark" : "",
                 selectedModel === model.value
-                  ? "bg-muted shadow-lg text-primary hover:bg-muted!"
+                  ? "bg-muted shadow-lg text-primary! hover:bg-muted!"
                   : ""
               )}
             >
-              {model.name}
+              <model.icon
+                className={cn(
+                  "w-4 h-4",
+                  selectedModel === model.value ? "text-primary!" : "text-foreground"
+                )}
+              />
+              <span
+                className={cn(
+                  "flex items-center gap-2",
+                  selectedModel === model.value ? "text-primary!" : "text-foreground"
+                )}
+              >
+                {model.name}
+              </span>
             </SelectItem>
           ))}
         </SelectGroup>

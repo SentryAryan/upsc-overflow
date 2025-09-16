@@ -17,6 +17,8 @@ import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Spotlight } from "../ui/spotlight";
+import { MessageWithReactions } from "@/components/ui/reaction-chip";
+import { Reaction } from "@/convex/schema";
 
 interface UserType {
   id: string;
@@ -200,6 +202,12 @@ const Chat = ({
       if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
     };
   }, [messages, autoScroll]);
+
+  // Ensure we start at the bottom on first mount
+  useEffect(() => {
+    scrollToBottom(false);
+  }, []);
+
   return (
     <div className="container mx-auto flex flex-col items-center w-full px-4 gap-8 pt-12 md:pt-4 scroll-smooth">
       {/* Spotlight */}
@@ -301,7 +309,7 @@ const Chat = ({
               <div
                 key={message._id}
                 ref={i === messages.length - 1 ? lastMsgRef : undefined}
-                className={`whitespace-pre-wrap p-3 rounded-md border-mode flex flex-col gap-2 ${
+                className={`whitespace-pre-wrap p-3 rounded-md border-mode flex flex-col gap-2 group relative ${
                   message.sender.id === user?.id
                     ? "bg-primary/5 ml-auto"
                     : "bg-background mr-auto"
@@ -352,12 +360,18 @@ const Chat = ({
                   </button>
                 </section>
 
-                {/* Message Content */}
-                <span className="text-sm md:text-base">{message.content}</span>
+                {/* Message Content with Reactions */}
+                <MessageWithReactions text={message.content} messageId={message._id} isMessageByLoggedInUser={message.sender.id === user?.id} />
               </div>
             );
           })}
+
+          {/* Bottom sentinel to ensure reliable scroll-to-bottom */}
+          {/* <div ref={bottomRef} className="h-1" /> */}
         </div>
+
+        {/* Bottom sentinel to ensure reliable scroll-to-bottom
+        <div ref={bottomRef} className="h-1" /> */}
       </div>
 
       {/* Chat Composer Input and Send Button */}
@@ -424,7 +438,7 @@ const Chat = ({
               type="submit"
               variant="outline"
               size="icon"
-              className="w-max flex justify-center items-center rounded-full transition-transform hover:scale-105 p-2 gap-2"
+              className="w-max flex justify-center items-center rounded-full transition-transform hover:scale-105 p-2 gap-2 font-[900]!"
             >
               <Send className="h-8 w-8" />
               <span>Send</span>
