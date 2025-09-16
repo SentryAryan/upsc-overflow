@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { paginationOptsValidator } from "convex/server";
+import { Reaction } from "./schema";
 
 export const sendMessage = mutation({
   args: {
@@ -76,5 +77,91 @@ export const getConversationMessages = query({
       )
       .order("desc")
       .paginate(args.paginationOpts);
+  },
+});
+
+export const reactToMessage = mutation({
+  args: {
+    messageId: v.id("messages"),
+    reaction: v.union(
+      v.literal(Reaction.LIKE),
+      v.literal(Reaction.LOVE),
+      v.literal(Reaction.PARTY),
+      v.literal(Reaction.LAUGH),
+      v.literal(Reaction.WOW),
+      v.literal(Reaction.SAD),
+      v.literal(Reaction.ANGRY),
+      v.literal(Reaction.SCARED),
+      v.literal(Reaction.SURPRISED),
+      v.literal(Reaction.CONFUSED),
+      v.literal(Reaction.DISLIKE),
+      v.literal(Reaction.BORED),
+      v.literal(Reaction.TIRED),
+      v.literal(Reaction.EXCITED),
+      v.literal(Reaction.HUNDRED)
+    ),
+    liker: v.object({
+      id: v.string(),
+      firstName: v.string(),
+      lastName: v.string(),
+      fullName: v.string(),
+      imageUrl: v.string(),
+    }),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.insert("reactions", {
+      messageId: args.messageId,
+      liker: args.liker,
+      reaction: args.reaction,
+    });
+  },
+});
+
+export const toggleReaction = mutation({
+  args: {
+    reactionId: v.id("reactions"),
+    reaction: v.union(
+      v.literal(Reaction.LIKE),
+      v.literal(Reaction.LOVE),
+      v.literal(Reaction.PARTY),
+      v.literal(Reaction.LAUGH),
+      v.literal(Reaction.WOW),
+      v.literal(Reaction.SAD),
+      v.literal(Reaction.ANGRY),
+      v.literal(Reaction.SCARED),
+      v.literal(Reaction.SURPRISED),
+      v.literal(Reaction.CONFUSED),
+      v.literal(Reaction.DISLIKE),
+      v.literal(Reaction.BORED),
+      v.literal(Reaction.TIRED),
+      v.literal(Reaction.EXCITED),
+      v.literal(Reaction.HUNDRED)
+    ),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.patch(args.reactionId, {
+      reaction: args.reaction,
+    });
+  },
+});
+
+export const getMessageReactions = query({
+  args: {
+    messageId: v.id("messages"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("reactions")
+      .withIndex("by_message_id", (q) => q.eq("messageId", args.messageId))
+      .collect();
+  },
+});
+
+export const deleteReaction = mutation({
+  args: {
+    reactionId: v.id("reactions"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.delete(args.reactionId);
   },
 });

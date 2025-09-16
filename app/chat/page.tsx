@@ -1,5 +1,6 @@
 "use client";
 
+import { Response } from "@/components/ai-elements/response";
 import { SelectModelForm } from "@/components/Forms/select-model/SelectModelForm";
 import PulsatingLoader from "@/components/Loaders/PulsatingLoader";
 import ChatMenu from "@/components/Menu/chat/ChatMenu";
@@ -11,15 +12,16 @@ import { ChatTypeSchema } from "@/db/models/chat.model";
 import { cn } from "@/lib/utils";
 import { UIMessage, useChat } from "@ai-sdk/react";
 import { useUser } from "@clerk/nextjs";
+import { SiGooglegemini, SiNvidia } from "@icons-pack/react-simple-icons";
 import axios from "axios";
 import { motion } from "framer-motion";
 import {
   ArrowDown,
   Ban,
   Brain,
-  ChevronUp,
   Check,
   ChevronDown,
+  ChevronUp,
   Copy,
   MessageCircleMore,
   Plus,
@@ -28,10 +30,10 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { ChatTabTypeSchema } from "../../db/models/chatTab.model";
-import { Response } from "@/components/ai-elements/response";
+import { ChatTabTypeSchema } from "@/db/models/chatTab.model";
 
 export type UseChatReturn = ReturnType<typeof useChat>;
 export type UseChatStatus = UseChatReturn["status"];
@@ -74,71 +76,120 @@ export const models = [
     name: "DeepSeek: DeepSeek V3.1 (free)",
     value: "deepseek/deepseek-chat-v3.1:free",
     isReasoningAvailable: true,
+    provider: "openrouter",
+    icon: Brain,
   },
   {
     name: "TNG: DeepSeek R1T2 Chimera (free)",
     value: "tngtech/deepseek-r1t2-chimera:free",
     isReasoningAvailable: true,
+    provider: "openrouter",
+    icon: Brain,
   },
   {
     name: "Google: Gemini 2.5 Pro",
     value: "models/gemini-2.5-pro",
     isReasoningAvailable: true,
+    provider: "google",
+    icon: SiGooglegemini,
   },
   {
     name: "Google: Gemini 2.5 Flash",
     value: "models/gemini-2.5-flash",
     isReasoningAvailable: true,
+    provider: "google",
+    icon: SiGooglegemini,
   },
   {
     name: "Google: Gemini 2.5 Flash-Lite",
     value: "models/gemini-2.5-flash-lite",
     isReasoningAvailable: false,
+    provider: "google",
+    icon: SiGooglegemini,
   },
   {
     name: "Google: Gemini 2.0 Flash",
     value: "models/gemini-2.0-flash",
     isReasoningAvailable: true,
+    provider: "google",
+    icon: SiGooglegemini,
   },
   {
     name: "Google: Gemini 2.0 Flash-Lite",
     value: "models/gemini-2.0-flash-lite",
     isReasoningAvailable: true,
+    provider: "google",
+    icon: SiGooglegemini,
   },
   {
     name: "Google: Gemini 2.0 Flash Experimental (free)",
     value: "google/gemini-2.0-flash-exp:free",
     isReasoningAvailable: false,
+    provider: "openrouter",
+    icon: Brain,
+  },
+  {
+    name: "Groq: Compound",
+    value: "groq/compound",
+    isReasoningAvailable: false,
+    provider: "groq",
+    icon: Brain,
+  },
+  {
+    name: "Llama 3.3 70B",
+    value: "llama-3.3-70b-versatile",
+    isReasoningAvailable: false,
+    provider: "groq",
+    icon: Brain,
+  },
+  {
+    name: "Qwen3-32B",
+    value: "qwen/qwen3-32b",
+    isReasoningAvailable: true,
+    provider: "groq",
+    icon: Brain,
   },
   {
     name: "Sonoma Dusk Alpha",
     value: "openrouter/sonoma-dusk-alpha",
     isReasoningAvailable: false,
+    provider: "openrouter",
+    icon: Brain,
   },
   {
     name: "Sonoma Sky Alpha",
     value: "openrouter/sonoma-sky-alpha",
     isReasoningAvailable: true,
+    provider: "openrouter",
+    icon: Brain,
   },
   {
     name: "NVIDIA: Nemotron Nano 9B V2 (free)",
     value: "nvidia/nemotron-nano-9b-v2:free",
     isReasoningAvailable: true,
+    provider: "openrouter",
+    icon: SiNvidia,
   },
   {
     name: "Qwen: Qwen3 Coder 480B A35B (free)",
     value: "qwen/qwen3-coder:free",
     isReasoningAvailable: false,
+    provider: "openrouter",
+    icon: Brain,
   },
   {
     name: "MoonshotAI: Kimi K2 0711 (free)",
     value: "moonshotai/kimi-k2:free",
     isReasoningAvailable: false,
+    provider: "openrouter",
+    icon: Brain,
   },
   {
     name: "Z.AI: GLM 4.5 Air (free)",
     value: "z-ai/glm-4.5-air:free",
     isReasoningAvailable: true,
+    provider: "openrouter",
+    icon: Brain,
   },
 ];
 
@@ -440,16 +491,28 @@ function Chat({
   };
 
   // Ensure we start at the bottom on first mount
-  // useEffect(() => {
-  //   scrollToBottom(false);
-  // }, []);
+  useEffect(() => {
+    scrollToBottom(true);
+  }, [messages]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (input.trim() && status === "ready") {
+    if (input.trim() && (status === "ready" || status === "error")) {
       sendMessage(
         { text: input },
-        { body: { model: selectedModel, reasoning } }
+        {
+          body: {
+            model: selectedModel,
+            reasoning:
+              models.find((model) => model.value === selectedModel)
+                ?.provider === "groq"
+                ? models.find((model) => model.value === selectedModel)
+                    ?.isReasoningAvailable && reasoning
+                : reasoning,
+            provider: models.find((model) => model.value === selectedModel)
+              ?.provider,
+          },
+        }
       );
       setInput("");
       // schedule a short scroll to the last attached message after DOM updates
@@ -485,7 +548,10 @@ function Chat({
   const handleStoreChat = async () => {
     try {
       console.log("inside handleStoreChat");
-      if (status === "streaming" && messages.length % 2 === 0) {
+      if (
+        status === "streaming" &&
+        messages[messages.length - 1]?.role === "assistant"
+      ) {
         setChats((curr) => [
           ...curr,
           {
@@ -501,7 +567,11 @@ function Chat({
           },
         ]);
       }
-      if (status === "ready" && messages.length % 2 === 0 && !initialRender) {
+      if (
+        status === "ready" &&
+        messages[messages.length - 1]?.role === "assistant" &&
+        !initialRender
+      ) {
         await axios.post("/api/chat/storeChat", {
           chatTab: selectedChatTab?._id?.toString() as string,
           message: messages[messages.length - 2],
@@ -638,6 +708,11 @@ function Chat({
                 message.parts
                   .filter((part) => part.type === "reasoning")[0]
                   .text.trim() !== "";
+              const ProviderIcon = models.find(
+                (model) =>
+                  model.value ===
+                  chats.find((chat) => chat.message.id === message.id)?.ai_model
+              )?.icon;
               return (
                 <div
                   key={message.id}
@@ -660,15 +735,22 @@ function Chat({
                       ) : (
                         <User />
                       )
+                    ) : ProviderIcon ? (
+                      <ProviderIcon className="w-4 h-4 text-primary font-[900]" />
                     ) : (
-                      <Brain />
+                      <Brain className="w-4 h-4 text-primary font-[900]" />
                     )}
                     <span className="text-lg font-[900] text-primary mr-2">
                       {message.role === "user"
                         ? `${user?.fullName || "User"}`
                         : `${
-                            chats.find((chat) => chat.message.id === message.id)
-                              ?.ai_model || "AI"
+                            models.find(
+                              (model) =>
+                                model.value ===
+                                chats.find(
+                                  (chat) => chat.message.id === message.id
+                                )?.ai_model
+                            )?.name || "AI"
                           }`}
                       :
                     </span>
@@ -811,10 +893,27 @@ function Chat({
               if (e.key === "Enter") {
                 e.preventDefault();
                 // Call the submit logic directly
-                if (input.trim() && status === "ready") {
+                if (
+                  input.trim() &&
+                  (status === "ready" || status === "error")
+                ) {
                   sendMessage(
                     { text: input },
-                    { body: { model: selectedModel, reasoning } }
+                    {
+                      body: {
+                        model: selectedModel,
+                        reasoning:
+                          models.find((model) => model.value === selectedModel)
+                            ?.provider === "groq"
+                            ? models.find(
+                                (model) => model.value === selectedModel
+                              )?.isReasoningAvailable && reasoning
+                            : reasoning,
+                        provider: models.find(
+                          (model) => model.value === selectedModel
+                        )?.provider,
+                      },
+                    }
                   );
                   setInput("");
                   window.setTimeout(() => scrollToBottom(true), 40);
