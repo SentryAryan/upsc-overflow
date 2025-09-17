@@ -81,6 +81,7 @@
     "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.6.0",
     "emotion": "^11.0.0",
+    "exa-js": "^1.9.3",
     "framer-motion": "^12.23.12",
     "html-react-parser": "^5.2.5",
     "hugerte": "^1.0.9",

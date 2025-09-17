@@ -51,8 +51,8 @@ export async function POST(req: NextRequest) {
           model: modelReceived,
           messages: convertToModelMessages(messages),
           system: reasoning
-            ? "Do NOT output step-by-step internal reasoning; return a concise final answer."
-            : "Do output step-by-step internal reasoning; return a concise final answer.",
+            ? "Do output step-by-step internal reasoning; return a concise final answer."
+            : "Do NOT output step-by-step internal reasoning; return a concise final answer.",
           // maxOutputTokens: 1000,
           // temperature: 0.3,
           // maxRetries: 3,
