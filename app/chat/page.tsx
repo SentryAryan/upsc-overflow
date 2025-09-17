@@ -31,9 +31,15 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import type React from "react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, Fragment } from "react";
 import { toast } from "sonner";
 import { ChatTabTypeSchema } from "@/db/models/chatTab.model";
+import useSound from "use-sound";
+import {
+  Reasoning,
+  ReasoningContent,
+  ReasoningTrigger,
+} from "@/components/ai-elements/reasoning";
 
 export type UseChatReturn = ReturnType<typeof useChat>;
 export type UseChatStatus = UseChatReturn["status"];
@@ -121,48 +127,48 @@ export const models = [
     provider: "google",
     icon: SiGooglegemini,
   },
-  {
-    name: "Google: Gemini 2.0 Flash Experimental (free)",
-    value: "google/gemini-2.0-flash-exp:free",
-    isReasoningAvailable: false,
-    provider: "openrouter",
-    icon: Brain,
-  },
-  {
-    name: "Groq: Compound",
-    value: "groq/compound",
-    isReasoningAvailable: false,
-    provider: "groq",
-    icon: Brain,
-  },
-  {
-    name: "Llama 3.3 70B",
-    value: "llama-3.3-70b-versatile",
-    isReasoningAvailable: false,
-    provider: "groq",
-    icon: Brain,
-  },
-  {
-    name: "Qwen3-32B",
-    value: "qwen/qwen3-32b",
-    isReasoningAvailable: true,
-    provider: "groq",
-    icon: Brain,
-  },
-  {
-    name: "Sonoma Dusk Alpha",
-    value: "openrouter/sonoma-dusk-alpha",
-    isReasoningAvailable: false,
-    provider: "openrouter",
-    icon: Brain,
-  },
-  {
-    name: "Sonoma Sky Alpha",
-    value: "openrouter/sonoma-sky-alpha",
-    isReasoningAvailable: true,
-    provider: "openrouter",
-    icon: Brain,
-  },
+  // {
+  //   name: "Google: Gemini 2.0 Flash Experimental (free)",
+  //   value: "google/gemini-2.0-flash-exp:free",
+  //   isReasoningAvailable: false,
+  //   provider: "openrouter",
+  //   icon: Brain,
+  // },
+  // {
+  //   name: "Groq: Compound",
+  //   value: "groq/compound",
+  //   isReasoningAvailable: false,
+  //   provider: "groq",
+  //   icon: Brain,
+  // },
+  // {
+  //   name: "Llama 3.3 70B",
+  //   value: "llama-3.3-70b-versatile",
+  //   isReasoningAvailable: false,
+  //   provider: "groq",
+  //   icon: Brain,
+  // },
+  // {
+  //   name: "Qwen3-32B",
+  //   value: "qwen/qwen3-32b",
+  //   isReasoningAvailable: true,
+  //   provider: "groq",
+  //   icon: Brain,
+  // },
+  // {
+  //   name: "Sonoma Dusk Alpha",
+  //   value: "openrouter/sonoma-dusk-alpha",
+  //   isReasoningAvailable: false,
+  //   provider: "openrouter",
+  //   icon: Brain,
+  // },
+  // {
+  //   name: "Sonoma Sky Alpha",
+  //   value: "openrouter/sonoma-sky-alpha",
+  //   isReasoningAvailable: true,
+  //   provider: "openrouter",
+  //   icon: Brain,
+  // },
   {
     name: "NVIDIA: Nemotron Nano 9B V2 (free)",
     value: "nvidia/nemotron-nano-9b-v2:free",
@@ -396,6 +402,7 @@ function Chat({
   const [selectedModel, setSelectedModel] = useState(models[0].value);
   const [reasoningOpened, setReasoningOpened] = useState<String[]>([]);
   const [reasoning, setReasoning] = useState<boolean>(false);
+  const [play] = useSound("/sounds/chat-completed-sound.mp3");
   console.log("error =", error);
   console.log("status =", status);
   console.log("messages =", messages);
@@ -490,7 +497,7 @@ function Chat({
     }
   };
 
-  // Ensure we start at the bottom on first mount
+  // Ensure we start at the bottom on first mount or when messages change
   useEffect(() => {
     scrollToBottom(true);
   }, [messages]);
@@ -521,33 +528,36 @@ function Chat({
   };
 
   // auto-scroll when messages change, but only if user is at bottom
-  useEffect(() => {
-    if (!autoScroll) return;
-    const el = containerRef.current;
-    if (!el) return;
-    if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
-    timeoutRef.current = window.setTimeout(() => {
-      rafRef.current = requestAnimationFrame(() => {
-        try {
-          el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
-        } catch {
-          lastMsgRef.current?.scrollIntoView({
-            behavior: "smooth",
-            block: "end",
-          });
-        }
-      });
-    }, 60);
-    return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
-    };
-  }, [messages, autoScroll]);
+  // useEffect(() => {
+  //   if (!autoScroll) return;
+  //   const el = containerRef.current;
+  //   if (!el) return;
+  //   if (rafRef.current) cancelAnimationFrame(rafRef.current);
+  //   if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
+  //   timeoutRef.current = window.setTimeout(() => {
+  //     rafRef.current = requestAnimationFrame(() => {
+  //       try {
+  //         el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+  //       } catch {
+  //         lastMsgRef.current?.scrollIntoView({
+  //           behavior: "smooth",
+  //           block: "end",
+  //         });
+  //       }
+  //     });
+  //   }, 60);
+  //   return () => {
+  //     if (rafRef.current) cancelAnimationFrame(rafRef.current);
+  //     if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
+  //   };
+  // }, [messages, autoScroll]);
 
   const handleStoreChat = async () => {
     try {
       console.log("inside handleStoreChat");
+      if (status === "ready") {
+        play();
+      }
       if (
         status === "streaming" &&
         messages[messages.length - 1]?.role === "assistant"
@@ -641,6 +651,37 @@ function Chat({
     }
     setInitialRender(false);
   }, [selectedChatTab]);
+
+  // effect to open and close reasoning in real time
+  useEffect(() => {
+    if (
+      messages.length > 0 &&
+      messages[messages.length - 1].parts.filter(
+        (part) => part.type === "reasoning"
+      )[0]?.state === "streaming"
+    ) {
+      if (!reasoningOpened.includes(messages[messages.length - 1].id)) {
+        setReasoningOpened([
+          ...reasoningOpened,
+          messages[messages.length - 1].id,
+        ]);
+      }
+    }
+    if (
+      messages.length > 0 &&
+      messages[messages.length - 1].parts.filter(
+        (part) => part.type === "reasoning"
+      )[0]?.state === "done"
+    ) {
+      if (reasoningOpened.includes(messages[messages.length - 1].id)) {
+        setReasoningOpened(
+          reasoningOpened.filter(
+            (id) => id !== messages[messages.length - 1].id
+          )
+        );
+      }
+    }
+  }, [messages]);
 
   return (
     <div className="container mx-auto flex flex-col items-center w-full px-4 gap-8 pt-12 md:pt-4 min-h-screen scroll-smooth">
@@ -834,6 +875,22 @@ function Chat({
                           })}
                     </div>
                   )}
+
+                  {/* Message Parts(Reasoning) through AI SDK provided component */}
+                  {/* {message.parts
+                    .filter((part) => part.type === "reasoning")
+                    .map((part, i) => {
+                      return (
+                        <Reasoning
+                          key={`${message.id}-${i}`}
+                          className="w-full"
+                          isStreaming={status === "streaming"}
+                        >
+                          <ReasoningTrigger />
+                          <ReasoningContent>{part.text}</ReasoningContent>
+                        </Reasoning>
+                      );
+                    })} */}
 
                   {/* Message Parts(Text) */}
                   {message.parts
