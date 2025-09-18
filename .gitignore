@@ -48,3 +48,7 @@ next-env.d.ts
 
 # vscode
 .vscode/*
+.vscode
+
+.gemini/
+gha-creds-*.json

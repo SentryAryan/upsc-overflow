@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
             },
           },
           experimental_transform: smoothStream({
-            delayInMs: null, // optional: defaults to 10ms
+            delayInMs: 50, // optional: defaults to 10ms
             chunking: "word", // optional: defaults to 'word'
           }),
         })
@@ -86,23 +86,33 @@ export async function POST(req: NextRequest) {
             model: modelReceived,
             messages: convertToModelMessages(messages),
             system: reasoning
-              ? "Do NOT output step-by-step internal reasoning; return a concise final answer."
-              : "Do output step-by-step internal reasoning; return a concise final answer.",
+              ? "Do output step-by-step internal reasoning; return a concise final answer."
+              : "Do NOT output step-by-step internal reasoning; return a concise final answer.",
+            // maxOutputTokens: 1000,
             providerOptions: {
               groq: {
-                reasoningFormat: reasoning ? "parsed" : "hidden",
+                reasoningFormat: reasoning ? "raw" : "hidden",
                 reasoningEffort: "default",
               },
             },
+            experimental_transform: smoothStream({
+              delayInMs: 50, // optional: defaults to 10ms
+              chunking: "word", // optional: defaults to 'word'
+            }),
           })
         : streamText({
             model: modelReceived,
             messages: convertToModelMessages(messages),
+            // maxOutputTokens: 1000,
+            experimental_transform: smoothStream({
+              delayInMs: 50, // optional: defaults to 10ms
+              chunking: "word", // optional: defaults to 'word'
+            }),
           });
 
   if (provider !== "groq") {
     return result.toUIMessageStreamResponse({
-      sendReasoning: true,
+      sendReasoning: reasoning,
     });
   } else {
     if (reasoning) {

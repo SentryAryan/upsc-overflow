@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Spotlight } from "@/components/ui/spotlight";
 import { Textarea } from "@/components/ui/textarea";
 import { ChatTypeSchema } from "@/db/models/chat.model";
+import { ChatTabTypeSchema } from "@/db/models/chatTab.model";
 import { cn } from "@/lib/utils";
 import { UIMessage, useChat } from "@ai-sdk/react";
 import { useUser } from "@clerk/nextjs";
@@ -31,15 +32,9 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import type React from "react";
-import { useEffect, useRef, useState, Fragment } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { ChatTabTypeSchema } from "@/db/models/chatTab.model";
 import useSound from "use-sound";
-import {
-  Reasoning,
-  ReasoningContent,
-  ReasoningTrigger,
-} from "@/components/ai-elements/reasoning";
 
 export type UseChatReturn = ReturnType<typeof useChat>;
 export type UseChatStatus = UseChatReturn["status"];
@@ -109,31 +104,31 @@ export const models = [
   {
     name: "Google: Gemini 2.5 Flash-Lite",
     value: "models/gemini-2.5-flash-lite",
-    isReasoningAvailable: false,
+    isReasoningAvailable: true,
     provider: "google",
     icon: SiGooglegemini,
   },
   {
     name: "Google: Gemini 2.0 Flash",
     value: "models/gemini-2.0-flash",
-    isReasoningAvailable: true,
-    provider: "google",
-    icon: SiGooglegemini,
-  },
-  {
-    name: "Google: Gemini 2.0 Flash-Lite",
-    value: "models/gemini-2.0-flash-lite",
-    isReasoningAvailable: true,
+    isReasoningAvailable: false,
     provider: "google",
     icon: SiGooglegemini,
   },
   // {
-  //   name: "Google: Gemini 2.0 Flash Experimental (free)",
-  //   value: "google/gemini-2.0-flash-exp:free",
+  //   name: "Google: Gemini 2.0 Flash-Lite",
+  //   value: "models/gemini-2.0-flash-lite",
   //   isReasoningAvailable: false,
-  //   provider: "openrouter",
-  //   icon: Brain,
+  //   provider: "google",
+  //   icon: SiGooglegemini,
   // },
+  {
+    name: "Google: Gemini 2.0 Flash Experimental (free)",
+    value: "google/gemini-2.0-flash-exp:free",
+    isReasoningAvailable: false,
+    provider: "openrouter",
+    icon: SiGooglegemini,
+  },
   // {
   //   name: "Groq: Compound",
   //   value: "groq/compound",
@@ -155,20 +150,20 @@ export const models = [
   //   provider: "groq",
   //   icon: Brain,
   // },
-  // {
-  //   name: "Sonoma Dusk Alpha",
-  //   value: "openrouter/sonoma-dusk-alpha",
-  //   isReasoningAvailable: false,
-  //   provider: "openrouter",
-  //   icon: Brain,
-  // },
-  // {
-  //   name: "Sonoma Sky Alpha",
-  //   value: "openrouter/sonoma-sky-alpha",
-  //   isReasoningAvailable: true,
-  //   provider: "openrouter",
-  //   icon: Brain,
-  // },
+  {
+    name: "Sonoma Dusk Alpha",
+    value: "openrouter/sonoma-dusk-alpha",
+    isReasoningAvailable: false,
+    provider: "openrouter",
+    icon: Brain,
+  },
+  {
+    name: "Sonoma Sky Alpha",
+    value: "openrouter/sonoma-sky-alpha",
+    isReasoningAvailable: true,
+    provider: "openrouter",
+    icon: Brain,
+  },
   {
     name: "NVIDIA: Nemotron Nano 9B V2 (free)",
     value: "nvidia/nemotron-nano-9b-v2:free",
@@ -254,6 +249,12 @@ export default function ChatPage() {
       toast.error("Error fetching chat tabs");
     }
   }, [error]);
+
+  // useEffect(() => {
+  //   if (status === "ready") {
+  //     handleNewChatCreate();
+  //   }
+  // }, [status]);
 
   return (
     <div className="w-full flex flex-col gap-6 items-center justify-center">
@@ -401,6 +402,7 @@ function Chat({
   const [input, setInput] = useState("");
   const [selectedModel, setSelectedModel] = useState(models[0].value);
   const [reasoningOpened, setReasoningOpened] = useState<String[]>([]);
+  const [isMessageOpen, setIsMessageOpen] = useState<String[]>([]);
   const [reasoning, setReasoning] = useState<boolean>(false);
   const [play] = useSound("/sounds/chat-completed-sound.mp3");
   console.log("error =", error);
@@ -499,23 +501,32 @@ function Chat({
 
   // Ensure we start at the bottom on first mount or when messages change
   useEffect(() => {
-    scrollToBottom(true);
+    if (status !== "streaming" && status !== "submitted") {
+      scrollToBottom(true);
+    }
   }, [messages]);
+
+  // Ensure we start at the bottom on first mount
+  // useEffect(() => {
+  //   scrollToBottom(true);
+  // }, []);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (messages.length >= 10) {
+      handleNewChatCreate();
+      return;
+    }
     if (input.trim() && (status === "ready" || status === "error")) {
       sendMessage(
         { text: input },
         {
           body: {
             model: selectedModel,
-            reasoning:
-              models.find((model) => model.value === selectedModel)
-                ?.provider === "groq"
-                ? models.find((model) => model.value === selectedModel)
-                    ?.isReasoningAvailable && reasoning
-                : reasoning,
+            reasoning: models.find((model) => model.value === selectedModel)
+              ?.isReasoningAvailable
+              ? reasoning
+              : false,
             provider: models.find((model) => model.value === selectedModel)
               ?.provider,
           },
@@ -624,6 +635,10 @@ function Chat({
       setMessages(
         response.data.data.map((chat: ChatTypeSchema) => chat.message)
       );
+      const openedMessages = response.data.data
+        .slice()
+        .map((chat: ChatTypeSchema) => chat.message.id);
+      setIsMessageOpen(openedMessages);
       setChats(
         response.data.data.map((chat: ChatTypeSchema) => ({
           message: chat.message,
@@ -643,6 +658,9 @@ function Chat({
 
   useEffect(() => {
     handleStoreChat();
+    // if (status === "ready") {
+    //   handleNewChatCreate();
+    // }
   }, [status]);
 
   useEffect(() => {
@@ -654,6 +672,7 @@ function Chat({
 
   // effect to open and close reasoning in real time
   useEffect(() => {
+    // if thinking is streaming then display thinking(initially hidden)
     if (
       messages.length > 0 &&
       messages[messages.length - 1].parts.filter(
@@ -667,6 +686,30 @@ function Chat({
         ]);
       }
     }
+
+    // hide reasoning and message text if it was stopped abruptly
+    for (const message of messages) {
+      // reasoning part
+      if (
+        message.parts.filter((part) => part.type === "reasoning")[0]?.state ===
+          "streaming" &&
+        status === "ready"
+      ) {
+        setReasoningOpened(reasoningOpened.filter((id) => id !== message.id));
+      }
+
+      // message text part
+      if (
+        message.parts.filter((part) => part.type === "text")[0]?.state ===
+          "streaming" &&
+        status === "ready" &&
+        !initialRender
+      ) {
+        setIsMessageOpen(isMessageOpen.filter((id) => id !== message.id));
+      }
+    }
+
+    // if thinking is done the hide thinking
     if (
       messages.length > 0 &&
       messages[messages.length - 1].parts.filter(
@@ -679,6 +722,26 @@ function Chat({
             (id) => id !== messages[messages.length - 1].id
           )
         );
+      }
+    }
+
+    // if message text is streaming then display message text(initially hidden)
+    // for assistant message
+    if (
+      messages.length > 0 &&
+      messages[messages.length - 1].parts.filter(
+        (part) => part.type === "text"
+      )[0]?.state === "streaming"
+    ) {
+      if (!isMessageOpen.includes(messages[messages.length - 1].id)) {
+        setIsMessageOpen([...isMessageOpen, messages[messages.length - 1].id]);
+      }
+    }
+
+    // for user message
+    if (messages.length > 0 && messages[messages.length - 1].role === "user") {
+      if (!isMessageOpen.includes(messages[messages.length - 1].id)) {
+        setIsMessageOpen([...isMessageOpen, messages[messages.length - 1].id]);
       }
     }
   }, [messages]);
@@ -759,7 +822,9 @@ function Chat({
                   key={message.id}
                   ref={i === messages.length - 1 ? lastMsgRef : undefined}
                   className={`whitespace-pre-wrap p-3 rounded-md border-mode flex flex-col gap-2 ${
-                    message.role === "user" ? "bg-primary/5" : "bg-background"
+                    message.role === "user"
+                      ? "bg-primary/5 ml-auto"
+                      : "bg-background mr-auto"
                   }`}
                 >
                   {/* Message Header */}
@@ -821,6 +886,19 @@ function Chat({
                     </button>
                   </section>
 
+                  {/* Loader while streaming indicating actual message or reasoning is still streaming */}
+                  {message.role === "assistant" &&
+                    (message.parts.filter((part) => part.type === "text")[0]
+                      ?.state === "streaming" ||
+                      message.parts.filter(
+                        (part) => part.type === "reasoning"
+                      )[0]?.state === "streaming") &&
+                    status === "streaming" && (
+                      <div className="w-full flex flex-col items-center justify-center py-4">
+                        <PulsatingLoader />
+                      </div>
+                    )}
+
                   {/* Message Parts(Reasoning) */}
                   {isReasoningAvailable && (
                     <div className="w-full flex flex-col gap-2 text-muted-foreground mt-2">
@@ -831,11 +909,11 @@ function Chat({
                             (part) => part.type === "reasoning"
                           )[0].state === "streaming"
                             ? "Thinking..."
-                            : "Thinking Completed"}
+                            : "Thinking Data"}
                         </p>
                         <Button
                           variant="outline"
-                          className="w-6 h-6"
+                          className="w-4 h-4"
                           size="icon"
                           onClick={() => {
                             if (reasoningOpened.includes(message.id)) {
@@ -876,6 +954,36 @@ function Chat({
                     </div>
                   )}
 
+                  {/* Show/Hide Messages Button */}
+                  <span className="text-sm font-bold flex justify-start items-center gap-2 mt-2">
+                    <MessageCircleMore className="w-4 h-4" />
+                    <p>
+                      {isMessageOpen.includes(message.id)
+                        ? "Hide Message"
+                        : "Show Message"}
+                    </p>
+                    <Button
+                      variant="outline"
+                      className="w-4 h-4"
+                      size="icon"
+                      onClick={() => {
+                        if (isMessageOpen.includes(message.id)) {
+                          setIsMessageOpen(
+                            isMessageOpen.filter((id) => id !== message.id)
+                          );
+                        } else {
+                          setIsMessageOpen([...isMessageOpen, message.id]);
+                        }
+                      }}
+                    >
+                      {isMessageOpen.includes(message.id) ? (
+                        <ChevronUp className="w-4 h-4" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4" />
+                      )}
+                    </Button>
+                  </span>
+
                   {/* Message Parts(Reasoning) through AI SDK provided component */}
                   {/* {message.parts
                     .filter((part) => part.type === "reasoning")
@@ -893,18 +1001,19 @@ function Chat({
                     })} */}
 
                   {/* Message Parts(Text) */}
-                  {message.parts
-                    .filter((part) => part.type === "text")
-                    .map((part, i) => {
-                      return (
-                        <Response
-                          key={`${message.id}-${i}`}
-                          className="leading-relaxed p-2"
-                        >
-                          {part.text}
-                        </Response>
-                      );
-                    })}
+                  {isMessageOpen.includes(message.id) &&
+                    message.parts
+                      .filter((part) => part.type === "text")
+                      .map((part, i) => {
+                        return (
+                          <Response
+                            key={`${message.id}-${i}`}
+                            className="leading-relaxed p-2"
+                          >
+                            {part.text}
+                          </Response>
+                        );
+                      })}
                 </div>
               );
             })}
@@ -949,7 +1058,10 @@ function Chat({
               // Regular Enter will create new lines
               if (e.key === "Enter") {
                 e.preventDefault();
-                // Call the submit logic directly
+                if (messages.length >= 10) {
+                  handleNewChatCreate();
+                  return;
+                }
                 if (
                   input.trim() &&
                   (status === "ready" || status === "error")
@@ -959,13 +1071,11 @@ function Chat({
                     {
                       body: {
                         model: selectedModel,
-                        reasoning:
-                          models.find((model) => model.value === selectedModel)
-                            ?.provider === "groq"
-                            ? models.find(
-                                (model) => model.value === selectedModel
-                              )?.isReasoningAvailable && reasoning
-                            : reasoning,
+                        reasoning: models.find(
+                          (model) => model.value === selectedModel
+                        )?.isReasoningAvailable
+                          ? reasoning
+                          : false,
                         provider: models.find(
                           (model) => model.value === selectedModel
                         )?.provider,
@@ -991,22 +1101,27 @@ function Chat({
                 selectedModel={selectedModel}
                 setSelectedModel={setSelectedModel}
               />
-              <Button
-                onClick={(e) => {
-                  e.preventDefault();
-                  setReasoning((curr) => !curr);
-                }}
-                type="button"
-                variant="outline"
-                className={cn(
-                  "w-full! sm:w-max! flex! justify-center! items-center! gap-2 px-3 py-1 text-sm rounded-md bg-background! text-foreground hover:scale-105 hover:text-foreground! transition-transform ease-in-out duration-300 cursor-pointer font-[900]! size-9",
-                  reasoning && "bg-muted! text-primary hover:text-primary!",
-                  "sm:w-10 sm:h-10"
-                )}
-              >
-                <Brain className={cn("w-4 h-4", reasoning && "text-primary")} />
-                <p>Think</p>
-              </Button>
+              {models.find((model) => model.value === selectedModel)
+                ?.isReasoningAvailable && (
+                <Button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setReasoning((curr) => !curr);
+                  }}
+                  type="button"
+                  variant="outline"
+                  className={cn(
+                    "w-full! sm:w-max! flex! justify-center! items-center! gap-2 px-3 py-1 text-sm rounded-md bg-background! text-foreground hover:scale-105 hover:text-foreground! transition-transform ease-in-out duration-300 cursor-pointer font-[900]! size-9",
+                    reasoning && "bg-muted! text-primary hover:text-primary!",
+                    "sm:w-10 sm:h-10"
+                  )}
+                >
+                  <Brain
+                    className={cn("w-4 h-4", reasoning && "text-primary")}
+                  />
+                  <p>Think</p>
+                </Button>
+              )}
             </div>
 
             {/* Send/Stop/Go-to-latest-message Buttons */}
