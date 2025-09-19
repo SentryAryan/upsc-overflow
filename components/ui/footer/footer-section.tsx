@@ -28,6 +28,7 @@ import {
   LayoutDashboard,
   Brain,
   MessageCircle,
+  PencilLine,
 } from "lucide-react";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
@@ -53,12 +54,14 @@ function Footerdemo() {
   const [chatPath, setChatPath] = useState<string>("/chat");
   const [conversationPath, setConversationPath] =
     useState<string>("/conversation");
+  const [testPath, setTestPath] = useState<string>("/test");
 
   const quickLinks = isSignedIn
     ? [
         { name: "Home", url: homePath, icon: Home },
         { name: "Ask Question", url: "/ask-question", icon: FileQuestion },
         { name: "Ask AI", url: chatPath, icon: Brain },
+        { name: "Test", url: testPath, icon: PencilLine },
         { name: "Conversations", url: conversationPath, icon: MessageCircle },
         { name: "Dashboard", url: dashboardPath, icon: LayoutDashboard },
         { name: "Saved", url: savedPath, icon: Bookmark },
@@ -143,6 +146,11 @@ function Footerdemo() {
         ? `/conversation?${searchString}`
         : "/conversation";
       setConversationPath(fullPath);
+    }
+    if (pathname === "/test") {
+      const searchString = searchParams.toString();
+      const fullPath = searchString ? `/test?${searchString}` : "/test";
+      setTestPath(fullPath);
     }
   }, [pathname, searchParams]);
 

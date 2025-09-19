@@ -101,7 +101,7 @@ export async function POST(req: NextRequest) {
         ? streamText({
             model: modelReceived,
             messages: convertToModelMessages(messages),
-            system: system,
+            // system: system,
             maxOutputTokens,
             temperature: 0.3,
             maxRetries: 3,
@@ -119,7 +119,7 @@ export async function POST(req: NextRequest) {
         : streamText({
             model: modelReceived,
             messages: convertToModelMessages(messages),
-            system: system,
+            // system: system,
             maxOutputTokens,
             temperature: 0.3,
             maxRetries: 3,

@@ -60,6 +60,10 @@ type ChatProps = {
   chatTabs: ChatTabTypeSchema[];
   handleNewChatCreate: () => Promise<void>;
   chatTabsLoading: boolean;
+  chatTabsLength: number;
+  limit: number;
+  totalChatTabs: number;
+  fetchChatTabs: () => Promise<void>;
 };
 
 interface MessageWithAiModel {
@@ -244,6 +248,7 @@ export const models = [
     icon: Brain,
   },
 ];
+const limit = 5;
 
 {
   /* Chat Page Component */
@@ -255,20 +260,32 @@ export default function ChatPage() {
     useState<ChatTabTypeSchema | null>(null);
   const { messages, sendMessage, stop, status, setMessages, error } = useChat();
   const [chatTabsLoading, setChatTabsLoading] = useState<boolean>(true);
-  const [chatTabPage, setChatTabPage] = useState<number>(1);
+  const [totalChatTabs, setTotalChatTabs] = useState<number>(0);
 
   const fetchChatTabs = async () => {
     try {
       setChatTabsLoading(true);
-      const response = await axios.get("/api/chat/getAllTabs");
+      if (chatTabs.length > totalChatTabs) {
+        toast.error("No more chat tabs to load");
+        return;
+      }
+      const response = await axios.get(
+        `/api/chat/getAllTabs?chatTabsLength=${chatTabs.length}&limit=${limit}`
+      );
       setChatTabs(response.data.data);
-      setSelectedChatTab(response.data.data[0]);
+      if (chatTabs.length === 0) {
+        setSelectedChatTab(response.data.data[0]);
+      }
     } catch (error: any) {
       console.log(error.response.data.message);
       if (error.response.data.errors.includes("No chat tabs found")) {
-        const response = await axios.post("/api/chat/createChatTab", {
-          name: "New Chat Tab",
-        });
+        const response = await axios.post(
+          `/api/chat/createChatTab?chatTabsLength=${chatTabs.length}`,
+          {
+            name: "New Chat Tab",
+          }
+        );
+        fetchTotalChatTabs();
         setChatTabs(response.data.data);
         setSelectedChatTab(response.data.data[0]);
       }
@@ -280,9 +297,13 @@ export default function ChatPage() {
   const handleNewChatCreate = async () => {
     try {
       setChatTabsLoading(true);
-      const response = await axios.post("/api/chat/createChatTab", {
-        name: "New Chat Tab",
-      });
+      const response = await axios.post(
+        `/api/chat/createChatTab?chatTabsLength=${chatTabs.length}`,
+        {
+          name: "New Chat Tab",
+        }
+      );
+      fetchTotalChatTabs();
       setChatTabs(response.data.data);
       setSelectedChatTab(response.data.data[0]);
     } catch (error: any) {
@@ -292,7 +313,18 @@ export default function ChatPage() {
     }
   };
 
+  const fetchTotalChatTabs = async () => {
+    try {
+      const response = await axios.get(`/api/chat/getTotalChatTabs`);
+      console.log("total chat tabs =", response.data.data);
+      setTotalChatTabs(response.data.data);
+    } catch (error: any) {
+      console.log(error.response.data.message);
+    }
+  };
+
   useEffect(() => {
+    fetchTotalChatTabs();
     fetchChatTabs();
   }, []);
 
@@ -329,8 +361,11 @@ export default function ChatPage() {
       >
         <Sidebar open={open} setOpen={setOpen}>
           <SidebarBody className="justify-between gap-10 bg-backgound! sm:bg-transparent! min-h-screen! rounded-lg!">
-            <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden gap-4">
+            <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden gap-4 h-full">
+              {/* App Logo */}
               {open ? <Logo /> : <LogoIcon />}
+
+              {/* Create new Chat Button */}
               {open ? (
                 <Button
                   onClick={handleNewChatCreate}
@@ -345,6 +380,25 @@ export default function ChatPage() {
                 </span>
               )}
 
+              {/* Create new Chat Button */}
+              {open && chatTabs.length < totalChatTabs ? (
+                <Button
+                  onClick={() => {
+                    fetchChatTabs();
+                  }}
+                  variant="outline"
+                  disabled={status === "streaming" || status === "submitted"}
+                >
+                  <Plus className="w-5 h-5" /> Fetch More
+                </Button>
+              ) : (
+                chatTabs.length < totalChatTabs && (
+                  <span>
+                    <Plus className="w-5 h-5" />
+                  </span>
+                )
+              )}
+
               {/* Loader while waiting for chat tabs to load or when creating a new chat tab */}
               {chatTabsLoading && (
                 <div className="mt-8 w-full flex flex-col items-center justify-center py-4">
@@ -354,7 +408,7 @@ export default function ChatPage() {
 
               {/* Chat Tabs */}
               {chatTabs.length > 0 && (
-                <div className="mt-8 flex flex-col gap-4 h-full!">
+                <div className="mt-8 flex flex-col gap-4 h-full! w-full!">
                   {chatTabs.map((chatTab: ChatTabTypeSchema, index: number) => {
                     const name =
                       chatTab.name.length > 15
@@ -431,6 +485,10 @@ export default function ChatPage() {
           chatTabs={chatTabs}
           handleNewChatCreate={handleNewChatCreate}
           chatTabsLoading={chatTabsLoading}
+          chatTabsLength={chatTabs.length}
+          limit={limit}
+          totalChatTabs={totalChatTabs}
+          fetchChatTabs={fetchChatTabs}
         />
       </div>
     </div>
@@ -453,6 +511,10 @@ function Chat({
   chatTabs,
   handleNewChatCreate,
   chatTabsLoading,
+  chatTabsLength,
+  limit,
+  totalChatTabs,
+  fetchChatTabs,
 }: ChatProps) {
   const { user } = useUser();
   const [input, setInput] = useState("");
@@ -470,12 +532,12 @@ function Chat({
   const isInputValid = useMemo(() => {
     return currentWordsCount <= maxInputWords;
   }, [currentWordsCount, maxInputWords]);
-  console.log("isInputValid =", isInputValid);
-  console.log("currentWordsCount =", currentWordsCount);
-  console.log("maxInputWords =", maxInputWords);
-  console.log("error =", error);
-  console.log("status =", status);
-  console.log("messages =", messages);
+  // console.log("isInputValid =", isInputValid);
+  // console.log("currentWordsCount =", currentWordsCount);
+  // console.log("maxInputWords =", maxInputWords);
+  // console.log("error =", error);
+  // console.log("status =", status);
+  // console.log("messages =", messages);
   // console.log(user);
 
   // scrolling refs/state
@@ -489,8 +551,8 @@ function Chat({
   const [initialRender, setInitialRender] = useState<boolean>(true);
   const [isMessagesLoading, setIsMessagesLoading] = useState<boolean>(true);
   const [chats, setChats] = useState<MessageWithAiModel[]>([]);
-  console.log("initialRender =", initialRender);
-  console.log("selectedModel =", selectedModel);
+  // console.log("initialRender =", initialRender);
+  // console.log("selectedModel =", selectedModel);
 
   const copyMessageToClipboard = async (
     id: string,
@@ -568,11 +630,11 @@ function Chat({
   };
 
   // Ensure we start at the bottom on first mount or when messages change
-  useEffect(() => {
-    if (status !== "streaming" && status !== "submitted") {
-      scrollToBottom(true);
-    }
-  }, [messages]);
+  // useEffect(() => {
+  //   if (status !== "streaming" && status !== "submitted") {
+  //     scrollToBottom(true);
+  //   }
+  // }, [messages]);
 
   // Ensure we start at the bottom on first mount
   // useEffect(() => {
@@ -642,7 +704,7 @@ function Chat({
 
   const handleStoreChat = async () => {
     try {
-      console.log("inside handleStoreChat");
+      // console.log("inside handleStoreChat");
       if (status === "ready") {
         play();
       }
@@ -722,9 +784,9 @@ function Chat({
           ai_model: chat.ai_model,
         }))
       );
-      console.log(
-        response.data.data.map((chat: ChatTypeSchema) => chat.message)
-      );
+      // console.log(
+      //   response.data.data.map((chat: ChatTypeSchema) => chat.message)
+      // );
     } catch (error: any) {
       console.log(error.response.data.message);
       setMessages([]);
@@ -1249,6 +1311,8 @@ function Chat({
                 handleNewChatCreate={handleNewChatCreate}
                 chatTabsLoading={chatTabsLoading}
                 status={status}
+                totalChatTabs={totalChatTabs}
+                fetchChatTabs={fetchChatTabs}
               />
 
               {/* Send/Stop button */}

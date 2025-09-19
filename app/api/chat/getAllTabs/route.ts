@@ -8,26 +8,41 @@ import ChatTab from "@/db/models/chatTab.model";
 import { auth } from "@clerk/nextjs/server";
 
 export const GET = errorHandler(async (req: NextRequest) => {
- const { userId } = await auth();
+  const chatTabsLength =
+    Number(req.nextUrl.searchParams.get("chatTabsLength")) || 0;
+  const limit = Number(req.nextUrl.searchParams.get("limit")) || 5;
+  const { userId } = await auth();
 
- if (!userId) {
-  throw generateApiError(401, "Unauthorized", ["Unauthorized"]);
- }
-
- await dbConnect();
-
- const chatTabs: ChatTabTypeSchema[] = await ChatTab.find({
-  chatter: userId,
- }).sort({ createdAt: "desc" });
-
- if (chatTabs && chatTabs.length === 0) {
-  throw generateApiError(404, "No chat tabs found", ["No chat tabs found"]);
- }
-
- return res.json(
-  generateApiResponse(201, "Chat tabs fetched successfully", chatTabs),
-  {
-   status: 201,
+  if (!userId) {
+    throw generateApiError(401, "Unauthorized", ["Unauthorized"]);
   }
- );
+
+  await dbConnect();
+
+  const totalChatTabs: number = await ChatTab.countDocuments({
+    chatter: userId,
+  });
+
+  if (chatTabsLength > totalChatTabs) {
+    throw generateApiError(400, "No more chat tabs to load", [
+      "No more chat tabs to load",
+    ]);
+  }
+
+  const chatTabs: ChatTabTypeSchema[] = await ChatTab.find({
+    chatter: userId,
+  })
+    .sort({ createdAt: "desc" })
+    .limit(chatTabsLength + limit);
+
+  if (chatTabs && chatTabs.length === 0) {
+    throw generateApiError(404, "No chat tabs found", ["No chat tabs found"]);
+  }
+
+  return res.json(
+    generateApiResponse(201, "Chat tabs fetched successfully", chatTabs),
+    {
+      status: 201,
+    }
+  );
 });
