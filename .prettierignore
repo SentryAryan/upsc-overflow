@@ -1,0 +1,14 @@
+# Ignore artifacts:
+.next
+.turbo
+node_modules
+dist
+
+# Ignore dotfiles:
+.env
+.env*.local
+
+# Ignore misc:
+*.log
+package-lock.json
+bun.lockb
