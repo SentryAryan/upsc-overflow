@@ -8,24 +8,26 @@ import ChatTab from "@/db/models/chatTab.model";
 import { auth } from "@clerk/nextjs/server";
 
 export const GET = errorHandler(async (req: NextRequest) => {
-  const { userId } = await auth();
+ const { userId } = await auth();
 
-  if (!userId) {
-    throw generateApiError(401, "Unauthorized", ["Unauthorized"]);
+ if (!userId) {
+  throw generateApiError(401, "Unauthorized", ["Unauthorized"]);
+ }
+
+ await dbConnect();
+
+ const chatTabs: ChatTabTypeSchema[] = await ChatTab.find({
+  chatter: userId,
+ }).sort({ createdAt: "desc" });
+
+ if (chatTabs && chatTabs.length === 0) {
+  throw generateApiError(404, "No chat tabs found", ["No chat tabs found"]);
+ }
+
+ return res.json(
+  generateApiResponse(201, "Chat tabs fetched successfully", chatTabs),
+  {
+   status: 201,
   }
-
-  await dbConnect();
-
-  const chatTabs: ChatTabTypeSchema[] = await ChatTab.find({ chatter: userId });
-
-  if (chatTabs && chatTabs.length === 0) {
-    throw generateApiError(404, "No chat tabs found", ["No chat tabs found"]);
-  }
-
-  return res.json(
-    generateApiResponse(201, "Chat tabs fetched successfully", chatTabs),
-    {
-      status: 201,
-    }
-  );
+ );
 });

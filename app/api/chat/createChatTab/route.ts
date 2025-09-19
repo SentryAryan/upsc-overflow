@@ -26,7 +26,7 @@ export const POST = errorHandler(async (req: NextRequest) => {
     name,
     chatter: userId,
   });
-  const chatTabs: ChatTabTypeSchema[] = await ChatTab.find({ chatter: userId });
+  const chatTabs: ChatTabTypeSchema[] = await ChatTab.find({ chatter: userId }).sort({ createdAt: "desc" });
 
   return res.json(
     generateApiResponse(201, "Chat tab created successfully", chatTabs),

@@ -13,7 +13,11 @@ import { ChatTabTypeSchema } from "@/db/models/chatTab.model";
 import { cn } from "@/lib/utils";
 import { UIMessage, useChat } from "@ai-sdk/react";
 import { useUser } from "@clerk/nextjs";
-import { SiGooglegemini, SiNvidia } from "@icons-pack/react-simple-icons";
+import {
+  SiGooglegemini,
+  SiNvidia,
+  SiClaude,
+} from "@icons-pack/react-simple-icons";
 import axios from "axios";
 import { motion } from "framer-motion";
 import {
@@ -32,12 +36,14 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import type React from "react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import useSound from "use-sound";
+import { ProgressWithLabel } from "@/components/ui/progress-bar";
 
 export type UseChatReturn = ReturnType<typeof useChat>;
 export type UseChatStatus = UseChatReturn["status"];
+export const maxInputTokens = 512;
 
 type ChatProps = {
   selectedChatTab: ChatTabTypeSchema | null;
@@ -129,6 +135,7 @@ export const models = [
     provider: "openrouter",
     icon: SiGooglegemini,
   },
+  // // Groq Models
   // {
   //   name: "Groq: Compound",
   //   value: "groq/compound",
@@ -150,6 +157,50 @@ export const models = [
   //   provider: "groq",
   //   icon: Brain,
   // },
+  // // Anthropic Models
+  // {
+  //   name: "Claude Opus 4.1",
+  //   value: "claude-opus-4-1-20250805",
+  //   isReasoningAvailable: true,
+  //   provider: "anthropic",
+  //   icon: Brain,
+  // },
+  // {
+  //   name: "Claude Opus 4",
+  //   value: "claude-opus-4-20250514",
+  //   isReasoningAvailable: true,
+  //   provider: "anthropic",
+  //   icon: SiClaude,
+  // },
+  // {
+  //   name: "Claude Sonnet 4",
+  //   value: "claude-sonnet-4-20250514",
+  //   isReasoningAvailable: true,
+  //   provider: "anthropic",
+  //   icon: SiClaude,
+  // },
+  // {
+  //   name: "Claude Sonnet 3.7",
+  //   value: "claude-3-7-sonnet-latest",
+  //   isReasoningAvailable: true,
+  //   provider: "anthropic",
+  //   icon: SiClaude,
+  // },
+  // {
+  //   name: "Claude Haiku 3.5",
+  //   value: "claude-3-5-haiku-latest",
+  //   isReasoningAvailable: false,
+  //   provider: "anthropic",
+  //   icon: SiClaude,
+  // },
+  // {
+  //   name: "Claude Haiku 3",
+  //   value: "claude-3-haiku-20240307",
+  //   isReasoningAvailable: false,
+  //   provider: "anthropic",
+  //   icon: SiClaude,
+  // },
+  //other openrouter models
   {
     name: "Sonoma Dusk Alpha",
     value: "openrouter/sonoma-dusk-alpha",
@@ -204,6 +255,7 @@ export default function ChatPage() {
     useState<ChatTabTypeSchema | null>(null);
   const { messages, sendMessage, stop, status, setMessages, error } = useChat();
   const [chatTabsLoading, setChatTabsLoading] = useState<boolean>(true);
+  const [chatTabPage, setChatTabPage] = useState<number>(1);
 
   const fetchChatTabs = async () => {
     try {
@@ -232,7 +284,7 @@ export default function ChatPage() {
         name: "New Chat Tab",
       });
       setChatTabs(response.data.data);
-      setSelectedChatTab(response.data.data[response.data.data.length - 1]);
+      setSelectedChatTab(response.data.data[0]);
     } catch (error: any) {
       console.log(error.response.data.message);
     } finally {
@@ -264,7 +316,7 @@ export default function ChatPage() {
           <Brain className="w-4 h-4 sm:w-5 sm:h-5" />
         </span>
         <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-accent-foreground to-foreground text-center">
-          AI Chat
+          AI Chat({messages.length})
         </h1>
       </div>
 
@@ -292,6 +344,15 @@ export default function ChatPage() {
                   <Plus className="w-5 h-5" />
                 </span>
               )}
+
+              {/* Loader while waiting for chat tabs to load or when creating a new chat tab */}
+              {chatTabsLoading && (
+                <div className="mt-8 w-full flex flex-col items-center justify-center py-4">
+                  <PulsatingLoader />
+                </div>
+              )}
+
+              {/* Chat Tabs */}
               {chatTabs.length > 0 && (
                 <div className="mt-8 flex flex-col gap-4 h-full!">
                   {chatTabs.map((chatTab: ChatTabTypeSchema, index: number) => {
@@ -335,11 +396,6 @@ export default function ChatPage() {
                       </span>
                     );
                   })}
-                </div>
-              )}
-              {chatTabsLoading && (
-                <div className="w-full flex flex-col items-center justify-center py-4">
-                  <PulsatingLoader />
                 </div>
               )}
             </div>
@@ -405,6 +461,18 @@ function Chat({
   const [isMessageOpen, setIsMessageOpen] = useState<String[]>([]);
   const [reasoning, setReasoning] = useState<boolean>(false);
   const [play] = useSound("/sounds/chat-completed-sound.mp3");
+  const maxInputWords = useMemo(() => {
+    return Math.floor(maxInputTokens * 0.75);
+  }, [maxInputTokens]);
+  const currentWordsCount = useMemo(() => {
+    return input.trim().length > 0 ? input.trim().split(" ").length : 0;
+  }, [input]);
+  const isInputValid = useMemo(() => {
+    return currentWordsCount <= maxInputWords;
+  }, [currentWordsCount, maxInputWords]);
+  console.log("isInputValid =", isInputValid);
+  console.log("currentWordsCount =", currentWordsCount);
+  console.log("maxInputWords =", maxInputWords);
   console.log("error =", error);
   console.log("status =", status);
   console.log("messages =", messages);
@@ -513,11 +581,20 @@ function Chat({
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (messages.length >= 10) {
-      handleNewChatCreate();
-      return;
-    }
     if (input.trim() && (status === "ready" || status === "error")) {
+      if (messages.length >= 10) {
+        toast.error(
+          "You can only have 10 messages in a chat tab for better performance, please create a new chat tab."
+        );
+        // handleNewChatCreate();
+        return;
+      }
+      if (!isInputValid) {
+        toast.error(
+          `You can only send up to ${maxInputWords} words, please reduce your message length.`
+        );
+        return;
+      }
       sendMessage(
         { text: input },
         {
@@ -886,7 +963,7 @@ function Chat({
                     </button>
                   </section>
 
-                  {/* Loader while streaming indicating actual message or reasoning is still streaming */}
+                  {/* Loader while streaming, indicating actual message or reasoning is still streaming */}
                   {message.role === "assistant" &&
                     (message.parts.filter((part) => part.type === "text")[0]
                       ?.state === "streaming" ||
@@ -894,7 +971,7 @@ function Chat({
                         (part) => part.type === "reasoning"
                       )[0]?.state === "streaming") &&
                     status === "streaming" && (
-                      <div className="w-full flex flex-col items-center justify-center py-4">
+                      <div className="w-full flex flex-col items-center justify-start py-4">
                         <PulsatingLoader />
                       </div>
                     )}
@@ -1036,7 +1113,7 @@ function Chat({
       <div className="mt-6 fixed bottom-1 left-0 right-0 flex justify-center items-center w-screen px-6 md:px-10">
         <form
           onSubmit={handleSubmit}
-          className="container relative w-full flex flex-col justify-center items-center h-full bg-background rounded-xl shadow-lg border-2 border-border max-w-5xl"
+          className="container relative w-full flex flex-col justify-end items-center h-full bg-background rounded-xl shadow-lg border-2 border-border max-w-5xl"
         >
           {/* <Input
             className="p-6 rounded-xl bg-background! border-mode card-shadow-no-hover font-md container! w-full! disabled:opacity-100! border-2"
@@ -1047,7 +1124,7 @@ function Chat({
           /> */}
 
           <Textarea
-            className="py-6 px-4 rounded-xl bg-background! border-mode font-md container! w-full! disabled:opacity-100! border-2 shadow-none! border-none! resize-none! ring-0! focus-visible:ring-0! focus-visible:ring-offset-0! focus-visible:outline-none! focus-visible:border-none! hover:outline-none! hover:ring-none! focus:outline-none! focus:ring-none! focus:ring-offset-none!"
+            className="py-6 px-4 pb-4 rounded-xl bg-background! border-mode font-md container! w-full! disabled:opacity-100! border-2 shadow-none! border-none! resize-none! ring-0! focus-visible:ring-0! focus-visible:ring-offset-0! focus-visible:outline-none! focus-visible:border-none! hover:outline-none! hover:ring-none! focus:outline-none! focus:ring-none! focus:ring-offset-none!"
             rows={1}
             style={{
               height: "scroll",
@@ -1058,14 +1135,25 @@ function Chat({
               // Regular Enter will create new lines
               if (e.key === "Enter") {
                 e.preventDefault();
-                if (messages.length >= 10) {
-                  handleNewChatCreate();
-                  return;
-                }
                 if (
                   input.trim() &&
                   (status === "ready" || status === "error")
                 ) {
+                  if (messages.length >= 10) {
+                    toast.error(
+                      "You can only have 10 messages in a chat tab for better performance, please create a new chat tab."
+                    );
+                    // handleNewChatCreate();
+                    return;
+                  }
+
+                  if (!isInputValid) {
+                    toast.error(
+                      `You can only send up to ${maxInputWords} words, please reduce your message length.`
+                    );
+                    return;
+                  }
+
                   sendMessage(
                     { text: input },
                     {
@@ -1091,6 +1179,19 @@ function Chat({
             placeholder="Type your message..."
             onChange={(e) => setInput(e.currentTarget.value)}
             disabled={status === "submitted" || status === "streaming"}
+          />
+
+          {/* Show progress bar */}
+          <ProgressWithLabel
+            value={(currentWordsCount / maxInputWords) * 100}
+            colorFrom="bg-primary"
+            label={"Words Count"}
+            colorTo="bg-primary/90"
+            className="w-full"
+            duration={1500}
+            delay={150}
+            currentWordsCount={currentWordsCount}
+            maxInputWords={maxInputWords}
           />
 
           {/* Show spinner + Stop while waiting/streaming, otherwise Send button */}
@@ -1140,7 +1241,7 @@ function Chat({
                 <ArrowDown className="w-4 h-4 font-[900]!" />
               </Button>
 
-              {/* View All Chats button */}
+              {/* View All Chats Tabs */}
               <ChatMenu
                 chatTabs={chatTabs}
                 setSelectedChatTab={setSelectedChatTab}
