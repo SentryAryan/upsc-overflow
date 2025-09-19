@@ -21,6 +21,7 @@ import {
   Users,
   X,
   MessageCircle,
+  PencilLine,
 } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
@@ -60,6 +61,7 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
   const [chatPath, setChatPath] = useState<string>("/chat");
   const [conversationPath, setConversationPath] =
     useState<string>("/conversation");
+  const [testPath, setTestPath] = useState<string>("/test");
 
   const menuItems: MenuItem[] = isSignedIn
     ? [
@@ -83,36 +85,42 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
         },
         {
           id: 4,
+          title: "Test",
+          url: testPath,
+          icon: PencilLine,
+        },
+        {
+          id: 5,
           title: "Conversations",
           url: conversationPath,
           icon: MessageCircle,
         },
         {
-          id: 5,
+          id: 6,
           title: "Dashboard",
           url: dashboardPath,
           icon: LayoutDashboard,
         },
         {
-          id: 6,
+          id: 7,
           title: "Saved",
           url: savedPath,
           icon: Bookmark,
         },
         {
-          id: 7,
+          id: 8,
           title: "Community",
           url: communityPath,
           icon: Users,
         },
         {
-          id: 8,
+          id: 9,
           title: "Popular Tags",
           url: popularTagsPath,
           icon: Tag,
         },
         {
-          id: 9,
+          id: 10,
           title: "Popular Subjects",
           url: popularSubjectsPath,
           icon: Book,
@@ -196,6 +204,11 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
         ? `/conversation?${searchString}`
         : "/conversation";
       setConversationPath(fullPath);
+    }
+    if (pathname === "/test") {
+      const searchString = searchParams.toString();
+      const fullPath = searchString ? `/test?${searchString}` : "/test";
+      setTestPath(fullPath);
     }
   }, [pathname, searchParams]);
 

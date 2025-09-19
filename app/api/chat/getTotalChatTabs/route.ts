@@ -5,19 +5,10 @@ import { generateApiError } from "@/lib/helpers/api-error.helper";
 import dbConnect from "@/db/dbConnect";
 import { ChatTabTypeSchema } from "@/db/models/chatTab.model";
 import ChatTab from "@/db/models/chatTab.model";
-import { z } from "zod";
 import { auth } from "@clerk/nextjs/server";
 
-const chatTabSchema = z.object({
-  name: z.string().nonempty({ message: "Name is required" }),
-});
-
-export const POST = errorHandler(async (req: NextRequest) => {
-  const { name } = chatTabSchema.parse(await req.json());
+export const GET = errorHandler(async (req: NextRequest) => {
   const { userId } = await auth();
-  const chatTabsLength = Number(
-    req.nextUrl.searchParams.get("chatTabsLength")
-  );
 
   if (!userId) {
     throw generateApiError(401, "Unauthorized", ["Unauthorized"]);
@@ -25,17 +16,16 @@ export const POST = errorHandler(async (req: NextRequest) => {
 
   await dbConnect();
 
-  const chatTab: ChatTabTypeSchema[] = await ChatTab.create({
-    name,
+  const totalChatTabs: number = await ChatTab.countDocuments({
     chatter: userId,
   });
-  const chatTabs: ChatTabTypeSchema[] = await ChatTab.find({ chatter: userId })
-    .sort({ createdAt: "desc" })
-    .limit(chatTabsLength + 1);
-  console.log("chatTabs =", chatTabs);
+
+  if (totalChatTabs === 0) {
+    throw generateApiError(404, "No chat tabs found", ["No chat tabs found"]);
+  }
 
   return res.json(
-    generateApiResponse(201, "Chat tab created successfully", chatTabs),
+    generateApiResponse(201, "Chat tabs fetched successfully", totalChatTabs),
     {
       status: 201,
     }
