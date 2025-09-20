@@ -34,7 +34,7 @@ export default function MenuDemo2() {
         <>
           <div className="flex items-center space-x-4">
             <FloatingActionPanelTrigger
-              title="Settings/Profile :"
+              title="Settings/Profile:"
               mode="actions"
               className="cursor-pointer rounded-full p-4 flex items-center justify-center gap-2 w-full border-3! border-primary! shadow-none! font-[900]! hover:text-primary!"
             >
@@ -45,7 +45,7 @@ export default function MenuDemo2() {
 
           <FloatingActionPanelContent>
             {mode === "actions" ? (
-              <div className="space-y-1 p-2">
+              <div className="space-y-1 p-2 w-full">
                 {/* Mode Switch */}
                 <FloatingActionPanelButton
                   onClick={() => console.log("New Project")}
