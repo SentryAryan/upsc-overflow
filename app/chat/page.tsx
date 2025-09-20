@@ -1261,6 +1261,7 @@ function Chat({
             {/* Select Model */}
             <div className="w-full flex flex-col sm:flex-row justify-start gap-2">
               <SelectModelForm
+                models={models}
                 selectedModel={selectedModel}
                 setSelectedModel={setSelectedModel}
               />

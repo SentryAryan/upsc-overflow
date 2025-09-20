@@ -14,42 +14,36 @@ import { RootState } from "@/lib/redux/store";
 import { useSelector } from "react-redux";
 import { cn } from "@/lib/utils";
 
-interface SelectModelFormProps {
-  selectedModel: string;
-  setSelectedModel: React.Dispatch<React.SetStateAction<string>>;
-  models: {
-    name: string;
-    value: string;
-    isReasoningAvailable: boolean;
-    provider: string;
-    icon: React.ElementType;
-  }[];
+interface SelectSubjectForTestProps {
+  selectedSubject: string;
+  setSelectedSubject: React.Dispatch<React.SetStateAction<string>>;
+  subjects: string[];
 }
 
-export function SelectModelForm({
-  selectedModel,
-  setSelectedModel,
-  models,
-}: SelectModelFormProps) {
+export function SelectSubjectForTest({
+  selectedSubject,
+  setSelectedSubject,
+  subjects,
+}: SelectSubjectForTestProps) {
   const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
   return (
     <Select
-      onValueChange={(value) => setSelectedModel(value)}
-      defaultValue={selectedModel}
+      onValueChange={(value) => setSelectedSubject(value)}
+      defaultValue={selectedSubject}
     >
       <SelectTrigger
         className={cn(
-          "max-w-[100%] cursor-pointer bg-background! font-[900]",
+          "w-full cursor-pointer bg-background! font-[900]",
           isDarkMode ? "dark" : ""
         )}
       >
-        <SelectValue placeholder="Select a model" />
+        <SelectValue placeholder="Select a subject" />
       </SelectTrigger>
 
       {/* Applying dark class separately becuase radix portal is used inside SelectContent */}
       <SelectContent
         className={cn(
-          "sm:max-w-[100%] max-w-[300px] bg-background! font-[900]",
+          "w-full bg-background! font-[900]",
           isDarkMode ? "dark" : ""
         )}
       >
@@ -59,36 +53,28 @@ export function SelectModelForm({
             isDarkMode ? "dark" : ""
           )}
         >
-          <SelectLabel>Models</SelectLabel>
-          {models.map((model) => (
+          <SelectLabel>Subjects</SelectLabel>
+          {subjects.map((subject) => (
             <SelectItem
-              key={model.value}
-              value={model.value}
+              key={subject}
+              value={subject}
               className={cn(
                 "cursor-pointer hover:scale-105 transition-all duration-300 ease-in-out font-[900] text-foreground!",
                 isDarkMode ? "dark" : "",
-                selectedModel === model.value
+                selectedSubject === subject
                   ? "bg-muted shadow-lg text-primary! hover:bg-muted!"
                   : ""
               )}
             >
-              <model.icon
-                className={cn(
-                  "w-4 h-4",
-                  selectedModel === model.value
-                    ? "text-primary!"
-                    : "text-foreground"
-                )}
-              />
               <span
                 className={cn(
                   "flex items-center gap-2",
-                  selectedModel === model.value
+                  selectedSubject === subject
                     ? "text-primary!"
                     : "text-foreground"
                 )}
               >
-                {model.name}
+                {subject}
               </span>
             </SelectItem>
           ))}
