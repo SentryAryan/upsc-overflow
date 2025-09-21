@@ -4,6 +4,7 @@ import filterSubjectsReducer from "./slices/filterSubjects.slice";
 import themeReducer from "./slices/theme.slice";
 import previousPathReducer from "./slices/previousPath.slice";
 import questionUpdateReducer from "./slices/questionUpdate.slice";
+import testReducer from "./slices/test.slice";
 
 const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ const store = configureStore({
     theme: themeReducer,
     previousPath: previousPathReducer,
     questionUpdate: questionUpdateReducer,
+    test: testReducer,
   },
 });
 

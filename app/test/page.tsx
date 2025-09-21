@@ -2,23 +2,30 @@
 
 import { Button } from "@/components/ui/button";
 import { Spotlight } from "@/components/ui/spotlight";
-import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { useChat } from "@ai-sdk/react";
 import { Brain } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { SiGooglegemini, SiNvidia } from "@icons-pack/react-simple-icons";
+import { SiGooglegemini, SiNvidia, SiX } from "@icons-pack/react-simple-icons";
 import { SelectModelForm } from "../../components/Forms/select-model/SelectModelForm";
 import subjects from "@/lib/constants/subjects";
 import { Response } from "@/components/ai-elements/response";
 import { SelectSubjectForTest } from "@/components/Forms/select-subject/SelectSubjectForTest";
 import PulsatingLoader from "../../components/Loaders/PulsatingLoader";
+import { GiveAnswersForm } from "../../components/Forms/test-answers/GiveAnswersForm";
+import z from "zod";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 
 interface Question {
   id: number;
   text: string;
 }
+
+const numberOfAnswers = 5;
+const numberOfQuestions = 5;
 
 export const models = [
   {
@@ -43,11 +50,11 @@ export const models = [
     icon: SiGooglegemini,
   },
   {
-    name: "Sonoma Sky Alpha",
-    value: "openrouter/sonoma-sky-alpha",
+    name: "xAI: Grok 4 Fast (free)",
+    value: "x-ai/grok-4-fast:free",
     isReasoningAvailable: true,
     provider: "openrouter",
-    icon: Brain,
+    icon: SiX,
   },
   {
     name: "NVIDIA: Nemotron Nano 9B V2 (free)",
@@ -66,18 +73,28 @@ export const models = [
 ];
 
 export default function TestPage() {
-  const [questions, setQuestions] = useState<Question[]>([]);
-  const [answers, setAnswers] = useState<string[]>(Array(10).fill(""));
+  const [answers, setAnswers] = useState<string[]>(
+    Array(numberOfAnswers).fill("")
+  );
   const [selectedModel, setSelectedModel] = useState(models[0].value);
   const [reasoning, setReasoning] = useState(true);
-  const [subject, setSubject] = useState<string>("other");
+  const [subject, setSubject] = useState<string>("math");
   const { messages, sendMessage, stop, status, setMessages, error } = useChat();
+  const router = useRouter();
+  const { user } = useUser();
+
+  console.log("messages =", messages);
+  console.log("status =", status);
+  console.log("error =", error);
+
   const [isQuestionsGenerated, setIsQuestionsGenerated] = useState(false);
 
   const handleGenerateQuestions = async () => {
     try {
       sendMessage(
-        { text: `Generate 10 questions for me on ${subject} subject` },
+        {
+          text: `Generate ${numberOfQuestions} questions for me on ${subject} subject`,
+        },
         {
           body: {
             model: selectedModel,
@@ -87,6 +104,7 @@ export default function TestPage() {
               : false,
             provider: models.find((model) => model.value === selectedModel)
               ?.provider,
+            forTest: true,
           },
         }
       );
@@ -109,6 +127,70 @@ export default function TestPage() {
     toast.info("Submit functionality is a placeholder.");
   };
 
+  const onAnswersSubmit = async (answers: string[]) => {
+    try {
+      sendMessage(
+        {
+          text: `Review the answers and give me a review and marks out of 100 percentage, for the test: ${answers.join(", ")}`,
+        },
+        {
+          body: {
+            model: selectedModel,
+            reasoning: models.find((model) => model.value === selectedModel)
+              ?.isReasoningAvailable
+              ? reasoning
+              : false,
+            provider: models.find((model) => model.value === selectedModel)
+              ?.provider,
+            forTest: true,
+          },
+        }
+      );
+    } catch (error: any) {
+      console.log(error.response.data.message);
+      const errors = error.response.data.errors.map(
+        (error: any) => error.message
+      );
+      toast.error("Failed to create test", {
+        description: errors.join(", "),
+      });
+    }
+  };
+
+  const storeTest = async () => {
+    try {
+      const questions = messages[1].parts.filter(
+        (part) => part.type === "text"
+      )[0].text;
+      const review = messages[messages.length - 1].parts.filter(
+        (part) => part.type === "text"
+      )[0].text;
+      const response = await axios.post("/api/test/storeTest", {
+        questions: questions.trim() || "Questions not available",
+        answers: answers.length > 0 ? answers : ["Answers not available"],
+        review: review.trim() || "Review not available",
+        ai_model: selectedModel,
+        creator: user?.id,
+      });
+      console.log("response =", response.data.data);
+      router.push(`/test/view?testId=${response.data.data._id}`);
+    } catch (error: any) {
+      console.log(error.response.data.message);
+      const errors = error.response.data.errors.map(
+        (error: any) => error.message
+      );
+      toast.error("Failed to store test", {
+        description: errors.join(", "),
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (status === "ready" && messages.length === 4) {
+      storeTest();
+    }
+  }, [status]);
+
   return (
     <div
       className="max-w-7xl w-full rounded-md flex flex-col gap-6 items-center justify-center px-4 md:px-6 py-8
@@ -129,7 +211,7 @@ export default function TestPage() {
       </div>
 
       {/* Generate Button */}
-      <div className="my-4 flex flex-col gap-4 w-full max-w-sm">
+      <div className="my-4 flex flex-col gap-4">
         {/* Select Subject */}
         {!isQuestionsGenerated && (
           <div className="flex flex-col gap-1 w-full">
@@ -172,7 +254,7 @@ export default function TestPage() {
 
       {/* Loader */}
       {(status === "submitted" || status === "streaming") && (
-        <div className="w-full max-w-4xl bg-background border-mode rounded-lg p-4 md:p-6 card-shadow-no-hover scroll-smooth mt-4">
+        <div className="w-full max-w-4xl rounded-lg p-4 md:p-6 scroll-smooth mt-4">
           <PulsatingLoader />
         </div>
       )}
@@ -180,31 +262,53 @@ export default function TestPage() {
       {messages.length > 0 && (
         <div
           className={cn(
-            "w-full bg-background border-mode rounded-lg p-4 md:p-6 card-shadow-no-hover scroll-smooth"
+            "w-full bg-background border-mode rounded-lg p-4 md:p-6 card-shadow-no-hover scroll-smooth flex flex-col gap-4"
           )}
         >
-          <h2 className="text-2xl font-bold mb-4 text-center">
-            Generated Questions
-          </h2>
-          <div className="flex flex-col gap-4">
-            {messages.length > 0 &&
-              messages[messages.length - 1].role === "assistant" &&
-              messages[messages.length - 1].parts
-                .filter((part) => part.type === "text")
-                .map((part) => (
-                  <div
-                    key={part.text}
-                    className="p-3 rounded-md border-mode bg-primary/5"
-                  >
-                    <Response>{part.text}</Response>
-                  </div>
-                ))}
-          </div>
+          {messages.map((message, index) => (
+            <div key={message.id}>
+              {index === 1 ? (
+                <p className="text-lg text-foreground">
+                  {message.parts.filter((part) => part?.type === "text")[0]
+                    ?.state === "streaming"
+                    ? "Generating Questions..."
+                    : "Generated Questions"}
+                </p>
+              ) : (
+                index === messages.length - 1 &&
+                message.role === "assistant" && (
+                  <p className="text-lg text-foreground">
+                    {message.parts.filter((part) => part?.type === "text")[0]
+                      ?.state === "streaming"
+                      ? "Generating Review..."
+                      : "Generated Review"}
+                  </p>
+                )
+              )}
+              {message.role === "assistant" && (
+                <div className="p-3 rounded-md border-mode bg-primary/5">
+                  {message.parts
+                    .filter((part) => part.type === "text")
+                    .map((part, i) => {
+                      return (
+                        <Response
+                          key={`${message.id}-${i}`}
+                          className="leading-relaxed p-2"
+                        >
+                          {part.text}
+                        </Response>
+                      );
+                    })}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       )}
 
       {messages.length > 0 &&
-        messages[messages.length - 1].role === "assistant" && (
+        messages[messages.length - 1].role === "assistant" &&
+        status === "ready" && (
           <div
             className={cn(
               "w-full bg-background border-mode rounded-lg p-4 md:p-6 card-shadow-no-hover scroll-smooth mt-4"
@@ -213,29 +317,11 @@ export default function TestPage() {
             <h2 className="text-2xl font-bold mb-4 text-center">
               Your Answers
             </h2>
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              {answers.map((_, index) => (
-                <div key={index} className="flex flex-col gap-2">
-                  <label
-                    htmlFor={`answer-${index}`}
-                    className="font-semibold text-primary"
-                  >
-                    Answer for Question {index + 1}
-                  </label>
-                  <Textarea
-                    id={`answer-${index}`}
-                    value={answers[index]}
-                    onChange={(e) => handleAnswerChange(index, e.target.value)}
-                    placeholder={`Type your answer for question ${index + 1}...`}
-                    className="bg-background border-mode"
-                    rows={3}
-                  />
-                </div>
-              ))}
-              <Button type="submit" className="mt-4 self-center" size="lg">
-                Submit Answers
-              </Button>
-            </form>
+            <GiveAnswersForm
+              numberOfAnswers={numberOfAnswers}
+              onAnswersSubmit={onAnswersSubmit}
+              setAnswers={setAnswers}
+            />
           </div>
         )}
     </div>
