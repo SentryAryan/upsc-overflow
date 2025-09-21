@@ -95,7 +95,7 @@ export default function MenuDemo2() {
                       showName={true}
                       appearance={{
                         elements: {
-                          userButtonBox: "text-foreground",
+                          userButtonBox: "text-foreground w-full rounded-full",
                         },
                       }}
                     />

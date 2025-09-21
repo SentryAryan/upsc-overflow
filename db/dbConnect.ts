@@ -5,6 +5,9 @@ import "@/db/models/comment.model";
 import "@/db/models/like.model";
 import "@/db/models/save.model";
 import "@/db/models/subscription.model";
+import "@/db/models/test.model";
+import "@/db/models/chat.model";
+import "@/db/models/chatTab.model";
 
 const dbConnect = async (): Promise<void> => {
   try {

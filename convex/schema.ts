@@ -68,4 +68,11 @@ export default defineSchema({
       v.literal(Reaction.HUNDRED)
     ),
   }).index("by_message_id", ["messageId"]),
+  tests: defineTable({
+    questions: v.string(),
+    answers: v.array(v.string()),
+    review: v.string(),
+    ai_model: v.string(),
+    creator: v.string(),
+  }).index("by_creator_id", ["creator"]),
 });

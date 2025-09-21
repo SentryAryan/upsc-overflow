@@ -28,11 +28,13 @@ export async function POST(req: NextRequest) {
     messages,
     reasoning,
     provider,
+    forTest,
   }: {
     model: string;
     messages: UIMessage[];
     reasoning: boolean;
     provider: string;
+    forTest: boolean;
   } = await req.json();
 
   // console.log("messages =", messages);
@@ -63,7 +65,7 @@ export async function POST(req: NextRequest) {
           model: modelReceived,
           messages: convertToModelMessages(messages),
           system: system,
-          maxOutputTokens,
+          maxOutputTokens: forTest ? 10000 : maxOutputTokens,
           temperature: 0.3,
           maxRetries: 3,
           providerOptions: {
@@ -102,7 +104,7 @@ export async function POST(req: NextRequest) {
             model: modelReceived,
             messages: convertToModelMessages(messages),
             // system: system,
-            maxOutputTokens,
+            maxOutputTokens: forTest ? 10000 : maxOutputTokens,
             temperature: 0.3,
             maxRetries: 3,
             providerOptions: {
@@ -120,7 +122,7 @@ export async function POST(req: NextRequest) {
             model: modelReceived,
             messages: convertToModelMessages(messages),
             // system: system,
-            maxOutputTokens,
+            maxOutputTokens: forTest ? 10000 : maxOutputTokens,
             temperature: 0.3,
             maxRetries: 3,
             experimental_transform: smoothStream({

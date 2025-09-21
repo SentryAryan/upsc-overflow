@@ -17,6 +17,7 @@ import {
   SiGooglegemini,
   SiNvidia,
   SiClaude,
+  SiX,
 } from "@icons-pack/react-simple-icons";
 import axios from "axios";
 import { motion } from "framer-motion";
@@ -206,18 +207,11 @@ export const models = [
   // },
   //other openrouter models
   {
-    name: "Sonoma Dusk Alpha",
-    value: "openrouter/sonoma-dusk-alpha",
-    isReasoningAvailable: false,
-    provider: "openrouter",
-    icon: Brain,
-  },
-  {
-    name: "Sonoma Sky Alpha",
-    value: "openrouter/sonoma-sky-alpha",
+    name: "xAI: Grok 4 Fast (free)",
+    value: "x-ai/grok-4-fast:free",
     isReasoningAvailable: true,
     provider: "openrouter",
-    icon: Brain,
+    icon: SiX,
   },
   {
     name: "NVIDIA: Nemotron Nano 9B V2 (free)",
@@ -668,6 +662,7 @@ function Chat({
               : false,
             provider: models.find((model) => model.value === selectedModel)
               ?.provider,
+            forTest: false,
           },
         }
       );
@@ -1229,6 +1224,7 @@ function Chat({
                         provider: models.find(
                           (model) => model.value === selectedModel
                         )?.provider,
+                        forTest: false,
                       },
                     }
                   );
