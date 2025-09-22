@@ -22,6 +22,7 @@ import {
   X,
   MessageCircle,
   PencilLine,
+  BookOpenCheck,
 } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
@@ -62,6 +63,7 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
   const [conversationPath, setConversationPath] =
     useState<string>("/conversation");
   const [testPath, setTestPath] = useState<string>("/test");
+  const [allTestsPath, setAllTestsPath] = useState<string>("/allTests");
 
   const menuItems: MenuItem[] = isSignedIn
     ? [
@@ -91,36 +93,42 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
         },
         {
           id: 5,
+          title: "All Tests",
+          url: allTestsPath,
+          icon: BookOpenCheck,
+        },
+        {
+          id: 6,
           title: "Conversations",
           url: conversationPath,
           icon: MessageCircle,
         },
         {
-          id: 6,
+          id: 7,
           title: "Dashboard",
           url: dashboardPath,
           icon: LayoutDashboard,
         },
         {
-          id: 7,
+          id: 8,
           title: "Saved",
           url: savedPath,
           icon: Bookmark,
         },
         {
-          id: 8,
+          id: 9,
           title: "Community",
           url: communityPath,
           icon: Users,
         },
         {
-          id: 9,
+          id: 10,
           title: "Popular Tags",
           url: popularTagsPath,
           icon: Tag,
         },
         {
-          id: 10,
+          id: 11,
           title: "Popular Subjects",
           url: popularSubjectsPath,
           icon: Book,
@@ -209,6 +217,13 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
       const searchString = searchParams.toString();
       const fullPath = searchString ? `/test?${searchString}` : "/test";
       setTestPath(fullPath);
+    }
+    if (pathname === "/allTests") {
+      const searchString = searchParams.toString();
+      const fullPath = searchString
+        ? `/allTests?${searchString}`
+        : "/allTests";
+      setAllTestsPath(fullPath);
     }
   }, [pathname, searchParams]);
 
