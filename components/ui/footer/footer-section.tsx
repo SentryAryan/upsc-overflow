@@ -166,8 +166,8 @@ function Footerdemo() {
 
   return (
     <footer className="relative border-t bg-background text-foreground transition-colors duration-300 mt-10 rounded-t-4xl">
-      <div className="container mx-auto px-4 py-12 md:px-6 lg:px-8">
-        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
+      <div className="w-full px-4 py-12 md:px-8 lg:px-14 xl:px-8">
+        <div className="w-full grid gap-12 xl:gap-20 md:grid-cols-2 lg:grid-cols-4">
           {/* Newsletter */}
           <div className="relative">
             <h2 className="mb-4 text-3xl font-bold tracking-tight">

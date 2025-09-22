@@ -56,7 +56,7 @@ export default function AllTestsPage() {
         </div>
       ) : tests.length === 0 ? (
         <p className="text-center mt-4 text-muted-foreground animate-slide-up flex justify-center items-center h-[20vh] sm:h-[30vh]">
-          No questions found.
+          No tests found.
         </p>
       ) : (
         <div className="grid grid-cols-1 gap-8 w-full">

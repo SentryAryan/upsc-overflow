@@ -32,17 +32,18 @@ export default async function RootLayout({
 
   return (
     <ReduxProvider>
-      <html lang="en">
+      <html lang="en" suppressHydrationWarning={true}>
         <body
           className={`${openSans.variable} ${jetbrainsMono.variable} font-mono antialiased w-screen min-h-screen overflow-x-hidden relative always-show-scrollbar`}
+          suppressHydrationWarning={true}
         >
           <ThemeWrapper>
-            <main className="container mx-auto flex-1 flex flex-col items-center justify-center overflow-x-hidden pt-12 min-[640px]:pt-26 always-show-scrollbar">
+            <main className="container mx-auto flex-1 flex flex-col items-center justify-center overflow-x-hidden pt-12 min-[640px]:pt-26 always-show-scrollbar pb-8">
               <ScrollNavigationMenu />
               {children}
-              <Footerdemo />
               <Toaster />
             </main>
+            <Footerdemo />
           </ThemeWrapper>
         </body>
       </html>
