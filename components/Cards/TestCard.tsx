@@ -1,13 +1,13 @@
 import { models } from "@/app/test/page";
 import {
- Tooltip,
- TooltipContent,
- TooltipProvider,
- TooltipTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Doc } from "@/convex/_generated/dataModel";
 import { format } from "date-fns";
-import { Book, Bot, Brain, Hash, MessageSquare } from "lucide-react";
+import { Book, Bot, Brain, MessageSquare } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useRef, useState, type ComponentType, type SVGProps } from "react";
 
@@ -28,9 +28,12 @@ const TestCard = ({ test }: TestCardProps) => {
     : "N/A";
 
   const creatorName = test.creator || "AI Generated";
-  const AiModelIcon: ComponentType<SVGProps<SVGSVGElement>> =
-    (models.find((model) => model.value === test.ai_model)?.icon || Brain) as ComponentType<SVGProps<SVGSVGElement>>;
-  const aiModelName = models.find((model) => model.value === test.ai_model)?.name || "AI Generated";
+  const AiModelIcon: ComponentType<SVGProps<SVGSVGElement>> = (models.find(
+    (model) => model.value === test.ai_model
+  )?.icon || Brain) as ComponentType<SVGProps<SVGSVGElement>>;
+  const aiModelName =
+    models.find((model) => model.value === test.ai_model)?.name ||
+    "AI Generated";
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
 
@@ -94,7 +97,7 @@ const TestCard = ({ test }: TestCardProps) => {
 
   return (
     <div
-      className="bg-background rounded-lg card-shadow transition-all duration-300 p-6 border-mode w-full h-full flex flex-col cursor-pointer group relative before:absolute before:bg-accent before:inset-0 before:translate-x-[-100%] before:transition-transform overflow-hidden before:duration-300 before:ease-in-out before:rounded-lg hover:before:translate-x-0 animate-slide-up before:shadow-mode-hover"
+      className="bg-background rounded-lg card-shadow transition-all duration-300 p-6 border-mode w-full h-full flex flex-col cursor-pointer group relative before:absolute before:bg-accent before:inset-0 before:w-full before:translate-x-[-100%] before:transition-transform overflow-hidden before:duration-300 before:ease-in-out before:rounded-lg hover:before:translate-x-[0%] animate-slide-up before:shadow-mode-hover"
       ref={cardRef}
       style={cardStyle}
       onMouseMove={handleMouseMove}

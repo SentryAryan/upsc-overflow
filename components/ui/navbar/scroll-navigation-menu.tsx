@@ -50,7 +50,7 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [hoveredItem, setHoveredItem] = useState<number | null>(null);
-  const { isSignedIn } = useUser();
+  const { isSignedIn, isLoaded } = useUser();
   const [homePath, setHomePath] = useState<string>("/");
   const [popularTagsPath, setPopularTagsPath] =
     useState<string>("/popular-tags");
@@ -65,7 +65,7 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
   const [testPath, setTestPath] = useState<string>("/test");
   const [allTestsPath, setAllTestsPath] = useState<string>("/allTests");
 
-  const menuItems: MenuItem[] = isSignedIn
+  const menuItems: MenuItem[] = isSignedIn && isLoaded
     ? [
         {
           id: 1,
@@ -220,9 +220,7 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
     }
     if (pathname === "/allTests") {
       const searchString = searchParams.toString();
-      const fullPath = searchString
-        ? `/allTests?${searchString}`
-        : "/allTests";
+      const fullPath = searchString ? `/allTests?${searchString}` : "/allTests";
       setAllTestsPath(fullPath);
     }
   }, [pathname, searchParams]);
@@ -299,7 +297,7 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
         transition={{ duration: 0.3, ease: "easeInOut" }}
         className={`fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border rounded-b-4xl flex justify-center w-full ${className}`}
       >
-        <div className="flex justify-center px-4 sm:px-6 lg:px-8">
+        <div className="flex w-full justify-center px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 w-full">
             {/* Logo */}
             <motion.div
@@ -316,8 +314,19 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
             </motion.div>
 
             {/* Desktop Menu */}
-            <div className="hidden xl:block">
-              <div className="ml-10 flex items-baseline space-x-4">
+            <div
+              className={cn(
+                "hidden",
+                isSignedIn && isLoaded ? "xl:block" : "w-full xl:flex xl:justify-end"
+              )}
+            >
+              <div
+                className={cn(
+                  "ml-10 flex items-baseline space-x-4",
+                  isSignedIn && isLoaded && "w-full justify-end"
+                )}
+              >
+                {/* Menu Items */}
                 {menuItems.slice(0, 7).map((item) => {
                   const itemPathname = item.url.split("?")[0];
                   const isActive =
@@ -375,7 +384,7 @@ export const ScrollNavigationMenu: React.FC<ScrollNavbarProps> = ({
             </div>
 
             {/* Mobile Menu */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 w-max">
               {/* Setting/Profile for mobile */}
               <div className="xl:hidden cursor-pointer">
                 {/* Setting/Profile*/}
