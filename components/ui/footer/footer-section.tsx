@@ -29,6 +29,7 @@ import {
   Brain,
   MessageCircle,
   PencilLine,
+  BookOpenCheck,
 } from "lucide-react";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
@@ -55,6 +56,7 @@ function Footerdemo() {
   const [conversationPath, setConversationPath] =
     useState<string>("/conversation");
   const [testPath, setTestPath] = useState<string>("/test");
+  const [allTestsPath, setAllTestsPath] = useState<string>("/allTests");
 
   const quickLinks = isSignedIn
     ? [
@@ -62,6 +64,7 @@ function Footerdemo() {
         { name: "Ask Question", url: "/ask-question", icon: FileQuestion },
         { name: "Ask AI", url: chatPath, icon: Brain },
         { name: "Test", url: testPath, icon: PencilLine },
+        { name: "All Tests", url: allTestsPath, icon: BookOpenCheck },
         { name: "Conversations", url: conversationPath, icon: MessageCircle },
         { name: "Dashboard", url: dashboardPath, icon: LayoutDashboard },
         { name: "Saved", url: savedPath, icon: Bookmark },
@@ -151,6 +154,13 @@ function Footerdemo() {
       const searchString = searchParams.toString();
       const fullPath = searchString ? `/test?${searchString}` : "/test";
       setTestPath(fullPath);
+    }
+    if (pathname === "/allTests") {
+      const searchString = searchParams.toString();
+      const fullPath = searchString
+        ? `/allTests?${searchString}`
+        : "/allTests";
+      setAllTestsPath(fullPath);
     }
   }, [pathname, searchParams]);
 
