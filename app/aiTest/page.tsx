@@ -1,23 +1,23 @@
 "use client";
 
-import { Response } from "@/components/ai-elements/response";
-import { SelectModelForm } from "@/components/Forms/select-model/SelectModelForm";
-import { SelectSubjectForTest } from "@/components/Forms/select-subject/SelectSubjectForTest";
-import { GiveAnswersForm } from "@/components/Forms/test-answers/GiveAnswersForm";
-import PulsatingLoader from "@/components/Loaders/PulsatingLoader";
 import { Button } from "@/components/ui/button";
 import { Spotlight } from "@/components/ui/spotlight";
-import { api } from "@/convex/_generated/api";
-import subjects from "@/lib/constants/subjects";
 import { cn } from "@/lib/utils";
 import { useChat } from "@ai-sdk/react";
-import { useUser } from "@clerk/nextjs";
-import { SiGooglegemini, SiNvidia, SiX } from "@icons-pack/react-simple-icons";
-import { useMutation } from "convex/react";
 import { Brain } from "lucide-react";
-import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { SiGooglegemini, SiNvidia, SiX } from "@icons-pack/react-simple-icons";
+import { SelectModelForm } from "../../components/Forms/select-model/SelectModelForm";
+import subjects from "@/lib/constants/subjects";
+import { Response } from "@/components/ai-elements/response";
+import { SelectSubjectForTest } from "@/components/Forms/select-subject/SelectSubjectForTest";
+import PulsatingLoader from "../../components/Loaders/PulsatingLoader";
+import { GiveAnswersForm } from "../../components/Forms/test-answers/GiveAnswersForm";
+import z from "zod";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 
 interface Question {
   id: number;
@@ -81,10 +81,7 @@ export default function TestPage() {
   const [subject, setSubject] = useState<string>("math");
   const { messages, sendMessage, stop, status, setMessages, error } = useChat();
   const router = useRouter();
-  const { isLoaded, isSignedIn, user } = useUser();
-  const createTest = useMutation(
-    api["test_table_functions"].testTableFunctions.createTest
-  );
+  const { user } = useUser();
 
   console.log("messages =", messages);
   console.log("status =", status);
@@ -160,28 +157,23 @@ export default function TestPage() {
     }
   };
 
-  const storeTestInConvex = async () => {
+  const storeTest = async () => {
     try {
-      if (!isSignedIn || !isLoaded) {
-        toast.error("Please login to store test");
-        return;
-      }
       const questions = messages[1].parts.filter(
         (part) => part.type === "text"
       )[0].text;
       const review = messages[messages.length - 1].parts.filter(
         (part) => part.type === "text"
       )[0].text;
-      const response = await createTest({
-        questions: questions || "Questions not available",
+      const response = await axios.post("/api/test/storeTest", {
+        questions: questions.trim() || "Questions not available",
         answers: answers.length > 0 ? answers : ["Answers not available"],
-        review: review || "Review not available",
+        review: review.trim() || "Review not available",
         ai_model: selectedModel,
-        creator: user?.id || "",
-        subject: subject || "other",
+        creator: user?.id,
       });
-      console.log("response =", response);
-      router.push(`/test/view?testId=${response._id}`);
+      console.log("response =", response.data.data);
+      router.push(`/aiTest/view?testId=${response.data.data._id}`);
     } catch (error: any) {
       console.log(error.response.data.message);
       const errors = error.response.data.errors.map(
@@ -195,10 +187,7 @@ export default function TestPage() {
 
   useEffect(() => {
     if (status === "ready" && messages.length === 4) {
-      //for mongo db
-      // storeTest();
-      //for convex db
-      storeTestInConvex();
+      storeTest();
     }
   }, [status]);
 

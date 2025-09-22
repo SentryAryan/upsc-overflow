@@ -8,6 +8,7 @@ export const createTest = mutation({
     review: v.string(),
     ai_model: v.string(),
     creator: v.string(),
+    subject: v.string(),
   },
   returns: v.union(
     v.object({
@@ -18,39 +19,46 @@ export const createTest = mutation({
     v.object({ success: v.boolean(), message: v.string() })
   ),
   handler: async (ctx, args) => {
-    if (!args.questions) {
+    if (!args.questions || args.questions.trim() === "") {
       return {
         success: false,
         message: "Questions are required",
       };
     }
-    if (!args.answers) {
+    if (!args.answers || args.answers.length === 0) {
       return {
         success: false,
         message: "Answers are required",
       };
     }
-    if (!args.review) {
+    if (!args.review || args.review.trim() === "") {
       return {
         success: false,
         message: "Review is required",
       };
     }
-    if (!args.ai_model) {
+    if (!args.ai_model || args.ai_model.trim() === "") {
       return {
         success: false,
         message: "AI model is required",
       };
     }
-    if (!args.creator) {
+    if (!args.creator || args.creator.trim() === "") {
       return {
         success: false,
         message: "Creator is required",
       };
     }
+    if (!args.subject || args.subject.trim() === "") {
+      return {
+        success: false,
+        message: "Subject is required",
+      };
+    }
     const id = await ctx.db.insert("tests", {
       ...args,
       creator: args.creator,
+      subject: args.subject,
     });
     return {
       success: true,
@@ -64,28 +72,25 @@ export const getTestById = query({
   args: {
     id: v.id("tests"),
   },
-  returns: v.object({
-    success: v.boolean(),
-    message: v.string(),
-    test: v.union(
-      v.object({
-        _id: v.id("tests"),
-        _creationTime: v.number(),
-        questions: v.string(),
-        answers: v.array(v.string()),
-        review: v.string(),
-        ai_model: v.string(),
-        creator: v.string(),
-      }),
-      v.null()
-    ),
-  }),
   handler: async (ctx, args) => {
     const test = await ctx.db.get(args.id);
-    return {
-      success: test ? true : false,
-      message: test ? "Test fetched successfully" : "Test not found",
-      test: test || null,
-    };
+    console.log("test =", test);
+    return test;
+  },
+});
+
+export const getAllTestsOfUser = query({
+  args: {
+    creator: v.string(),
+  },
+  handler: async (ctx, args) => {
+    if (!args.creator) {
+      return [];
+    }
+    const tests = await ctx.db
+      .query("tests")
+      .withIndex("by_creator_id", (q) => q.eq("creator", args.creator))
+      .collect();
+    return tests;
   },
 });

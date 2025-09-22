@@ -73,6 +73,7 @@ export default defineSchema({
     answers: v.array(v.string()),
     review: v.string(),
     ai_model: v.string(),
+    subject: v.string(),
     creator: v.string(),
   }).index("by_creator_id", ["creator"]),
 });
