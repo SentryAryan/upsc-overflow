@@ -20,7 +20,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "UPSC Overflow | Aryan Srivastaav",
+  title: "UPSC Overflow | Aryan Srivastava",
   description: "A community platform for UPSC aspirants",
 };
 
