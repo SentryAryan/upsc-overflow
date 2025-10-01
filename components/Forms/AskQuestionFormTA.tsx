@@ -19,6 +19,7 @@ import TiptapFormField from "./TiptapFormField";
 import HugeRTEFormField from "./HugeRTEFormField2";
 import TinyMCEFormField from "./TinyMCEFormField";
 import { RootState } from "../../lib/redux/store";
+import { queryClient } from "@/lib/tanstack-react-query/query-client";
 
 const formSchema = z.object({
   title: z
@@ -109,6 +110,8 @@ export function AskQuestionFormTA({
       console.log(question);
       toast.success("Question created successfully");
       dispatch(setQuestions([]));
+      // queryClient.invalidateQueries({ queryKey: ["questions"] });
+      // queryClient.invalidateQueries({ queryKey: ["subjects"] });
     } catch (error: any) {
       console.log(error);
       const errors = error.response.data.errors.map(

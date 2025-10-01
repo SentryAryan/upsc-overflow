@@ -3,17 +3,20 @@ import React from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { setTotalPages } from "@/lib/redux/slices/questions.slice";
 import { useDispatch } from "react-redux";
+import { Skeleton } from "../ui/skeleton";
 
 interface SubjectFilterProps {
   subjects: string[]; // Array of available subjects
   selectedSubject: string | null; // Selected subject (single string or null)
   handleSelectSubject: (subject: string | null) => void;
+  isLoading?: boolean;
 }
 
 const SubjectFilter: React.FC<SubjectFilterProps> = ({
   subjects,
   selectedSubject,
   handleSelectSubject,
+  isLoading,
 }) => {
   console.log("SubjectFilter.jsx");
   const router = useRouter();
@@ -58,19 +61,23 @@ const SubjectFilter: React.FC<SubjectFilterProps> = ({
       >
         All Subjects
       </button>
-      {subjects.map((subject) => (
-        <button
-          key={subject}
-          className={`px-3 py-1 rounded-full text-sm cursor-pointer font-[900] filter-shadow hover:shadow-none transition-all duration-300 hover:scale-90 animate-slide-up ${
-            selectedSubject === subject
-              ? "bg-primary text-primary-foreground"
-              : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-          }`}
-          onClick={() => handleSelectCurrentSubject(subject)}
-        >
-          {subject}
-        </button>
-      ))}
+      {isLoading
+        ? Array.from({ length: 10 }).map((_, index) => (
+            <Skeleton key={index} className="w-20 h-8 rounded-full" />
+          ))
+        : subjects.map((subject) => (
+            <button
+              key={subject}
+              className={`px-3 py-1 rounded-full text-sm cursor-pointer font-[900] filter-shadow hover:shadow-none transition-all duration-300 hover:scale-90 animate-slide-up ${
+                selectedSubject === subject
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+              }`}
+              onClick={() => handleSelectCurrentSubject(subject)}
+            >
+              {subject}
+            </button>
+          ))}
     </div>
   );
 };

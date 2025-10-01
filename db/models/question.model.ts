@@ -36,6 +36,7 @@ const questionSchema: Schema<QuestionTypeSchema> = new mongoose.Schema(
       required: true,
       enum: subjects,
       lowercase: true,
+      index: true,
     },
     tags: {
       type: [
@@ -45,6 +46,7 @@ const questionSchema: Schema<QuestionTypeSchema> = new mongoose.Schema(
           lowercase: true,
         },
       ],
+      index: true,
     },
     asker: { type: String, required: true, index: true },
   },
