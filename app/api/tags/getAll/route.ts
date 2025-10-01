@@ -105,7 +105,7 @@ export const GET = errorHandler(async (req: NextRequest) => {
           (acc, curr) => acc + curr.length,
           0
         ),
-        firstQuestion: questions[0].title,
+        firstQuestion: questions[0]?.title,
         totalPages,
       };
     })
@@ -117,52 +117,52 @@ export const GET = errorHandler(async (req: NextRequest) => {
         return b.numberOfQuestions !== a.numberOfQuestions
           ? b.numberOfQuestions - a.numberOfQuestions
           : b.numberOfAnswers !== a.numberOfAnswers
-          ? b.numberOfAnswers - a.numberOfAnswers
-          : b.numberOfComments !== a.numberOfComments
-          ? b.numberOfComments - a.numberOfComments
-          : b.uniqueSubjects.length !== a.uniqueSubjects.length
-          ? b.uniqueSubjects.length - a.uniqueSubjects.length
-          : 0;
+            ? b.numberOfAnswers - a.numberOfAnswers
+            : b.numberOfComments !== a.numberOfComments
+              ? b.numberOfComments - a.numberOfComments
+              : b.uniqueSubjects.length !== a.uniqueSubjects.length
+                ? b.uniqueSubjects.length - a.uniqueSubjects.length
+                : 0;
       case "answers-desc":
         return b.numberOfAnswers !== a.numberOfAnswers
           ? b.numberOfAnswers - a.numberOfAnswers
           : b.numberOfQuestions !== a.numberOfQuestions
-          ? b.numberOfQuestions - a.numberOfQuestions
-          : b.numberOfComments !== a.numberOfComments
-          ? b.numberOfComments - a.numberOfComments
-          : b.uniqueSubjects.length !== a.uniqueSubjects.length
-          ? b.uniqueSubjects.length - a.uniqueSubjects.length
-          : 0;
+            ? b.numberOfQuestions - a.numberOfQuestions
+            : b.numberOfComments !== a.numberOfComments
+              ? b.numberOfComments - a.numberOfComments
+              : b.uniqueSubjects.length !== a.uniqueSubjects.length
+                ? b.uniqueSubjects.length - a.uniqueSubjects.length
+                : 0;
       case "comments-desc":
         return b.numberOfComments !== a.numberOfComments
           ? b.numberOfComments - a.numberOfComments
           : b.numberOfQuestions !== a.numberOfQuestions
-          ? b.numberOfQuestions - a.numberOfQuestions
-          : b.numberOfAnswers !== a.numberOfAnswers
-          ? b.numberOfAnswers - a.numberOfAnswers
-          : b.uniqueSubjects.length !== a.uniqueSubjects.length
-          ? b.uniqueSubjects.length - a.uniqueSubjects.length
-          : 0;
+            ? b.numberOfQuestions - a.numberOfQuestions
+            : b.numberOfAnswers !== a.numberOfAnswers
+              ? b.numberOfAnswers - a.numberOfAnswers
+              : b.uniqueSubjects.length !== a.uniqueSubjects.length
+                ? b.uniqueSubjects.length - a.uniqueSubjects.length
+                : 0;
       case "subjects-desc":
         return b.uniqueSubjects.length !== a.uniqueSubjects.length
           ? b.uniqueSubjects.length - a.uniqueSubjects.length
           : b.numberOfQuestions !== a.numberOfQuestions
-          ? b.numberOfQuestions - a.numberOfQuestions
-          : b.numberOfAnswers !== a.numberOfAnswers
-          ? b.numberOfAnswers - a.numberOfAnswers
-          : b.numberOfComments !== a.numberOfComments
-          ? b.numberOfComments - a.numberOfComments
-          : 0;
+            ? b.numberOfQuestions - a.numberOfQuestions
+            : b.numberOfAnswers !== a.numberOfAnswers
+              ? b.numberOfAnswers - a.numberOfAnswers
+              : b.numberOfComments !== a.numberOfComments
+                ? b.numberOfComments - a.numberOfComments
+                : 0;
       default:
         return b.numberOfQuestions !== a.numberOfQuestions
           ? b.numberOfQuestions - a.numberOfQuestions
           : b.numberOfAnswers !== a.numberOfAnswers
-          ? b.numberOfAnswers - a.numberOfAnswers
-          : b.numberOfComments !== a.numberOfComments
-          ? b.numberOfComments - a.numberOfComments
-          : b.uniqueSubjects.length !== a.uniqueSubjects.length
-          ? b.uniqueSubjects.length - a.uniqueSubjects.length
-          : 0;
+            ? b.numberOfAnswers - a.numberOfAnswers
+            : b.numberOfComments !== a.numberOfComments
+              ? b.numberOfComments - a.numberOfComments
+              : b.uniqueSubjects.length !== a.uniqueSubjects.length
+                ? b.uniqueSubjects.length - a.uniqueSubjects.length
+                : 0;
     }
   });
   const slicedTagsWithMetrics = tagsWithMetricsSorted.slice(
