@@ -33,6 +33,7 @@ import {
   Plus,
   Send,
   User,
+  Lightbulb,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -957,8 +958,8 @@ function Chat({
                   ref={i === messages.length - 1 ? lastMsgRef : undefined}
                   className={`whitespace-pre-wrap p-3 rounded-md border-mode flex flex-col gap-2 ${
                     message.role === "user"
-                      ? "bg-primary/5 ml-auto"
-                      : "bg-background mr-auto"
+                      ? "bg-primary/5"
+                      : "bg-background"
                   }`}
                 >
                   {/* Message Header */}
@@ -1037,16 +1038,16 @@ function Chat({
                   {isReasoningAvailable && (
                     <div className="w-full flex flex-col gap-2 text-muted-foreground mt-2">
                       <span className="text-sm font-bold flex justify-start items-center gap-2">
-                        <Brain className="w-4 h-4" />
+                        <Lightbulb className="w-4 h-4" />
                         <p>
                           {message.parts.filter(
                             (part) => part.type === "reasoning"
                           )[0].state === "streaming"
                             ? "Thinking..."
-                            : "Thinking Data"}
+                            : "Thoughts"}
                         </p>
                         <Button
-                          variant="outline"
+                          variant="ghost"
                           className="w-4 h-4"
                           size="icon"
                           onClick={() => {
@@ -1097,7 +1098,7 @@ function Chat({
                         : "Show Message"}
                     </p>
                     <Button
-                      variant="outline"
+                      variant="ghost"
                       className="w-4 h-4"
                       size="icon"
                       onClick={() => {

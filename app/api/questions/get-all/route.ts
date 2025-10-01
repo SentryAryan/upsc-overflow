@@ -218,28 +218,28 @@ export const GET = errorHandler(async (req: NextRequest) => {
           const likes = await Like.countDocuments({
             question: q._id,
             isLiked: true,
-          });
+          }).lean();
           const dislikes = await Like.countDocuments({
             question: q._id,
             isLiked: false,
-          });
+          }).lean();
           votes = likes - dislikes;
         }
 
         if (sortBy === "answers-desc") {
-          answerCount = await Answer.countDocuments({ question: q._id });
+          answerCount = await Answer.countDocuments({ question: q._id }).lean();
         }
 
         if (sortBy === "comments-desc") {
           const directComments = await Comment.countDocuments({
             question: q._id,
-          });
+          }).lean();
           const answers = await Answer.find({ question: q._id });
           const answerComments = await Promise.all(
             answers.map(async (answer: AnswerTypeSchema) => {
               const answerComments = await Comment.countDocuments({
                 answer: answer._id,
-              });
+              }).lean();
               return answerComments;
             })
           );
@@ -374,23 +374,23 @@ export const GET = errorHandler(async (req: NextRequest) => {
       const likes = await Like.countDocuments({
         question: question._id,
         isLiked: true,
-      });
+      }).lean();
       const dislikes = await Like.countDocuments({
         question: question._id,
         isLiked: false,
-      });
+      }).lean();
       const answers = await Answer.find({ question: question._id });
       const answersComments = await Promise.all(
         answers.map(async (answer: AnswerTypeSchema) => {
           const answerComments = await Comment.countDocuments({
             answer: answer._id,
-          });
+          }).lean();
           return answerComments;
         })
       );
       const questionComments = await Comment.countDocuments({
         question: question._id,
-      });
+      }).lean();
       return {
         likes,
         dislikes,

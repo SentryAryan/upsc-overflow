@@ -8,17 +8,20 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { usePathname, useSearchParams } from "next/navigation";
+import { Skeleton } from "../ui/skeleton";
 
 const HomePagination = ({
   totalPages,
   subject,
   tag,
   question,
+  isLoading,
 }: {
   totalPages: number;
   subject?: string;
   tag?: string;
   question?: string;
+  isLoading?: boolean;
 }) => {
   console.log("HomePagination.jsx");
   const pathname = usePathname();
@@ -34,22 +37,26 @@ const HomePagination = ({
         {/* Previous Page */}
         <PaginationItem>
           <PaginationPrevious
-            href={totalPages === 0 ? "" : `${pathname}?page=${
-              currentPage === 1 ? totalPages : currentPage - 1
-            }${subject ? `&subject=${subject}` : ""}${
-              tag ? `&tag=${tag}` : ""
-            }${question ? `&question=${question}` : ""}${
-              sortBy ? `&sortBy=${sortBy}` : ""
-            }`}
+            href={
+              totalPages === 0
+                ? ""
+                : `${pathname}?page=${
+                    currentPage === 1 ? totalPages : currentPage - 1
+                  }${subject ? `&subject=${subject}` : ""}${
+                    tag ? `&tag=${tag}` : ""
+                  }${question ? `&question=${question}` : ""}${
+                    sortBy ? `&sortBy=${sortBy}` : ""
+                  }`
+            }
             className="animate-slide-up"
           />
         </PaginationItem>
 
         {/* Pages */}
-        {totalPages === 0 ? (
-          <PaginationItem>
-            <PaginationEllipsis className="animate-slide-up" />
-          </PaginationItem>
+        {totalPages === 0 || isLoading ? (
+          Array.from({ length: 10 }).map((_, i) => (
+            <Skeleton key={i} className="w-10 h-10 rounded-full" />
+          ))
         ) : totalPages <= 10 ? (
           <>
             {Array.from({ length: totalPages }, (_, i) => (
@@ -94,13 +101,17 @@ const HomePagination = ({
         {/* Next Page */}
         <PaginationItem>
           <PaginationNext
-            href={totalPages === 0 ? "" : `${pathname}?page=${
-              currentPage === totalPages ? 1 : currentPage + 1
-            }${subject ? `&subject=${subject}` : ""}${
-              tag ? `&tag=${tag}` : ""
-            }${question ? `&question=${question}` : ""}${
-              sortBy ? `&sortBy=${sortBy}` : ""
-            }`}
+            href={
+              totalPages === 0
+                ? ""
+                : `${pathname}?page=${
+                    currentPage === totalPages ? 1 : currentPage + 1
+                  }${subject ? `&subject=${subject}` : ""}${
+                    tag ? `&tag=${tag}` : ""
+                  }${question ? `&question=${question}` : ""}${
+                    sortBy ? `&sortBy=${sortBy}` : ""
+                  }`
+            }
             className="animate-slide-up"
           />
         </PaginationItem>

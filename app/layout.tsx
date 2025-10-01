@@ -7,6 +7,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import "./globals.css";
 import { Footerdemo } from "@/components/ui/footer/footer-section";
 import { ScrollNavigationMenu } from "@/components/ui/navbar/scroll-navigation-menu";
+import { QueryProvider } from "@/components/Providers/QueryProvider";
 
 const openSans = Open_Sans({
   variable: "--font-sans",
@@ -33,6 +34,9 @@ export default async function RootLayout({
   return (
     <ReduxProvider>
       <html lang="en" suppressHydrationWarning={true}>
+        <head>
+          {/* <script src="http://localhost:8097"></script> */}
+        </head>
         <body
           className={`${openSans.variable} ${jetbrainsMono.variable} font-mono antialiased w-screen min-h-screen overflow-x-hidden relative always-show-scrollbar`}
           suppressHydrationWarning={true}
@@ -40,7 +44,7 @@ export default async function RootLayout({
           <ThemeWrapper>
             <main className="container mx-auto flex-1 flex flex-col items-center justify-center overflow-x-hidden pt-12 min-[640px]:pt-26 always-show-scrollbar pb-8">
               <ScrollNavigationMenu />
-              {children}
+              <QueryProvider>{children}</QueryProvider>
               <Toaster />
             </main>
             <Footerdemo />
