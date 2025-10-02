@@ -12,6 +12,19 @@
 
 # testing
 /coverage
+/.nyc_output
+
+# # Cypress output
+# /cypress/videos/
+# /cypress/screenshots/
+# /cypress/reports/
+# /cypress/results/
+
+# # Ignore Cypress tests and config (optional - if you don't want tests in repo)
+# /cypress/
+# cypress.config.ts
+# cypress.config.js
+
 
 # next.js
 /.next/
