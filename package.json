@@ -10,7 +10,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "cypress:open": "cypress open"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^2.0.17",
@@ -128,6 +129,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/react-scroll-to-bottom": "^4.2.5",
+    "cypress": "^15.3.0",
     "eslint": "^9",
     "eslint-config-next": "15.3.2",
     "eslint-config-prettier": "^10.1.8",

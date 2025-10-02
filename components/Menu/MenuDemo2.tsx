@@ -34,6 +34,7 @@ export default function MenuDemo2() {
         <>
           <div className="flex items-center space-x-4">
             <FloatingActionPanelTrigger
+              data-testid="settings-trigger"
               title="Settings/Profile:"
               mode="actions"
               className="cursor-pointer rounded-full p-4 flex items-center justify-center gap-2 w-full border-3! border-primary! shadow-none! font-[900]! hover:text-primary!"
