@@ -85,13 +85,13 @@ const suggestions = [
 ];
 
 export const models = [
-  {
-    name: "DeepSeek: DeepSeek V3.1 (free)",
-    value: "deepseek/deepseek-chat-v3.1:free",
-    isReasoningAvailable: true,
-    provider: "openrouter",
-    icon: Brain,
-  },
+  // {
+  //   name: "DeepSeek: DeepSeek V3.1 (free)",
+  //   value: "deepseek/deepseek-chat-v3.1:free",
+  //   isReasoningAvailable: true,
+  //   provider: "openrouter",
+  //   icon: Brain,
+  // },
   {
     name: "TNG: DeepSeek R1T2 Chimera (free)",
     value: "tngtech/deepseek-r1t2-chimera:free",

@@ -11,6 +11,7 @@ export interface QuestionTypeSchema extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
+
 export interface QuestionType {
   _id: string;
   title: string;
